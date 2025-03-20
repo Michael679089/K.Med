@@ -1,6 +1,8 @@
 package com.example.cs320_hospital_and_medical_android_app
 
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -32,19 +34,48 @@ class ForgotPassword : AppCompatActivity() {
 
         userVerify = findViewById(R.id.emailVerify)
         val userVerifyBtn: Button = findViewById(R.id.userVerifyBtn)
+        val usernameInput: EditText = findViewById(R.id.usernameInput)
+        val usernameState: TextView = findViewById(R.id.usernameState)
 
         securityQuestion = findViewById(R.id.securityQuestion)
         val answerVerifyBtn: Button = findViewById(R.id.answerVerifyBtn)
+        val securityQuestionText: TextView = findViewById(R.id.securityQuestionText)
+        val answerInput: EditText = findViewById(R.id.answerInput)
+        val answerValue = "Red"
+        val questionState: TextView = findViewById(R.id.questionState)
 
         newPassword = findViewById(R.id.newPassword)
         val submitBtn: Button = findViewById(R.id.submitBtn)
 
         userVerifyBtn.setOnClickListener(){
-            changeLayout(securityQuestion)
+            val username = usernameInput.text.toString()
+
+            if(username.isEmpty()){
+                usernameState.text = "Please input a valid username"
+                usernameState.setTextColor(Color.parseColor("#ff0000"))
+            } else {
+                usernameState.text = null
+                securityQuestionText.text = "What is your favorite color?"
+                changeLayout(securityQuestion)
+            }
         }
 
         answerVerifyBtn.setOnClickListener() {
-            changeLayout(newPassword)
+            val answer = answerInput.text.toString()
+
+            if (answer == answerValue) {
+                usernameState.text = null
+                changeLayout(newPassword)
+            } else {
+                questionState.text = "Incorrect answer"
+                questionState.setTextColor(Color.parseColor("#ff0000"))
+            }
+
+            if (answer.isEmpty()) {
+                questionState.text = "Please input an answer"
+                questionState.setTextColor(Color.parseColor("#ff0000"))
+            }
+
         }
 
         submitBtn.setOnClickListener(){
