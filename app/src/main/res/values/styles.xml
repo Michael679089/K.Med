@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ActivityHeader">
+
+    </style>
+
+    <style name="BlueTextField">
+        <item name="android:background">@drawable/textfield_blue</item>
+        <item name="android:fontFamily">@font/montserrat_regular</item>
+        <item name="android:textColor">@color/darkBlue</item>
+        <item name="android:paddingLeft">20dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">60dp</item>
+    </style>
+
+    <style name="BlueButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">60dp</item>
+        <item name="android:textSize">20dp</item>
+        <item name="android:background">@drawable/button_blue</item>
+        <item name="fontFamily">@font/montserrat_bold</item>
+    </style>
+</resources>
