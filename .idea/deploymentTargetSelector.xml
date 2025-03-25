@@ -2,12 +2,15 @@
 <project version="4">
   <component name="deploymentTargetSelector">
     <selectionStates>
+      <SelectionState runConfigName="All Tests">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-03-20T01:42:32.102536700Z">
+        <DropdownSelection timestamp="2025-03-25T12:08:09.303559800Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\billa.LAPTOP-RG4AHTD5\.android\avd\Samsung_a31_API_30.avd" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=RF8N40J7SKK" />
             </handle>
           </Target>
         </DropdownSelection>

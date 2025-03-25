@@ -2,14 +2,24 @@ package com.example.cs320_hospital_and_medical_android_app
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.firebase.auth.FirebaseAuth;
 
-class MainActivity<Button> : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var auth: FirebaseAuth
+
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        auth = FirebaseAuth.getInstance()
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
@@ -17,6 +27,31 @@ class MainActivity<Button> : AppCompatActivity() {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
+        }
+
+        val emailInput: EditText = findViewById(R.id.emailInput)
+        val passwordInput: EditText = findViewById(R.id.passwordInput)
+        val signInBtn: Button = findViewById(R.id.signinBtn)
+
+        signInBtn.setOnClickListener {
+            val email = emailInput.text.toString().trim()
+            val password = passwordInput.text.toString().trim()
+
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Please enter both email and password", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    // Sign-in success
+                    val user = auth.currentUser
+                    Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
+                } else {
+                    // If sign-in fails
+                    Toast.makeText(this, "Authentication failed!", Toast.LENGTH_LONG).show()
+                }
+            }
         }
 
         val forgotPW: TextView = findViewById(R.id.forgotPassword)
@@ -29,10 +64,11 @@ class MainActivity<Button> : AppCompatActivity() {
         val registerBtn: TextView = findViewById(R.id.registerBtn)
 
         registerBtn.setOnClickListener(){
-            val intent = Intent(this, PatientRegistration::class.java)
+            val intent = Intent(this, AccountRegistration::class.java)
             startActivity(intent)
         }
 
 
     }
 }
+
