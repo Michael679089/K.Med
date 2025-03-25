@@ -1,7 +1,6 @@
 package com.example.cs320_hospital_and_medical_android_app
 
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
@@ -9,94 +8,58 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.fragment.app.Fragment
 import androidx.core.view.isVisible
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 
 class ForgotPassword : AppCompatActivity() {
 
-    private lateinit var  userVerify: LinearLayout
-    private lateinit var  securityQuestion: LinearLayout
-    private lateinit var  newPassword: LinearLayout
+    private lateinit var auth: FirebaseAuth
+    private lateinit var emailVerify: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.forgot_password)
 
-        userVerify = findViewById(R.id.emailVerify)
-        val userVerifyBtn: Button = findViewById(R.id.userVerifyBtn)
-        val usernameInput: EditText = findViewById(R.id.usernameInput)
-        val usernameState: TextView = findViewById(R.id.usernameState)
+        auth = FirebaseAuth.getInstance()
 
-        securityQuestion = findViewById(R.id.securityQuestion)
-        val answerVerifyBtn: Button = findViewById(R.id.answerVerifyBtn)
-        val securityQuestionText: TextView = findViewById(R.id.securityQuestionText)
-        val answerInput: EditText = findViewById(R.id.answerInput)
-        val answerValue = "Red"
-        val questionState: TextView = findViewById(R.id.questionState)
+        // Initialize UI components
+        emailVerify = findViewById(R.id.emailVerify)
+        val emailPassReset: Button = findViewById(R.id.emailPassReset)
+        val emailInput: EditText = findViewById(R.id.emailInput)
+        val emailInputState: TextView = findViewById(R.id.emailInputState)
 
-        newPassword = findViewById(R.id.newPassword)
-        val submitBtn: Button = findViewById(R.id.submitBtn)
 
-        userVerifyBtn.setOnClickListener(){
-            val username = usernameInput.text.toString()
+        // Handle user verification button click
+        emailPassReset.setOnClickListener {
+            val email = emailInput.text.toString()
 
-            if(username.isEmpty()){
-                usernameState.text = "Please input a valid username"
-                usernameState.setTextColor(Color.parseColor("#ff0000"))
+            if (email.isEmpty()) {
+                emailInputState.text = "Please input a valid email"
+                emailInputState.setTextColor(Color.parseColor("#FF0000"))
             } else {
-                usernameState.text = null
-                securityQuestionText.text = "What is your favorite color?"
-                changeLayout(securityQuestion)
+                // Send password reset email
+                auth.sendPasswordResetEmail(email).addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+                        // Email is valid and exists
+                        emailInputState.text = null
+                        Toast.makeText(
+                            this,
+                            "Password reset email sent successfully.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        emailPassReset.text = "Resend Email"
+                    } else {
+                        val exception = task.exception
+                        emailInputState.text = "An error occurred. Please try again."
+                        emailInputState.setTextColor(Color.parseColor("#FF0000"))
+                    }
+                }
             }
-        }
-
-        answerVerifyBtn.setOnClickListener() {
-            val answer = answerInput.text.toString()
-
-            if (answer == answerValue) {
-                usernameState.text = null
-                changeLayout(newPassword)
-            } else {
-                questionState.text = "Incorrect answer"
-                questionState.setTextColor(Color.parseColor("#ff0000"))
-            }
-
-            if (answer.isEmpty()) {
-                questionState.text = "Please input an answer"
-                questionState.setTextColor(Color.parseColor("#ff0000"))
-            }
-
-        }
-
-        submitBtn.setOnClickListener(){
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-        }
-
-    }
-
-    private fun changeLayout(stepLayout: LinearLayout) {
-        userVerify.visibility = View.GONE
-        securityQuestion.visibility = View.GONE
-        newPassword.visibility = View.GONE
-        stepLayout.visibility = View.VISIBLE
-    }
-
-    override fun onBackPressed() {
-        when {
-            securityQuestion.isVisible -> {
-                changeLayout(userVerify)
-
-            }
-            newPassword.isVisible -> {
-                changeLayout(securityQuestion)
-            }
-            else -> super.onBackPressed()
         }
     }
 }
