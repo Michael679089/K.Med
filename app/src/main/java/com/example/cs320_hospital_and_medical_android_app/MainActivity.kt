@@ -26,5 +26,13 @@ class MainActivity<Button> : AppCompatActivity() {
             startActivity(intent)
         }
 
+        val registerBtn: TextView = findViewById(R.id.registerBtn)
+
+        registerBtn.setOnClickListener(){
+            val intent = Intent(this, PatientRegistration::class.java)
+            startActivity(intent)
+        }
+
+
     }
 }
