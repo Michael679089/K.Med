@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "595154416898",
+    "project_id": "kmed-e381a",
+    "storage_bucket": "kmed-e381a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:595154416898:android:f88e2875b0f7d7b90fbe1b",
+        "android_client_info": {
+          "package_name": "com.example.cs320_hospital_and_medical_android_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNARXH2IztPzSx_PNfBt_QK7rk4uXnuTo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:595154416898:android:9551b107d72329ee0fbe1b",
+        "android_client_info": {
+          "package_name": "com.example.kmed"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNARXH2IztPzSx_PNfBt_QK7rk4uXnuTo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
