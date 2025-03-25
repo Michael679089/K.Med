@@ -29,7 +29,7 @@ class ForgotPassword : AppCompatActivity() {
 
         userVerify = findViewById(R.id.emailVerify)
         val userVerifyBtn: Button = findViewById(R.id.userVerifyBtn)
-        val usernameInput: EditText = findViewById(R.id.usernameInput)
+        val emailInput: EditText = findViewById(R.id.emailInput)
         val usernameState: TextView = findViewById(R.id.usernameState)
 
         securityQuestion = findViewById(R.id.securityQuestion)
@@ -43,7 +43,7 @@ class ForgotPassword : AppCompatActivity() {
         val submitBtn: Button = findViewById(R.id.submitBtn)
 
         userVerifyBtn.setOnClickListener(){
-            val username = usernameInput.text.toString()
+            val username = emailInput.text.toString()
 
             if(username.isEmpty()){
                 usernameState.text = "Please input a valid username"

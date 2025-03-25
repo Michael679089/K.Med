@@ -47,18 +47,19 @@
 
         <EditText
             android:id="@+id/birthday"
-            android:drawableEnd="@drawable/person"
+            android:drawableEnd="@drawable/calendar"
+            android:paddingRight="15dp"
             style="@style/BlueTextField"
             android:layout_marginBottom="10dp"
             android:clickable="true"
             android:focusable="false"
-            android:hint="Birthday" />
+            android:hint="Birth Date" />
 
         <EditText
             android:id="@+id/hmocompany"
-            android:drawableStart="@drawable/person"
             style="@style/BlueTextField"
             android:layout_marginBottom="10dp"
+            android:drawableStart="@drawable/company"
             android:hint="HMO Company"
             android:inputType="text" />
 
@@ -111,6 +112,7 @@
 
         <EditText
             android:id="@+id/email"
+            android:drawableStart="@drawable/email"
             style="@style/BlueTextField"
             android:layout_marginBottom="10dp"
             android:hint="Email"
@@ -118,6 +120,7 @@
 
         <EditText
             android:id="@+id/password"
+            android:drawableStart="@drawable/password"
             style="@style/BlueTextField"
             android:layout_marginBottom="20dp"
             android:hint="Password"
