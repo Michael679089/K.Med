@@ -7,124 +7,136 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="70dp"
-        android:layout_height="71dp"
-        android:layout_marginTop="108dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.152"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/app_logo" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="192dp"
-        android:fontFamily="@font/montserrat_bold"
-        android:text="Login"
-        android:textSize="35dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.168"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/passwordInput"
-        android:layout_width="300dp"
+        android:layout_width="0dp"
         android:layout_height="60dp"
-        android:layout_marginTop="348dp"
-        android:background="@drawable/textfield_blue"
-        android:ems="10"
-        android:fontFamily="@font/montserrat_regular"
+        android:layout_marginTop="16dp"
+        style="@style/BlueTextField"
+        android:drawableStart="@drawable/password"
         android:hint="Password"
         android:inputType="textPassword"
-        android:paddingLeft="20dp"
-        android:textColor="@color/darkBlue"
-
-        android:textColorHint="@color/darkBlue"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.468"
+        app:layout_constraintHorizontal_bias="0.512"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <EditText
-        android:id="@+id/emailInput"
-        android:layout_width="300dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="272dp"
-        android:background="@drawable/textfield_blue"
-        android:ems="10"
-        android:fontFamily="@font/montserrat_regular"
-        android:hint="Username"
-        android:inputType="text"
-        android:paddingLeft="20dp"
-        android:textColor="@color/darkBlue"
-
-        android:textColorHint="@color/darkBlue"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.468"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/emailInput"
+        app:layout_constraintWidth_percent="0.8" />
 
     <Button
         android:id="@+id/signinBtn"
-        android:layout_width="300dp"
+        android:layout_width="0dp"
         android:layout_height="55dp"
-        android:layout_marginTop="504dp"
-        android:background="@drawable/button_blue"
-        android:fontFamily="@font/montserrat_bold"
-        android:padding="5dp"
+        android:layout_marginTop="36dp"
+        style="@style/BlueButton"
         android:text="Sign in"
-        android:textSize="20dp"
-
         app:backgroundTint="@null"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.468"
+        app:layout_constraintHorizontal_bias="0.512"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/clinicStaff"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="588dp"
-        android:fontFamily="@font/montserrat_regular"
-        android:text="No account?"
-        android:textSize="15dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.384"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/forgotPassword"
+        app:layout_constraintWidth_percent="0.8" />
 
     <TextView
         android:id="@+id/registerBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="588dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="56dp"
         android:fontFamily="@font/montserrat_bold"
         android:text="Register"
-        android:textAlignment="viewStart"
         android:textColor="@color/darkBlue"
-        android:textSize="15dp"
+        android:textSize="15sp"
+        app:layout_constraintStart_toEndOf="@id/clinicStaff"
+        app:layout_constraintTop_toBottomOf="@id/signinBtn" />
+
+    <TextView
+        android:id="@+id/clinicStaff"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="56dp"
+        android:fontFamily="@font/montserrat_regular"
+        android:text="No account?"
+        android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.645"
+        app:layout_constraintHorizontal_bias="0.656"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/signinBtn" />
 
     <TextView
         android:id="@+id/forgotPassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="416dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="40dp"
         android:clickable="true"
         android:fontFamily="@font/montserrat_regular"
         android:text="Forgot password?"
-        android:textSize="15dp"
+        android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.787"
+        app:layout_constraintTop_toBottomOf="@id/passwordInput" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="81dp"
+        android:layout_height="94dp"
+        android:layout_marginTop="100dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.2"
+        app:layout_constraintHorizontal_bias="0.127"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.2"
+        app:srcCompat="@drawable/app_logo" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/montserrat_bold"
+        android:text="Login"
+        android:textSize="35sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.135"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imageView" />
+
+    <EditText
+        android:id="@+id/emailInput"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="16dp"
+        style="@style/BlueTextField"
+        android:drawableStart="@drawable/email"
+        android:hint="Username"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.512"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintWidth_percent="0.8" />
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="0dp"
+        android:layout_height="539sp"
+        android:layout_marginStart="216dp"
+        android:alpha="0.1"
+        app:layout_constraintBottom_toTopOf="@+id/emailInput"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/circle_bg" />
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="0dp"
+        android:layout_height="496sp"
+        android:layout_marginEnd="232dp"
+        android:alpha="0.1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/signinBtn"
+        app:srcCompat="@drawable/circle_bg" />
+
+    <!-- Register Button -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
