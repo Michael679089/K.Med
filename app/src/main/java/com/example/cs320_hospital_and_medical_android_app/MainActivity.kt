@@ -11,13 +11,18 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity : AppCompatActivity() {
 
+    //Firebase Initialization
     private lateinit var auth: FirebaseAuth
+    private lateinit var db: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
+        //Firebase Initialization
+        db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
 
         super.onCreate(savedInstanceState)
@@ -47,6 +52,26 @@ class MainActivity : AppCompatActivity() {
                     // Sign-in success
                     val user = auth.currentUser
                     Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
+
+                    val userId = user?.uid
+
+                    if (userId != null) {
+                        db.collection("Patients")
+                            .document(userId)
+                            .get()
+                            .addOnSuccessListener { document ->
+                                if(document.exists()){
+                                    Toast.makeText(this, "Hi?!", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    val intent = Intent(this, PatientInformation::class.java)
+                                    startActivity(intent)
+                                }
+                            }
+                            .addOnFailureListener {e ->
+                                Toast.makeText(this, "Error: $e", Toast.LENGTH_SHORT).show()
+                            }
+                    }
+
                 } else {
                     // If sign-in fails
                     Toast.makeText(this, "Authentication failed!", Toast.LENGTH_LONG).show()
