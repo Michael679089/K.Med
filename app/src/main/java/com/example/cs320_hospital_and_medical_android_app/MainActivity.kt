@@ -53,24 +53,8 @@ class MainActivity : AppCompatActivity() {
                     val user = auth.currentUser
                     Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
 
-                    val userId = user?.uid
-
-                    if (userId != null) {
-                        db.collection("Patients")
-                            .document(userId)
-                            .get()
-                            .addOnSuccessListener { document ->
-                                if(document.exists()){
-                                    Toast.makeText(this, "Hi?!", Toast.LENGTH_SHORT).show()
-                                } else {
-                                    val intent = Intent(this, PatientInformation::class.java)
-                                    startActivity(intent)
-                                }
-                            }
-                            .addOnFailureListener {e ->
-                                Toast.makeText(this, "Error: $e", Toast.LENGTH_SHORT).show()
-                            }
-                    }
+                    val intent = Intent(this, PatientInformation::class.java)
+                    startActivity(intent)
 
                 } else {
                     // If sign-in fails
