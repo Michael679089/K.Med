@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.health.connect.datatypes.units.Length
 import android.icu.util.Calendar
 import android.os.Bundle
+import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
@@ -29,6 +30,8 @@ class PatientInformation : AppCompatActivity() {
     private lateinit var hmoCardNoInput: EditText
 
     private lateinit var submitBtn: Button
+    private lateinit var updateBtn: Button
+    private lateinit var cancelBtn: Button
 
     //Firebase Initialization
     private lateinit var db: FirebaseFirestore
@@ -55,11 +58,27 @@ class PatientInformation : AppCompatActivity() {
         hmoCardNoInput = findViewById(R.id.hmoCardNoInput)
 
         submitBtn = findViewById(R.id.submitBtn)
+        updateBtn = findViewById(R.id.updateBtn)
+        cancelBtn = findViewById(R.id.cancelBtn)
+
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val userId = currentUser?.uid
 
         initializeFucntionalities()
 
-        submitBtn.setOnClickListener(){
-            insertDataToFirestore()
+        if (userId != null) {
+            db.collection("Patients")
+                .document(userId)
+                .get()
+                .addOnSuccessListener { document ->
+                    if(document.exists()) {
+                        getData(userId)
+                    }else {
+                        submitBtn.setOnClickListener(){
+                            pushData(userId, "added")
+                        }
+                    }
+                }
         }
     }
 
@@ -72,10 +91,69 @@ class PatientInformation : AppCompatActivity() {
         var hmoCardNo: String? = null
     )
 
-    fun insertDataToFirestore() {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        val userId = currentUser?.uid
+    fun editTextAccess(access: Boolean){
+        var editTexts = listOf(
+            firstNameInput,
+            lastNameInput,
+            sexInput,
+            birthdayInput,
+            hmoCompanyInput,
+            hmoCardNoInput
+        )
 
+        editTexts.forEach { editText ->
+            editText.isEnabled = access
+            editText.isFocusable = access
+            editText.isFocusableInTouchMode = access
+            editText.isClickable = access
+        }
+    }
+
+    fun getData(userId: String) {
+
+        editTextAccess(false)
+
+        submitBtn.visibility = View.INVISIBLE
+        cancelBtn.visibility = View.INVISIBLE
+        updateBtn.visibility = View.VISIBLE
+
+        db.collection("Patients")
+            .document(userId)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    firstNameInput.setText(document.getString("firstName"))
+                    lastNameInput.setText(document.getString("lastName"))
+                    sexInput.setText(document.getString("sex"))
+                    birthdayInput.setText(document.getString("birthday"))
+                    hmoCompanyInput.setText(document.getString("hmoCompany"))
+                    hmoCardNoInput.setText(document.getString("hmoCardNo"))
+
+                    updateBtn.setOnClickListener() {
+
+                        editTextAccess(true)
+
+                        submitBtn.visibility = View.VISIBLE
+                        cancelBtn.visibility = View.VISIBLE
+                        updateBtn.visibility = View.INVISIBLE
+
+                        submitBtn.setOnClickListener() {
+                            pushData(userId, "updated")
+                            getData(userId)
+                        }
+
+                        cancelBtn.setOnClickListener() {
+                            getData(userId)
+                        }
+                    }
+                }
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Error: $e", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    fun pushData(userId: String, status: String) {
         var firstName = firstNameInput.text.toString()
         val lastName = lastNameInput.text.toString()
         val sex = sexInput.text.toString()
@@ -92,22 +170,18 @@ class PatientInformation : AppCompatActivity() {
             hmoCardNo = hmoCardNo
         )
 
-        if (userId != null) {
-            db.collection("Patients")
-                .document(userId)
-                .set(patient)
-                .addOnSuccessListener {
-                    Toast.makeText(this, "Patient information added!", Toast.LENGTH_SHORT).show()
-                }
-                .addOnFailureListener { e ->
-                    Toast.makeText(this, "Error: $e", Toast.LENGTH_SHORT).show()
-                }
-        }
+        db.collection("Patients")
+            .document(userId)
+            .set(patient)
+            .addOnSuccessListener {
+                Toast.makeText(this, "Patient information ${status}!", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Error: $e", Toast.LENGTH_SHORT).show()
+            }
     }
 
-    fun initializeFucntionalities(){
-        //Dropdown for Sex Input
-
+    fun initializeFucntionalities() {
         val sexOptions = listOf("Male", "Female")
         val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, sexOptions)
         sexInput.setAdapter(adapter)
@@ -145,3 +219,5 @@ class PatientInformation : AppCompatActivity() {
         }
     }
 }
+
+
