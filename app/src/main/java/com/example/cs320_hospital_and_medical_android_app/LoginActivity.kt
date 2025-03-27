@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
-class MainActivity<Button> : AppCompatActivity() {
+class LoginActivity<Button> : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -25,6 +25,9 @@ class MainActivity<Button> : AppCompatActivity() {
             val intent = Intent(this, ForgotPassword::class.java)
             startActivity(intent)
         }
+
+        val intent = Intent(this, GenerateQRCodeTestActivity::class.java)
+        startActivity(intent)
 
     }
 }
