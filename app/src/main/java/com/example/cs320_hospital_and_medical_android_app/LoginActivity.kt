@@ -26,7 +26,7 @@ class LoginActivity<Button> : AppCompatActivity() {
             startActivity(intent)
         }
 
-        val intent = Intent(this, GenerateQRCodeTestActivity::class.java)
+        val intent = Intent(this, QRCodeScanTestActivity::class.java)
         startActivity(intent)
 
     }

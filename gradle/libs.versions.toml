@@ -10,6 +10,7 @@ material = "1.12.0"
 activity = "1.10.1"
 qrGeneratorAndScanner = "4.3.0"
 constraintlayout = "2.2.1"
+qrScanning = "2.3.0"
 
 
 [libraries]
@@ -22,7 +23,8 @@ material = { group = "com.google.android.material", name = "material", version.r
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 qr-generatorAndScanner = { group = "com.journeyapps", name = "zxing-android-embedded", version.ref = "qrGeneratorAndScanner"} # Used for QR Generation / Also used in Scanning.
-chinese-bga-qrcode = { group = "com.github.bingoogolapple.BGAQRCode-Android", name = "zxing", version = "latestVersion" } # QR Generation / and Scanner / from China.
+# 'com.github.yuriy-budiyev:code-scanner:2.3.0'
+# qr-scanning = {group = "com.github.yuriy-budiyev", name = "code-scanner", version.ref="qrScanning"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

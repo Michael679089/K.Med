@@ -45,12 +45,14 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+
+    // For QR Code Generator
     implementation(libs.qr.generatorAndScanner)
-    implementation(libs.chinese.bga.qrcode)
+
+    // For QR scanning.
+    // implementation(libs.qr.scanning)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-    // FOR the QR CODE creation
-    // implementation(libs.zxing.android.embedded) -- didn't work
 }
