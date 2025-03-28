@@ -6,10 +6,23 @@
     android:layout_height="match_parent"
     tools:context=".DashboardPatient">
 
+    <ImageView
+        android:id="@+id/logoWatermark"
+        android:layout_width="471dp"
+        android:layout_height="442dp"
+        android:layout_marginRight="-80dp"
+        android:layout_marginBottom="-80dp"
+        android:alpha="0.2"
+        android:scaleType="fitCenter"
+        android:src="@drawable/app_logo"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
     <FrameLayout
         android:id="@+id/headerBackground"
         android:layout_width="0dp"
-        android:layout_height="150dp"
+        android:layout_height="140dp"
         android:background="@drawable/header_background"
         android:padding="30dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -22,7 +35,7 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_gravity="start|top"
-            android:src="@drawable/app_logo" />
+            android:src="@drawable/kmed_negative" />
 
         <!-- Settings icon -->
         <ImageView
@@ -43,7 +56,7 @@
         android:layout_marginTop="-60dp"
         android:layout_marginRight="20dp"
         android:padding="16dp"
-        app:cardCornerRadius="12dp"
+        app:cardCornerRadius="20dp"
         app:cardElevation="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -55,9 +68,16 @@
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingLeft="15dp"
-            android:paddingTop="25dp"
+            android:paddingTop="18dp"
             android:paddingRight="15dp"
-            android:paddingBottom="25dp">
+            android:paddingBottom="18dp">
+
+            <ImageView
+                android:id="@+id/editIcon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/edit_icon"
+                android:contentDescription="Edit Icon" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -91,97 +111,175 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- Proceed Section -->
-    <LinearLayout
-        android:id="@+id/proceedSection"
+    <!-- Schedule Card -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/scheduleCard"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:background="@drawable/bg_proceed"
-        android:gravity="center_horizontal|center_vertical"
-        android:orientation="horizontal"
-        android:padding="12dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="50dp"
+        android:backgroundTint="#F5F5F5"
+        android:padding="20dp"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="6dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/patientCard">
+        app:layout_constraintTop_toBottomOf="@id/patientCard">
 
-        <TextView
-            android:id="@+id/proceedLabel"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Proceed to:\nOnboarding Desk"
-            android:textSize="16sp" />
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="20dp">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Schedule Today"
+                android:textColor="#888888"
+                android:textSize="14sp" />
 
-        <TextView
-            android:id="@+id/deskNumber"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_circle"
-            android:backgroundTint="@color/emerald"
-            android:paddingStart="12dp"
-            android:text="12"
-            android:textColor="@android:color/white"
-            android:textSize="24sp"
-            android:textStyle="bold" />
-    </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="March 5, 2025"
+                android:textColor="@android:color/black"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
-    <!-- Buttons -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Dr. Fillman Cosman"
+                android:textColor="#3F51B5"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Buttons Section -->
     <LinearLayout
         android:id="@+id/buttonSection"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="40dp"
         android:orientation="vertical"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/proceedSection">
+        app:layout_constraintTop_toBottomOf="@+id/scheduleCard">
 
-        <Button
-            android:id="@+id/schedule"
+        <!-- Schedule -->
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
             android:backgroundTint="@color/emerald"
-            android:paddingLeft="40dp"
-            android:paddingTop="30dp"
-            android:paddingRight="40dp"
-            android:paddingBottom="30dp"
-            android:text="Schedule"
-            android:textColor="@android:color/white"
-            android:textSize="20dp"
-            app:cornerRadius="20dp" />
+            app:cardCornerRadius="100dp"
+            app:cardElevation="6dp">
 
-        <Button
-            android:id="@+id/doctors"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="50dp"
+                android:paddingTop="25dp"
+                android:paddingRight="25dp"
+                android:paddingBottom="25dp">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="12dp"
+                    android:src="@drawable/calendar_icon"
+                    android:tint="@android:color/white" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Schedule"
+                    android:textColor="@android:color/white"
+                    android:textSize="25sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Doctors -->
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
             android:backgroundTint="#6200EE"
-            android:paddingLeft="40dp"
-            android:paddingTop="30dp"
-            android:paddingRight="40dp"
-            android:paddingBottom="30dp"
-            android:text="Doctors"
-            android:textColor="@android:color/white"
-            android:textSize="20dp"
-            app:cornerRadius="20dp" />
+            app:cardCornerRadius="100dp"
+            app:cardElevation="6dp">
 
-        <Button
-            android:id="@+id/medicine"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="50dp"
+                android:paddingTop="25dp"
+                android:paddingRight="25dp"
+                android:paddingBottom="25dp">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="12dp"
+                    android:src="@drawable/doctors_icon"
+                    android:tint="@android:color/white" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Doctors"
+                    android:textColor="@android:color/white"
+                    android:textSize="25sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Prescription -->
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="#F4A52D"
-            android:paddingLeft="40dp"
-            android:paddingTop="30dp"
-            android:paddingRight="40dp"
-            android:paddingBottom="30dp"
-            android:text="Medicine"
-            android:textColor="@android:color/white"
-            android:textSize="20dp"
-            app:cornerRadius="20dp" />
+            app:cardCornerRadius="100dp"
+            app:cardElevation="6dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="50dp"
+                android:paddingTop="25dp"
+                android:paddingRight="25dp"
+                android:paddingBottom="25dp">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="12dp"
+                    android:src="@drawable/pill_icon"
+                    android:tint="@android:color/white" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Prescription"
+                    android:textColor="@android:color/white"
+                    android:textSize="25sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
