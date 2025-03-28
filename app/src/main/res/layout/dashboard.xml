@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DashboardPatient">
+    tools:context=".Dashboard">
 
     <ImageView
         android:id="@+id/logoWatermark"
@@ -35,7 +35,10 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_gravity="start|top"
-            android:src="@drawable/kmed_negative" />
+            android:src="@drawable/kmed_negative"
+            android:contentDescription="Dashboard"
+            android:clickable="true"
+            android:focusable="true"/>
 
         <!-- Settings icon -->
         <ImageView
@@ -43,7 +46,11 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_gravity="end|top"
-            android:src="@drawable/setting_icon" />
+            android:src="@drawable/setting_icon"
+            android:contentDescription="Settings"
+            android:clickable="true"
+            android:focusable="true" />
+
 
     </FrameLayout>
 
@@ -77,8 +84,8 @@
                 android:id="@+id/editIcon"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:src="@drawable/edit_icon"
-                android:contentDescription="Edit Icon" />
+                android:contentDescription="Edit Icon"
+                android:src="@drawable/edit_icon" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -90,10 +97,10 @@
                     android:id="@+id/accountName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/font"
-                    android:text="John Doe"
+                    android:layout_marginBottom="-10dp"
+                    android:text="Patient Doe"
                     android:textColor="#000000"
-                    android:textSize="35sp"
+                    android:textSize="30sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -102,10 +109,10 @@
                     android:layout_height="wrap_content"
                     android:text="PID129847923"
                     android:textColor="#888888"
-                    android:textSize="14sp"
-                    android:fontFamily="@font/font"/>
+                    android:textSize="14sp" />
             </LinearLayout>
 
+            <!-- Fix QR placeholder here -->
             <ImageView
                 android:id="@+id/qrCode"
                 android:layout_width="64dp"
@@ -124,49 +131,19 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="50dp"
         android:backgroundTint="#F5F5F5"
-        android:padding="20dp"
         app:cardCornerRadius="20dp"
         app:cardElevation="6dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/patientCard">
 
-        <LinearLayout
+        <FrameLayout
+            android:id="@+id/scheduleCardContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            android:padding="20dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Schedule Today"
-                android:textColor="#888888"
-                android:textSize="14sp"
-                android:fontFamily="@font/font"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text="March 5, 2025"
-                android:textColor="@android:color/black"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:fontFamily="@font/font"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="Dr. Fillman Cosman"
-                android:textColor="#3F51B5"
-                android:textSize="28sp"
-                android:textStyle="bold"
-                android:fontFamily="@font/font"/>
-        </LinearLayout>
+            android:padding="20dp" />
     </androidx.cardview.widget.CardView>
+
 
     <!-- Buttons Section -->
     <FrameLayout
