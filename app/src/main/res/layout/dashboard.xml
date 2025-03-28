@@ -58,6 +58,7 @@
         android:padding="16dp"
         app:cardCornerRadius="20dp"
         app:cardElevation="4dp"
+        android:backgroundTint="#F5F5F5"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/headerBackground">
@@ -89,7 +90,9 @@
                     android:id="@+id/accountName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/font"
                     android:text="John Doe"
+                    android:textColor="#000000"
                     android:textSize="35sp"
                     android:textStyle="bold" />
 
@@ -99,7 +102,8 @@
                     android:layout_height="wrap_content"
                     android:text="PID129847923"
                     android:textColor="#888888"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"
+                    android:fontFamily="@font/font"/>
             </LinearLayout>
 
             <ImageView
@@ -139,7 +143,8 @@
                 android:layout_height="wrap_content"
                 android:text="Schedule Today"
                 android:textColor="#888888"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:fontFamily="@font/font"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -148,7 +153,8 @@
                 android:text="March 5, 2025"
                 android:textColor="@android:color/black"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:fontFamily="@font/font"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -157,129 +163,22 @@
                 android:text="Dr. Fillman Cosman"
                 android:textColor="#3F51B5"
                 android:textSize="28sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:fontFamily="@font/font"/>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
     <!-- Buttons Section -->
-    <LinearLayout
-        android:id="@+id/buttonSection"
+    <FrameLayout
+        android:id="@+id/buttonSectionContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
         android:layout_marginTop="16dp"
+        android:layout_marginStart="40dp"
         android:layout_marginEnd="40dp"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scheduleCard"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/scheduleCard">
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Schedule -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:backgroundTint="@color/emerald"
-            app:cardCornerRadius="100dp"
-            app:cardElevation="6dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingLeft="50dp"
-                android:paddingTop="25dp"
-                android:paddingRight="25dp"
-                android:paddingBottom="25dp">
-
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginEnd="12dp"
-                    android:src="@drawable/calendar_icon"
-                    android:tint="@android:color/white" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Schedule"
-                    android:textColor="@android:color/white"
-                    android:textSize="25sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- Doctors -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:backgroundTint="#6200EE"
-            app:cardCornerRadius="100dp"
-            app:cardElevation="6dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingLeft="50dp"
-                android:paddingTop="25dp"
-                android:paddingRight="25dp"
-                android:paddingBottom="25dp">
-
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginEnd="12dp"
-                    android:src="@drawable/doctors_icon"
-                    android:tint="@android:color/white" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Doctors"
-                    android:textColor="@android:color/white"
-                    android:textSize="25sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- Prescription -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="#F4A52D"
-            app:cardCornerRadius="100dp"
-            app:cardElevation="6dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingLeft="50dp"
-                android:paddingTop="25dp"
-                android:paddingRight="25dp"
-                android:paddingBottom="25dp">
-
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginEnd="12dp"
-                    android:src="@drawable/pill_icon"
-                    android:tint="@android:color/white" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Prescription"
-                    android:textColor="@android:color/white"
-                    android:textSize="25sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
