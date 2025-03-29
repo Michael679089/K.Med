@@ -1,34 +1,32 @@
 package com.example.cs320_hospital_and_medical_android_app
 
 import android.content.Context
-import android.widget.Toast
+import android.util.Log
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.BarcodeView
 
-class QRCodeScanner(private val context: Context, private val scanner: BarcodeView) {
+class QRCodeScanner(private val context: Context, private val scanner: BarcodeView, private val listener: QRCodeScanListener) {
 
     private var isScanning = false
-
     private var isFlashOn = false
     private var isAutoFocusOn = true
-
-    init { // runs automatically once class created
-        scanner.decodeContinuous(object : BarcodeCallback {
-            override fun barcodeResult(result: BarcodeResult?) {
-                if (result != null && isScanning) {
-                    Toast.makeText(context, "Scanned: ${result.text}", Toast.LENGTH_SHORT).show()
-                    stopScanner()
-                }
-            }
-        })
-    }
 
     fun startScanner() {
         if (!isScanning) {
             scanner.resume()
+            scanner.decodeContinuous { result ->
+                if (result != null) {
+                    listener.onQRCodeScanned(result.text) // Pass result to activity
+                }
+            }
             isScanning = true
+
         }
+    }
+
+    fun getIsScanning() : Boolean {
+        return isScanning;
     }
 
     fun stopScanner() {
@@ -38,27 +36,24 @@ class QRCodeScanner(private val context: Context, private val scanner: BarcodeVi
         }
     }
 
-    fun releaseScanner() { // to fully release sources from scanner.
+    fun releaseScanner() {
         scanner.pause()
         isScanning = false
     }
 
-
-    fun isScanning(): Boolean {
-        return isScanning
-    }
-
-    // # Additional Functionality: Toggle Flash and AutoFocus
-
     fun toggleFlash() {
         isFlashOn = !isFlashOn
-        scanner.setTorch(isFlashOn) // Turns flashlight on/off
+        scanner.setTorch(isFlashOn)
     }
 
     fun toggleAutoFocus() {
         isAutoFocusOn = !isAutoFocusOn
         val settings = scanner.cameraSettings
         settings.isAutoFocusEnabled = isAutoFocusOn
-        scanner.cameraSettings = settings // Apply new settings
+        scanner.cameraSettings = settings
+    }
+
+    interface QRCodeScanListener {
+        fun onQRCodeScanned(result: String)
     }
 }
