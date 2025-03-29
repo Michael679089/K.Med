@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/logoWatermark"
+    android:layout_width="471dp"
+    android:layout_height="442dp"
+    android:layout_marginRight="-80dp"
+    android:layout_marginBottom="-80dp"
+    android:alpha="0.2"
+    android:scaleType="fitCenter"
+    android:src="@drawable/app_logo"
+    android:layout_gravity="bottom|end"
+    />

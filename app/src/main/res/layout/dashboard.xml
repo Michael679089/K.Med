@@ -6,53 +6,22 @@
     android:layout_height="match_parent"
     tools:context=".Dashboard">
 
-    <ImageView
-        android:id="@+id/logoWatermark"
-        android:layout_width="471dp"
-        android:layout_height="442dp"
-        android:layout_marginRight="-80dp"
-        android:layout_marginBottom="-80dp"
-        android:alpha="0.2"
-        android:scaleType="fitCenter"
-        android:src="@drawable/app_logo"
+    <!-- Watermark Logo -->
+    <include
+        layout="@layout/logo_watermark"
+        android:id="@+id/includeWatermark"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-
-    <FrameLayout
-        android:id="@+id/headerBackground"
-        android:layout_width="0dp"
-        android:layout_height="140dp"
-        android:background="@drawable/header_background"
-        android:padding="30dp"
+    <!-- Header Bar -->
+    <include
+        android:id="@+id/includeHeader"
+        layout="@layout/header_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <!-- Logo -->
-        <ImageView
-            android:id="@+id/logo"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_gravity="start|top"
-            android:src="@drawable/kmed_negative"
-            android:contentDescription="Dashboard"
-            android:clickable="true"
-            android:focusable="true"/>
-
-        <!-- Settings icon -->
-        <ImageView
-            android:id="@+id/settings"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_gravity="end|top"
-            android:src="@drawable/setting_icon"
-            android:contentDescription="Settings"
-            android:clickable="true"
-            android:focusable="true" />
-
-
-    </FrameLayout>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Patient Info Card -->
     <androidx.cardview.widget.CardView
@@ -60,7 +29,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="-60dp"
+        android:layout_marginTop="-10dp"
         android:layout_marginRight="20dp"
         android:padding="16dp"
         app:cardCornerRadius="20dp"
@@ -68,7 +37,7 @@
         android:backgroundTint="#F5F5F5"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/headerBackground">
+        app:layout_constraintTop_toBottomOf="@+id/includeHeader">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -156,6 +125,5 @@
         app:layout_constraintTop_toBottomOf="@+id/scheduleCard"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
