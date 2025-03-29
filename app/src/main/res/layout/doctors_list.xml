@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Watermark Logo -->
+    <include
+        layout="@layout/logo_watermark"
+        android:id="@+id/includeWatermark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+    <!-- Header Bar -->
+    <include
+        android:id="@+id/includeHeader"
+        layout="@layout/header_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Screen Title -->
+    <TextView
+        android:id="@+id/screenName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Clinic Doctors"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/darkGray"
+        app:layout_constraintTop_toBottomOf="@id/includeHeader"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="16dp" />
+
+    <!-- Doctor Card -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/doctorCard"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        app:layout_constraintTop_toBottomOf="@id/screenName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <!-- Profile Photo -->
+            <ImageView
+                android:id="@+id/imageDoctor"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_marginEnd="12dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/kmed_negative"
+                android:background="@drawable/circle_bg" />
+
+            <!-- Text Info -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textDid"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="DID23719237"
+                    android:textColor="@color/lightGray"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/textName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Juan Dela Cruz"
+                    android:textColor="@color/darkBlue"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textSpecialization"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Specialization"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <!-- Calendar Icon -->
+            <ImageView
+                android:id="@+id/iconCalendar"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/calendar"
+                app:tint="@color/emerald" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
