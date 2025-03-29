@@ -34,7 +34,7 @@
         android:layout_height="60dp"
         android:layout_marginTop="16dp"
         style="@style/BlueTextField"
-        android:drawableStart="@drawable/password"
+        android:drawableStart="@drawable/icon_password"
         android:hint="Password"
         android:inputType="textPassword"
         app:layout_constraintEnd_toEndOf="parent"
@@ -95,7 +95,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_percent="0.2"
-        app:srcCompat="@drawable/app_logo" />
+        app:srcCompat="@drawable/logo_kmed_primary" />
 
     <TextView
         android:id="@+id/textView"
@@ -116,7 +116,7 @@
         android:layout_height="60dp"
         android:layout_marginTop="16dp"
         style="@style/BlueTextField"
-        android:drawableStart="@drawable/email"
+        android:drawableStart="@drawable/icon_email"
         android:hint="Email"
         android:inputType="text"
         android:paddingLeft="20dp"

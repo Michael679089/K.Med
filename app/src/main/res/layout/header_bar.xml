@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="100dp"
-    android:background="@drawable/header_background"
+    android:background="@drawable/bg_header"
     android:padding="30dp">
 
     <!-- Logo -->
@@ -13,7 +13,7 @@
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_gravity="start|top"
-        android:src="@drawable/kmed_negative"
+        android:src="@drawable/logo_kmed_negative"
         android:contentDescription="Dashboard"
         android:clickable="true"
         android:focusable="true" />
@@ -24,7 +24,7 @@
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_gravity="end|top"
-        android:src="@drawable/setting_icon"
+        android:src="@drawable/icon_settings_line"
         android:contentDescription="Settings"
         android:clickable="true"
         android:focusable="true" />
