@@ -11,7 +11,7 @@
         android:layout_height="442dp"
         android:alpha="0.2"
         android:scaleType="fitCenter"
-        android:src="@drawable/app_logo"
+        android:src="@drawable/logo_kmed_color"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginEnd="-80dp"

@@ -32,7 +32,7 @@
             android:layout_marginTop="25dp"
             android:layout_marginEnd="328dp"
             android:layout_marginBottom="29dp"
-            app:srcCompat="@drawable/kmed_negative" />
+            app:srcCompat="@drawable/logo_kmed_negative" />
 
         <ImageButton
             android:id="@+id/imageButton2"
@@ -47,7 +47,7 @@
             android:layout_marginEnd="28dp"
             android:layout_marginBottom="31dp"
             android:background="@null"
-            app:srcCompat="@drawable/settings"
+            app:srcCompat="@drawable/icon_settings"
             app:tint="@color/white" />
 
     </RelativeLayout>
@@ -58,7 +58,7 @@
         android:layout_width="0dp"
         android:layout_height="60dp"
         android:layout_marginTop="8dp"
-        android:drawableStart="@drawable/person"
+        android:drawableStart="@drawable/icon_person"
         android:hint="First Name"
         android:inputType="text"
         android:paddingLeft="20dp"
@@ -74,7 +74,7 @@
         android:layout_width="0dp"
         android:layout_height="60dp"
         android:layout_marginTop="12dp"
-        android:drawableStart="@drawable/person"
+        android:drawableStart="@drawable/icon_person"
         android:hint="Last Name"
         android:inputType="text"
         android:paddingLeft="20dp"
@@ -90,7 +90,7 @@
         android:layout_width="0dp"
         android:layout_height="60dp"
         android:layout_marginTop="12dp"
-        android:drawableEnd="@drawable/downarrow"
+        android:drawableEnd="@drawable/icon_downarrow"
         android:hint="Sex"
         android:inputType="none"
         android:paddingLeft="20dp"
@@ -108,7 +108,7 @@
         android:layout_width="0dp"
         android:layout_height="60dp"
         android:layout_marginTop="4dp"
-        android:drawableStart="@drawable/company"
+        android:drawableStart="@drawable/icon_company"
         android:hint="HMO Company"
         android:inputType="text"
         android:paddingLeft="20dp"
@@ -168,7 +168,7 @@
         android:layout_width="0dp"
         android:layout_height="60dp"
         android:layout_marginTop="12dp"
-        android:drawableEnd="@drawable/calendar"
+        android:drawableEnd="@drawable/icon_calendar"
         android:hint="Birthday"
         android:inputType="none"
         android:paddingLeft="20dp"
@@ -199,7 +199,7 @@
         android:layout_width="0dp"
         android:layout_height="60dp"
         android:layout_marginTop="16dp"
-        android:drawableStart="@drawable/card"
+        android:drawableStart="@drawable/icon_card"
         android:hint="HMO Card No."
         android:inputType="number"
         android:paddingLeft="20dp"

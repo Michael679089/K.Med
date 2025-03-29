@@ -29,7 +29,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:src="@drawable/kmed_negative"
+                android:src="@drawable/logo_kmed_negative"
                 app:shapeAppearanceOverlay="@style/CircleImageView" />
         </FrameLayout>
 
@@ -71,7 +71,7 @@
             android:id="@+id/doctorSchedule"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:src="@drawable/calendar"
+            android:src="@drawable/icon_calendar"
             app:tint="@color/emerald" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

@@ -57,7 +57,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:contentDescription="Edit Icon"
-                android:src="@drawable/edit_icon" />
+                android:src="@drawable/icon_edit" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -90,7 +90,7 @@
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:contentDescription="QR Code"
-                android:src="@drawable/qr_placeholder" />
+                android:src="@drawable/icon_qr_placeholder" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
