@@ -95,7 +95,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_percent="0.2"
-        app:srcCompat="@drawable/logo_kmed_color" />
+        app:srcCompat="@drawable/logo_kmed_primary" />
 
     <TextView
         android:id="@+id/textView"

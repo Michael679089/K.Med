@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -18,9 +19,9 @@
     <include
         android:id="@+id/includeHeader"
         layout="@layout/header_bar"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Search Bar -->
     <EditText
@@ -38,66 +39,67 @@
         android:padding="12dp"
         android:textColor="@color/black"
         android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/includeHeader"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/includeHeader" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Wrapper -->
+    <!-- Section Title -->
+    <TextView
+        android:id="@+id/screenName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="30dp"
+        android:text="Clinic Doctors"
+        android:textColor="@color/darkGray"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/searchBar"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerDoctors"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:paddingStart="30dp"
+        android:paddingEnd="30dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="16dp"
+        android:clipToPadding="false"
+        app:layout_constraintTop_toBottomOf="@id/screenName"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:listitem="@layout/doctors_card" />
+
+    <!-- Sample Schedule Cards
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fillViewport="true"
-        app:layout_constraintTop_toBottomOf="@id/searchBar"
+        app:layout_constraintTop_toBottomOf="@id/screenName"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
         <LinearLayout
-            android:id="@+id/doctorListSection"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingStart="30dp"
-            android:paddingEnd="30dp"
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp">
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="16dp">
 
-            <!-- Screen Title -->
-            <TextView
-                android:id="@+id/screenName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:text="Clinic Doctors"
-                android:textColor="@color/darkGray"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-            <!-- Sample Doctor Cards
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                tools:visibility="visible">
-
-                <include layout="@layout/doctors_card" />
-                <include layout="@layout/doctors_card" />
-                <include layout="@layout/doctors_card" />
-                <include layout="@layout/doctors_card" />
-            </LinearLayout>
-            -->
-
-            <!-- RecyclerView for Doctor Cards -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerDoctors"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:clipToPadding="false"
-                android:paddingBottom="12dp"
-                tools:listitem="@layout/doctors_card" />
+            <include layout="@layout/doctors_card" />
+            <include layout="@layout/doctors_card" />
+            <include layout="@layout/doctors_card" />
+            <include layout="@layout/doctors_card" />
+            <include layout="@layout/doctors_card" />
 
         </LinearLayout>
     </ScrollView>
+   -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
