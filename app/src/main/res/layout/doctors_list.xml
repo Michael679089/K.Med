@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,13 +7,12 @@
 
     <!-- Watermark Logo -->
     <include
-        layout="@layout/logo_watermark"
         android:id="@+id/includeWatermark"
+        layout="@layout/logo_watermark"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
-
 
     <!-- Header Bar -->
     <include
@@ -24,89 +22,82 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Screen Title -->
-    <TextView
-        android:id="@+id/screenName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Clinic Doctors"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="@color/darkGray"
-        app:layout_constraintTop_toBottomOf="@id/includeHeader"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="16dp" />
-
-    <!-- Doctor Card -->
-    <androidx.cardview.widget.CardView
-        android:id="@+id/doctorCard"
+    <!-- Search Bar -->
+    <EditText
+        android:id="@+id/searchBar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="4dp"
-        app:layout_constraintTop_toBottomOf="@id/screenName"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="25dp"
+        android:background="@drawable/searchbar_bg"
+        android:drawableEnd="@drawable/search_icon"
+        android:drawablePadding="8dp"
+        android:hint="Search here"
+        android:inputType="text"
+        android:padding="12dp"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/includeHeader" />
+
+    <!-- Wrapper -->
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toBottomOf="@id/searchBar"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
         <LinearLayout
+            android:id="@+id/doctorListSection"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="16dp">
+            android:orientation="vertical"
+            android:paddingStart="30dp"
+            android:paddingEnd="30dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp">
 
-            <!-- Profile Photo -->
-            <ImageView
-                android:id="@+id/imageDoctor"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:layout_marginEnd="12dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/kmed_negative"
-                android:background="@drawable/circle_bg" />
-
-            <!-- Text Info -->
-            <LinearLayout
-                android:layout_width="0dp"
+            <!-- Screen Title -->
+            <TextView
+                android:id="@+id/screenName"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:layout_marginBottom="12dp"
+                android:text="Clinic Doctors"
+                android:textColor="@color/darkGray"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/textDid"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="DID23719237"
-                    android:textColor="@color/lightGray"
-                    android:textSize="12sp" />
+            <!-- Sample Doctor Cards
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                tools:visibility="visible">
 
-                <TextView
-                    android:id="@+id/textName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Juan Dela Cruz"
-                    android:textColor="@color/darkBlue"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/textSpecialization"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Specialization"
-                    android:textColor="@color/black"
-                    android:textSize="16sp" />
+                <include layout="@layout/doctors_card" />
+                <include layout="@layout/doctors_card" />
+                <include layout="@layout/doctors_card" />
+                <include layout="@layout/doctors_card" />
             </LinearLayout>
+            -->
 
-            <!-- Calendar Icon -->
-            <ImageView
-                android:id="@+id/iconCalendar"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@drawable/calendar"
-                app:tint="@color/emerald" />
+            <!-- RecyclerView for Doctor Cards -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerDoctors"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:clipToPadding="false"
+                android:paddingBottom="12dp"
+                tools:listitem="@layout/doctors_card" />
+
         </LinearLayout>
-    </androidx.cardview.widget.CardView>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

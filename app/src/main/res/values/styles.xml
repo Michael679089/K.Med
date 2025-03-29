@@ -38,4 +38,10 @@
         <item name="android:background">@drawable/button_red</item>
         <item name="fontFamily">@font/montserrat_bold</item>
     </style>
+
+    <style name="CircleImageView" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
 </resources>
