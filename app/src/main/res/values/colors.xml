@@ -2,9 +2,14 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="lightGray">#A7A7A7</color>
+    <color name="darkGray">#404040</color>
     <color name="cyan">#1edeb6</color>
     <color name="emerald">#04b598</color>
     <color name="blue">#1792c3</color>
     <color name="darkBlue">#06668d</color>
     <color name="red">#cc0000</color>
+    <color name="green">#04B410</color>
+    <color name="violet">#5917E9</color>
+    <color name="yellowGold">#E68600</color>
 </resources>
