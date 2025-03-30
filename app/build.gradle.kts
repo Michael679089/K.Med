@@ -51,22 +51,12 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.material3.android)
 
+    // For QR Code Generator
+    implementation(libs.qr.generatorAndScanner)
+
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    // CameraX core library
-    implementation("androidx.camera:camera-core:1.4.1")
-    implementation("androidx.camera:camera-camera2:1.4.1")
-
-    // CameraX Lifecycle support
-    implementation("androidx.camera:camera-lifecycle:1.4.1")
-
-    // PreviewView class lives here
-    implementation("androidx.camera:camera-view:1.4.1")
-
-    // CameraX ML Kit library for barcode scanning
-    implementation("androidx.camera:camera-mlkit-vision:1.4.1")
-    implementation("com.google.mlkit:barcode-scanning:17.2.0")
 }

@@ -26,29 +26,33 @@
     <!-- Scanner Container -->
     <LinearLayout
         android:id="@+id/qrContainer"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:layout_width="359dp"
+        android:layout_height="521dp"
         android:layout_marginStart="40dp"
-        android:layout_marginEnd="40dp"
         android:layout_marginTop="40dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginEnd="40dp"
         android:background="@android:color/transparent"
-        app:layout_constraintTop_toBottomOf="@id/includeHeader"
+        android:orientation="vertical"
+        android:overScrollMode="ifContentScrolls"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/includeHeader">
 
         <!-- QR Scanner -->
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="320dp">
 
-            <androidx.camera.view.PreviewView
-                android:id="@+id/previewView"
+        <FrameLayout
+            android:id="@+id/qrFrameContainer"
+            android:layout_width="match_parent"
+            android:layout_height="325dp"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.journeyapps.barcodescanner.BarcodeView
+                android:id="@+id/qrBarcodeScanner"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/bg_qr_rounded"
-                android:clipToOutline="true" />
+                android:layout_height="match_parent" />
 
             <ImageView
                 android:id="@+id/qrGuideOverlay"
@@ -59,7 +63,10 @@
                 android:padding="40dp"
                 android:scaleType="fitXY"
                 android:src="@drawable/icon_focus_thin" />
+
         </FrameLayout>
+
+
 
         <!-- Toggle Light and Camera Focus -->
         <LinearLayout

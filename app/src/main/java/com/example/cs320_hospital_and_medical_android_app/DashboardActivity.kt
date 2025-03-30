@@ -1,6 +1,7 @@
 package com.example.cs320_hospital_and_medical_android_app
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import android.widget.TextView
@@ -9,9 +10,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 
-class Dashboard : AppCompatActivity() {
+class DashboardActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d("DEBUG", "You are now in the Dashboard_Activity")
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.dashboard)
 

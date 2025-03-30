@@ -8,122 +8,14 @@
     tools:context=".MainActivity">
 
 
-    <EditText
-        android:id="@+id/passwordInput"
-        android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="16dp"
-        style="@style/BlueTextField"
-        android:drawableStart="@drawable/icon_password"
-        android:hint="Password"
-        android:inputType="textPassword"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.512"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/emailInput"
-        app:layout_constraintWidth_percent="0.8" />
-
-    <Button
-        android:id="@+id/signinBtn"
-        android:layout_width="0dp"
-        android:layout_height="55dp"
-        android:layout_marginTop="36dp"
-        style="@style/BlueButton"
-        android:text="Sign in"
-        app:backgroundTint="@null"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.512"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/forgotPassword"
-        app:layout_constraintWidth_percent="0.8" />
-
-    <TextView
-        android:id="@+id/registerBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="56dp"
-        android:fontFamily="@font/montserrat_bold"
-        android:text="Register"
-        android:textColor="@color/darkBlue"
-        android:textSize="15sp"
-        app:layout_constraintStart_toEndOf="@id/clinicStaff"
-        app:layout_constraintTop_toBottomOf="@id/signinBtn" />
-
-    <TextView
-        android:id="@+id/clinicStaff"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="56dp"
-        android:fontFamily="@font/montserrat_regular"
-        android:text="No account?"
-        android:textSize="15sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.656"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/signinBtn" />
-
-    <TextView
-        android:id="@+id/forgotPassword"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="40dp"
-        android:clickable="true"
-        android:fontFamily="@font/montserrat_regular"
-        android:text="Forgot password?"
-        android:textSize="15sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/passwordInput" />
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="81dp"
-        android:layout_height="94dp"
-        android:layout_marginTop="100dp"
-        android:scaleType="fitCenter"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.2"
-        app:layout_constraintHorizontal_bias="0.127"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_percent="0.2"
-        app:srcCompat="@drawable/logo_kmed_primary" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:fontFamily="@font/montserrat_bold"
-        android:text="Login"
-        android:textSize="35sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.135"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/imageView" />
-
-    <EditText
-        android:id="@+id/emailInput"
-        android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="16dp"
-        style="@style/BlueTextField"
-        android:drawableStart="@drawable/icon_email"
-        android:hint="Username"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.512"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:layout_constraintWidth_percent="0.8" />
-
     <ImageView
         android:id="@+id/imageView3"
-        android:layout_width="0dp"
-        android:layout_height="539sp"
-        android:layout_marginStart="216dp"
+        android:layout_width="329dp"
+        android:layout_height="310dp"
+        android:layout_marginStart="290dp"
+        android:layout_marginBottom="535dp"
         android:alpha="0.1"
-        app:layout_constraintBottom_toTopOf="@+id/emailInput"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/circle_bg" />
 
@@ -131,11 +23,107 @@
         android:id="@+id/imageView4"
         android:layout_width="0dp"
         android:layout_height="496sp"
+        android:layout_marginTop="532dp"
         android:layout_marginEnd="232dp"
         android:alpha="0.1"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/signinBtn"
+        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/circle_bg" />
+
+    <LinearLayout
+        android:layout_width="339dp"
+        android:layout_height="541dp"
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="36dp"
+        tools:layout_editor_absoluteY="95dp">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="81dp"
+            android:layout_height="94dp"
+            android:scaleType="fitCenter"
+            app:layout_constraintHeight_percent="0.2"
+            app:layout_constraintWidth_percent="0.2"
+            app:srcCompat="@drawable/logo_kmed_primary" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/montserrat_bold"
+            android:text="Login"
+            android:textSize="35sp" />
+
+        <EditText
+            android:id="@+id/emailInput"
+            style="@style/BlueTextField"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="20dp"
+            android:drawableStart="@drawable/icon_email"
+            android:hint="Username"
+            app:layout_constraintWidth_percent="0.8" />
+
+        <EditText
+            android:id="@+id/passwordInput"
+            style="@style/BlueTextField"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="10dp"
+            android:drawableStart="@drawable/icon_password"
+            android:hint="Password"
+            android:inputType="textPassword"
+            app:layout_constraintWidth_percent="0.8" />
+
+        <TextView
+            android:id="@+id/forgotPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="10dp"
+            android:clickable="true"
+            android:fontFamily="@font/montserrat_regular"
+            android:gravity="end"
+            android:text="Forgot password?"
+            android:textColor="@color/darkBlue"
+            android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/signinBtn"
+            style="@style/BlueButton"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:text="Sign in"
+            android:layout_marginTop="50dp"
+            app:backgroundTint="@null"
+            app:layout_constraintWidth_percent="0.8" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="53dp"
+            android:gravity="center"
+            android:layout_marginTop="40dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/clinicStaff"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserrat_regular"
+                android:text="No account?"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/registerBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserrat_bold"
+                android:text="Register"
+                android:textColor="@color/darkBlue"
+                android:textSize="15sp" />
+        </LinearLayout>
+    </LinearLayout>
 
     <!-- Register Button -->
 

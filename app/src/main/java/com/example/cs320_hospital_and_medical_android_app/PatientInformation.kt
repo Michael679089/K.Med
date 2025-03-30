@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.health.connect.datatypes.units.Length
 import android.icu.util.Calendar
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
@@ -37,6 +38,7 @@ class PatientInformation : AppCompatActivity() {
     private lateinit var db: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d("DEBUG", "You are now in Patient Information Page")
 
         //Firebase Initialization
         db = FirebaseFirestore.getInstance()

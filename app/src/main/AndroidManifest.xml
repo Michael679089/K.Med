@@ -25,9 +25,9 @@
         <activity
             android:name=".AccountRegistration"
             android:exported="false" />
-        <activity
-            android:name=".PatientRegistration"
-            android:exported="false" />
+<!--        <activity-->
+<!--            android:name=".PatientRegistration"-->
+<!--            android:exported="false" />-->
         <activity
             android:name=".ForgotPassword"
             android:exported="false" />

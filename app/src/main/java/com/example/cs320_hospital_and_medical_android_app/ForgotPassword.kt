@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
+import android.util.Log
 
 class ForgotPassword : AppCompatActivity() {
 
@@ -19,6 +20,7 @@ class ForgotPassword : AppCompatActivity() {
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d("DEBUG", "You are now in ForgotPassword Page")
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_forgot_password)
