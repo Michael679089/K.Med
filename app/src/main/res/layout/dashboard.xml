@@ -6,16 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".Dashboard">
 
-    <!-- Watermark Logo -->
-    <include
-        layout="@layout/logo_watermark"
-        android:id="@+id/includeWatermark"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-
     <!-- Header Bar -->
     <include
         android:id="@+id/includeHeader"
@@ -25,6 +15,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Watermark Logo -->
+    <include
+        layout="@layout/logo_watermark"
+        android:id="@+id/includeWatermark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Patient Info Card -->
     <androidx.cardview.widget.CardView
