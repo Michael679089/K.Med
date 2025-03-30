@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Watermark Logo -->
+    <include
+        android:id="@+id/includeWatermark"
+        layout="@layout/logo_watermark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Header Bar -->
+    <include
+        android:id="@+id/includeHeader"
+        layout="@layout/header_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Scroll View for Prescription Details -->
+    <ScrollView
+        android:id="@+id/scrollableContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toBottomOf="@id/includeHeader"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:id="@+id/prescriptionContentContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
+            android:padding="24dp">
+
+            <!-- Date -->
+            <TextView
+                android:id="@+id/prescriptionDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="March 5, 2025"
+                android:textColor="@color/darkGray"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <!-- Prescription Details -->
+            <TextView
+                android:id="@+id/prescriptionDetails"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:lineSpacingExtra="6dp"
+                android:text="Amoxicillin, with a dosage of 500 mg to be taken orally three times a day for seven days. The doctor advised taking the medication after meals with water."
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+
+            <!-- Prescribed by -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Prescribed by:"
+                android:textColor="@color/lightGray"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/doctorName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Doctor Doe"
+                android:textColor="@color/black"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/doctorID"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="DID1233453534"
+                android:textColor="@color/darkGray"
+                android:textSize="12sp" />
+
+            <!-- Action Buttons -->
+            <LinearLayout
+                android:id="@+id/toggleContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <ImageButton
+                    android:id="@+id/btnEditPrescription"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="12dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/button_rounded"
+                    android:backgroundTint="@color/emerald"
+                    android:contentDescription="Edit"
+                    android:padding="12dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/icon_edit"
+                    app:tint="@android:color/white" />
+
+                <ImageButton
+                    android:id="@+id/btnDeletePrescription"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/button_rounded"
+                    android:backgroundTint="@color/red"
+                    android:contentDescription="Delete"
+                    android:padding="12dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/icon_trash"
+                    app:tint="@android:color/white" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
