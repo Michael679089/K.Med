@@ -32,7 +32,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_marginEnd="12dp"
-                android:src="@drawable/calendar"
+                android:src="@drawable/icon_calendar"
                 android:tint="@android:color/white" />
 
             <TextView
@@ -68,7 +68,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_marginEnd="12dp"
-                android:src="@drawable/doctors_icon"
+                android:src="@drawable/icon_doctor"
                 android:tint="@android:color/white" />
 
             <TextView
@@ -103,7 +103,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_marginEnd="12dp"
-                android:src="@drawable/pill_icon"
+                android:src="@drawable/icon_pill"
                 android:tint="@android:color/white" />
 
             <TextView
