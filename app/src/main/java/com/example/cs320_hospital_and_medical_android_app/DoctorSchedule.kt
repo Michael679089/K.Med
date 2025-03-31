@@ -2,44 +2,35 @@ package com.example.cs320_hospital_and_medical_android_app
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
-import android.widget.ViewFlipper
-import androidx.activity.enableEdgeToEdge
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.snapshots
 import com.google.firebase.firestore.toObject
 
 class DoctorSchedule : AppCompatActivity() {
 
+    //Initialize flipper
     private lateinit var viewFlipper: ViewFlipper
 
-    //Firebase Initialization
+    //Initialize firebase
     private lateinit var db: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
-        //Firebase Initialization
-        db = FirebaseFirestore.getInstance()
-
         super.onCreate(savedInstanceState)
         setContentView(R.layout.doctor_schedule)
 
+        //Initialize firebase
+        db = FirebaseFirestore.getInstance()
+
+        //Access Flipper
         viewFlipper = findViewById(R.id.viewFlipper)
 
+        //Get all doctors and display
         getAllDoctors()
-
     }
 
-    data class Doctor (
+    data class Doctor(
+        //Data structure for doctor
         val id: String = "",
         val PID: Long = 0L,
         val firstName: String = "",
@@ -48,163 +39,137 @@ class DoctorSchedule : AppCompatActivity() {
         val specialization: String = ""
     )
 
-    data class Schedule (
+    data class Schedule(
+        //Data structure for schedule
         val id: String = "",
         val date: String = "",
         val day: String = "",
-        val time: String = "",
+        val time: String = ""
     )
 
     private fun getAllDoctors() {
-        //Inflater initialization
+        //Access the list
         val listDoctors: LinearLayout? = findViewById(R.id.listDoctor)
+        //For inserting cards
         val inflater = LayoutInflater.from(this)
+        //Access doctor list from Firebase
+        db.collection("Doctors").addSnapshotListener { snapshot, _ ->
+            listDoctors?.removeAllViews()
+            //Display the data
+            snapshot?.forEach { document ->
+                val doctor = document.toObject(Doctor::class.java).copy(id = document.id)
+                val doctorCard = inflater.inflate(R.layout.doctors_card, listDoctors, false).apply {
+                    findViewById<TextView>(R.id.doctorID).text = doctor.PID.toString()
+                    findViewById<TextView>(R.id.doctorName).text = "${doctor.firstName} ${doctor.lastName}"
+                    findViewById<TextView>(R.id.doctorSpecialization).text = doctor.specialization
 
-        db.collection("Doctors")
-            .addSnapshotListener  { snapshots, error ->
-
-                listDoctors?.removeAllViews()
-
-                snapshots?.let {
-                    for (document in it) {
-                        val doctor = document.toObject(Doctor::class.java).copy(
-                            id = document.id
-                        )
-
-                        //Inflating instances of doctor
-                        val doctorCard = inflater.inflate(R.layout.doctors_card, listDoctors, false)
-
-                        val doctorID: TextView = doctorCard.findViewById(R.id.doctorID)
-                        val doctorName: TextView = doctorCard.findViewById(R.id.doctorName)
-                        val doctorSpecialization: TextView = doctorCard.findViewById(R.id.doctorSpecialization)
-
-                        doctorID.text = doctor.PID.toString()
-                        doctorName.text = "${doctor.firstName} ${doctor.lastName}"
-                        doctorSpecialization.text = doctor.specialization
-
-                        listDoctors?.let {
-                            it.addView(doctorCard)
-                        }
-
-                        val doctorSchedule: ImageView = doctorCard.findViewById(R.id.doctorSchedule)
-                        doctorSchedule.setOnClickListener() {
-                            getOneDoctor(doctor.id)
-                        }
+                    findViewById<ImageView>(R.id.doctorSchedule).apply {
+                        tag = doctor.id
+                        setOnClickListener { getOneDoctor(doctor.id) }
                     }
                 }
+                //Add the card
+                listDoctors?.addView(doctorCard)
             }
+        }
     }
 
-    private fun getOneDoctor(id: String) {
+    private fun getOneDoctor(DID: String) {
+        //Flip the layout
         viewFlipper.displayedChild = 1
-
-        db.collection("Doctors")
-            .document(id)
-            .addSnapshotListener { snapshot, error ->
-                if (error != null) {
-                    return@addSnapshotListener
-                }
-
-                val doctor = snapshot?.toObject(Doctor::class.java)?.copy(id = snapshot.id)
-
+        //Initialize the schedule of Doctors
+        getDoctorSchedule(DID)
+        //Access the doctors' information
+        db.collection("Doctors").document(DID).addSnapshotListener { snapshot, _ ->
+            snapshot?.toObject(Doctor::class.java)?.copy(id = snapshot.id)?.let { doctor ->
+                //Display the doctors' information
                 val profileSection: LinearLayout = findViewById(R.id.profileSection)
-
-                val doctorID: TextView = profileSection.findViewById(R.id.doctorID)
-                val doctorName: TextView = profileSection.findViewById(R.id.doctorName)
-                val doctorSpecialization: TextView = profileSection.findViewById(R.id.doctorSpecialization)
-
-                doctorID.text = doctor?.PID.toString()
-                doctorName.text = "${doctor?.firstName} ${doctor?.lastName}"
-                doctorSpecialization.text = doctor?.specialization
-
-                val btnSetSchedule: Button = findViewById(R.id.btnSetSchedule)
-                btnSetSchedule.setOnClickListener() {
-                    addDoctorSchedule(id)
+                with(profileSection) {
+                    findViewById<TextView>(R.id.doctorID).text = doctor.PID.toString()
+                    findViewById<TextView>(R.id.doctorName).text = "${doctor.firstName} ${doctor.lastName}"
+                    findViewById<TextView>(R.id.doctorSpecialization).text = doctor.specialization
                 }
 
-                val deleteBtn: ImageView = findViewById(R.id.deleteBtn)
-                deleteBtn.setOnClickListener(){
-                    createToast("Deleted")
+                findViewById<Button>(R.id.btnSetSchedule).apply {
+                    tag = doctor.id
+                    setOnClickListener { addDoctorSchedule(DID) }
                 }
             }
-
-        getDoctorSchedule(id)
+        }
     }
 
-    private fun getDoctorSchedule(id: String) {
-        //Inflater initialization
+    private fun getDoctorSchedule(DID: String) {
+        //Access the list
         val listSchedule: LinearLayout? = findViewById(R.id.listSchedule)
+        //For inserting card
         val inflater = LayoutInflater.from(this)
+        //Access the schedule from Firebase
+        db.collection("Doctors").document(DID).collection("schedule").addSnapshotListener { snapshots, _ ->
+            listSchedule?.removeAllViews()
+            //Display the schedule info
+            snapshots?.forEach { document ->
+                val schedule = document.toObject(Schedule::class.java).copy(id = document.id)
+                val scheduleCard = inflater.inflate(R.layout.schedule_card_clinic, listSchedule, false).apply {
+                    findViewById<TextView>(R.id.scheduleDate).text = schedule.date
+                    findViewById<TextView>(R.id.scheduleTime).text = "${schedule.day}: ${schedule.time}"
 
-        db.collection("Doctors").document(id).collection("schedule")
-            .addSnapshotListener  { snapshots, error ->
-
-                listSchedule?.removeAllViews()
-
-                snapshots?.let {
-                    for (document in it) {
-                        val schedule = document.toObject(Schedule::class.java).copy(
-                            id = document.id
-                        )
-
-                        //Inflating instances of doctor
-                        val scheduleCard = inflater.inflate(R.layout.schedule_card_clinic, listSchedule, false)
-
-                        val scheduleDate: TextView = scheduleCard.findViewById(R.id.scheduleDate)
-                        val scheduleTime: TextView = scheduleCard.findViewById(R.id.scheduleTime)
-
-                        scheduleDate.text = schedule.date
-                        scheduleTime.text = "${schedule.day}: ${schedule.time}"
-
-                        listSchedule?.let {
-                            it.addView(scheduleCard)
-                        }
-
+                    findViewById<ImageView>(R.id.deleteBtn).apply {
+                        tag = document.id
+                        setOnClickListener { deleteDoctorSchedule(DID, document.id) }
                     }
                 }
+                //Add card
+                listSchedule?.addView(scheduleCard)
             }
+        }
     }
 
-    private fun addDoctorSchedule(id: String){
+    private fun addDoctorSchedule(id: String) {
+        //Flip the view
         viewFlipper.displayedChild = 2
-
+        //Access the input fields
         val dateInput: EditText = findViewById(R.id.dateInput)
         val timeInput: EditText = findViewById(R.id.timeInput)
-
-        val setBtn: Button = findViewById(R.id.setBtn)
-        setBtn.setOnClickListener() {
-            val schedule = Schedule (
+        //Set the data structure
+        findViewById<Button>(R.id.setBtn).setOnClickListener {
+            val schedule = Schedule(
                 date = dateInput.text.toString().trim(),
                 day = "Saturday",
                 time = timeInput.text.toString().trim()
             )
-
+            //Access the schedule collection from Firebase
             val scheduleRef = db.collection("Doctors").document(id).collection("schedule").document()
-            val scheduleWithId = schedule.copy(id = scheduleRef.id)
-
-            scheduleRef.set(scheduleWithId)
-                .addOnSuccessListener {
-                    getOneDoctor(id)
-                }
-                .addOnSuccessListener { e ->
-                    if (e != null){
-                        createToast("FirestoreError: Failed to add schedule: $e")
-                    }
+            //Add the schedule details
+            scheduleRef.set(schedule.copy(id = scheduleRef.id))
+                .addOnSuccessListener { getOneDoctor(id) }
+                .addOnFailureListener { e ->
+                    createToast("FirestoreError: Failed to add schedule: ${e.message}")
                 }
         }
 
-        val cancelBtn: Button = findViewById(R.id.cancelBtn)
-        cancelBtn.setOnClickListener() {
+        findViewById<Button>(R.id.cancelBtn).setOnClickListener {
             getOneDoctor(id)
         }
     }
 
+    private fun deleteDoctorSchedule(doctorId: String, scheduleId: String) {
+        //Access the collection of schedule
+        db.collection("Doctors").document(doctorId)
+            .collection("schedule").document(scheduleId)
+            //Delete
+            .delete()
+            .addOnSuccessListener { createToast("Schedule deleted successfully") }
+            .addOnFailureListener { e -> createToast("Error deleting schedule: ${e.message}") }
+    }
+
     private fun createToast(message: String) {
+        //Create and display toast message
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 
     override fun onBackPressed() {
-        if (viewFlipper.displayedChild > 0){
+        //Flipping the view layouts
+        if (viewFlipper.displayedChild > 0) {
             viewFlipper.showPrevious()
         } else {
             super.onBackPressed()
