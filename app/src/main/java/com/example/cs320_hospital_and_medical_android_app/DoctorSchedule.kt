@@ -1,9 +1,11 @@
 package com.example.cs320_hospital_and_medical_android_app
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.Toast
 import android.widget.ViewFlipper
 import androidx.activity.enableEdgeToEdge
@@ -20,6 +22,9 @@ class DoctorSchedule : AppCompatActivity() {
         setContentView(R.layout.doctor_schedule)
 
         viewFlipper = findViewById(R.id.viewFlipper)
+
+        listDoctorSchedule()
+
         val doctorSchedule: ImageView = findViewById(R.id.doctorSchedule)
 
         doctorSchedule.setOnClickListener(){
@@ -28,8 +33,21 @@ class DoctorSchedule : AppCompatActivity() {
 
     }
 
+    private fun listDoctorSchedule() {
+        val listSchedule: LinearLayout? = findViewById(R.id.listSchedule)
+        val inflater = LayoutInflater.from(this)
+
+        repeat(5) {
+            val scheduleCard = inflater.inflate(R.layout.doctors_card, listSchedule, false)
+            listSchedule?.addView(scheduleCard)
+        }
+    }
+
+
     private fun viewDoctorSchedule() {
         viewFlipper.displayedChild = 1
+
+        listDoctorSchedule()
 
         val btnSetSchedule: Button = findViewById(R.id.btnSetSchedule)
         btnSetSchedule.setOnClickListener() {
