@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/main"
     tools:context=".Dashboard">
 
     <!-- Header Bar -->
@@ -52,7 +53,7 @@
             android:paddingBottom="18dp">
 
             <ImageView
-                android:id="@+id/editIcon"
+                android:id="@+id/editPatientBtn"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:contentDescription="Edit Icon"

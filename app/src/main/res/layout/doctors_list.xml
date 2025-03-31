@@ -73,7 +73,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         tools:listitem="@layout/doctors_card" />
 
-    <!-- Sample Schedule Cards
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -100,6 +99,5 @@
 
         </LinearLayout>
     </ScrollView>
-   -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -20,6 +20,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
+            android:id="@+id/scheduleBtn"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal"
@@ -56,6 +57,8 @@
 
         <LinearLayout
             android:layout_width="match_parent"
+            android:id="@+id/doctorBtn"
+
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal"
@@ -91,6 +94,8 @@
 
         <LinearLayout
             android:layout_width="match_parent"
+            android:id="@+id/prescriptionBtn"
+
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal"
