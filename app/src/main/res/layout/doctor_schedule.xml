@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ViewFlipper
+        android:id="@+id/viewFlipper"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <include layout="@layout/doctors_list"/>
+        <include layout="@layout/schedule_view_doctor"/>
+        <include layout="@layout/schedule_set_doctor"/>
+
+    </ViewFlipper>
+
+</RelativeLayout>

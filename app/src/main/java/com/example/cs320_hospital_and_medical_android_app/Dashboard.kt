@@ -7,6 +7,9 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import android.content.Intent
+import android.widget.ImageView
+import android.widget.LinearLayout
 
 
 class Dashboard : AppCompatActivity() {
@@ -15,33 +18,11 @@ class Dashboard : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.dashboard)
 
-        getUserRoleFromFirestore { role ->
             loadUserInfo()
-            loadRoleButtons(role)
-            loadScheduleCard(role)
-        }
+            loadRoleButtons("patient")
+            loadScheduleCard("patient")
     }
 
-    private fun getUserRoleFromFirestore(onRoleFetched: (String) -> Unit) {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        val userId = currentUser?.uid
-
-        if (userId != null) {
-            val db = FirebaseFirestore.getInstance()
-            db.collection("users").document(userId).get()
-                .addOnSuccessListener { document ->
-                    val role = document.getString("role") ?: "guest"
-                    onRoleFetched(role)
-                }
-                .addOnFailureListener {
-                    onRoleFetched("guest") //fallback
-                }
-        } else {
-            onRoleFetched("guest")
-        }
-    }
-
-    // STEP 1: Load Account Name & ID
     private fun loadUserInfo() {
         val currentUser = FirebaseAuth.getInstance().currentUser
         val userId = currentUser?.uid ?: return
@@ -72,12 +53,47 @@ class Dashboard : AppCompatActivity() {
             "doctor" -> R.layout.dashboard_buttons_doctor
             "nurse" -> R.layout.dashboard_buttons_nurse
             else -> null
+
         }
 
         layoutRes?.let {
-            val view = inflater.inflate(it, container, false)
             container.removeAllViews()
+
+            val view = inflater.inflate(it, container, false)
             container.addView(view)
+
+            if (role == "patient"){
+                patientAccessPoint()
+            }
+        }
+
+    }
+
+    private fun patientAccessPoint() {
+
+        val doctorBtn: LinearLayout = findViewById(R.id.doctorBtn)
+        val scheduleBtn: LinearLayout = findViewById(R.id.scheduleBtn)
+        val prescriptionBtn: LinearLayout = findViewById(R.id.prescriptionBtn)
+        val editPatientBtn: ImageView = findViewById(R.id.editPatientBtn)
+
+        doctorBtn.setOnClickListener(){
+            val intent = Intent(this, DoctorSchedule::class.java)
+            startActivity(intent)
+        }
+
+        scheduleBtn.setOnClickListener(){
+            val intent = Intent(this, PatientAppointment::class.java)
+            startActivity(intent)
+        }
+
+        prescriptionBtn.setOnClickListener(){
+            val intent = Intent(this, Prescription::class.java)
+            startActivity(intent)
+        }
+
+        editPatientBtn.setOnClickListener(){
+            val intent = Intent(this, PatientInformation::class.java)
+            startActivity(intent)
         }
     }
 

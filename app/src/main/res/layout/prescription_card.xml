@@ -65,6 +65,7 @@
 
     <!-- Delete Icon -->
     <ImageView
+        android:id="@+id/viewPrescriptionBtn"
         android:id="@+id/viewBtn"
         android:layout_width="50dp"
         android:layout_height="50dp"

@@ -35,7 +35,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         val emailInput: EditText = findViewById(R.id.emailInput)
+        emailInput.setText("james.billate@ciit.edu.ph")
         val passwordInput: EditText = findViewById(R.id.passwordInput)
+        passwordInput.setText("123456789")
+
         val signInBtn: Button = findViewById(R.id.signinBtn)
 
         signInBtn.setOnClickListener {
@@ -53,7 +56,7 @@ class MainActivity : AppCompatActivity() {
                     val user = auth.currentUser
                     Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
 
-                    val intent = Intent(this, PatientInformation::class.java)
+                    val intent = Intent(this, Dashboard::class.java)
                     startActivity(intent)
 
                 } else {
