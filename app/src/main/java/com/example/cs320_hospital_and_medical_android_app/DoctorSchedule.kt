@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.firestore.Exclude
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import java.text.SimpleDateFormat
@@ -34,10 +35,11 @@ class DoctorSchedule : AppCompatActivity() {
         getAllDoctors()
     }
 
+
     data class Doctor(
         //Data structure for doctor
         val id: String = "",
-        val PID: Long = 0L,
+        val pid: String = "",
         val firstName: String = "",
         val lastName: String = "",
         val profilePicture: String = "",
@@ -64,7 +66,7 @@ class DoctorSchedule : AppCompatActivity() {
             snapshot?.forEach { document ->
                 val doctor = document.toObject(Doctor::class.java).copy(id = document.id)
                 val doctorCard = inflater.inflate(R.layout.doctors_card, listDoctors, false).apply {
-                    findViewById<TextView>(R.id.doctorID).text = doctor.PID.toString()
+                    findViewById<TextView>(R.id.doctorID).text = doctor.pid
                     findViewById<TextView>(R.id.doctorName).text = "${doctor.firstName} ${doctor.lastName}"
                     findViewById<TextView>(R.id.doctorSpecialization).text = doctor.specialization
 
@@ -90,7 +92,7 @@ class DoctorSchedule : AppCompatActivity() {
                 //Display the doctors' information
                 val profileSection: LinearLayout = findViewById(R.id.profileSection)
                 with(profileSection) {
-                    findViewById<TextView>(R.id.doctorID).text = doctor.PID.toString()
+                    findViewById<TextView>(R.id.doctorID).text = doctor.pid
                     findViewById<TextView>(R.id.doctorName).text = "${doctor.firstName} ${doctor.lastName}"
                     findViewById<TextView>(R.id.doctorSpecialization).text = doctor.specialization
                 }
