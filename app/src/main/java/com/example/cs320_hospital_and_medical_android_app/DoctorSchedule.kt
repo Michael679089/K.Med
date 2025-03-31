@@ -1,11 +1,16 @@
 package com.example.cs320_hospital_and_medical_android_app
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
+import android.icu.util.Calendar
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class DoctorSchedule : AppCompatActivity() {
 
@@ -127,14 +132,25 @@ class DoctorSchedule : AppCompatActivity() {
     private fun addDoctorSchedule(id: String) {
         //Flip the view
         viewFlipper.displayedChild = 2
+        //Initialize Calendar & Time
+        initializeCalendar()
+        initializeTime()
         //Access the input fields
         val dateInput: EditText = findViewById(R.id.dateInput)
+        dateInput.text = null
         val timeInput: EditText = findViewById(R.id.timeInput)
-        //Set the data structure
+        timeInput.text = null
+
         findViewById<Button>(R.id.setBtn).setOnClickListener {
+
+            //Get the day
+            val inputFormat = SimpleDateFormat("MMMM d, yyyy", Locale.getDefault()) // Matches "March 5, 2025"
+            val date = inputFormat.parse(dateInput.text.toString().trim())
+            val dayFormat = SimpleDateFormat("EEEE", Locale.getDefault())
+
             val schedule = Schedule(
                 date = dateInput.text.toString().trim(),
-                day = "Saturday",
+                day = dayFormat.format(date).toString(),
                 time = timeInput.text.toString().trim()
             )
             //Access the schedule collection from Firebase
@@ -165,6 +181,68 @@ class DoctorSchedule : AppCompatActivity() {
     private fun createToast(message: String) {
         //Create and display toast message
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+    }
+
+    private fun initializeTime() {
+        //Time Input
+        findViewById<EditText>(R.id.timeInput).setOnClickListener(){
+            val calendar = Calendar.getInstance()
+            val hour = calendar.get(Calendar.HOUR)
+            val minute = calendar.get(Calendar.MINUTE)
+
+            // Select FROM time
+            TimePickerDialog(this, { _, fromHour, fromMinute ->
+                val fromTime = formatTime12Hour(fromHour, fromMinute)
+
+                // Select TO time
+                TimePickerDialog(this, { _, toHour, toMinute ->
+                    val toTime = formatTime12Hour(toHour, toMinute)
+
+                    // Set the selected time range in EditText
+                    findViewById<EditText>(R.id.timeInput).setText("$fromTime - $toTime")
+                }, hour, minute, false).show()  // "false" for 12-hour format
+
+            }, hour, minute, false).show()  // "false" for 12-hour format
+        }
+    }
+
+    private fun formatTime12Hour(hour: Int, minute: Int): String {
+        val amPm = if (hour < 12) "AM" else "PM"
+        val formattedHour = if (hour % 12 == 0) 12 else hour % 12
+        return String.format("%02d:%02d %s", formattedHour, minute, amPm)
+    }
+
+    private fun initializeCalendar() {
+        //Calendar Input
+        findViewById<EditText>(R.id.dateInput).setOnClickListener(){
+            // Get the current date
+            val calendar = Calendar.getInstance()
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH)
+            val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+            // Show DatePicker
+            val datePicker = DatePickerDialog(
+                this,
+                { _, selectedYear, selectedMonth, selectedDay ->
+                    // Calendar with the selected Date
+                    val selectedDate = Calendar.getInstance().apply {
+                        set(selectedYear, selectedMonth, selectedDay)
+                    }
+
+                    // Format to January 1, 1999
+                    val formatter = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault())
+                    val formattedDate = formatter.format(selectedDate.time)
+
+                    // Display the selected date
+                    findViewById<EditText>(R.id.dateInput).setText(formattedDate)
+                },
+                year,
+                month,
+                day
+            )
+            datePicker.show()
+        }
     }
 
     override fun onBackPressed() {
