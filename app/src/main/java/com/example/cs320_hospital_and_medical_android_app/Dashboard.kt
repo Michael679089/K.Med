@@ -19,8 +19,8 @@ class Dashboard : AppCompatActivity() {
         setContentView(R.layout.dashboard)
 
             loadUserInfo()
-            loadRoleButtons("patient")
-            loadScheduleCard("patient")
+            loadRoleButtons("doctor")
+            loadScheduleCard("doctor")
     }
 
     private fun loadUserInfo() {
@@ -64,6 +64,8 @@ class Dashboard : AppCompatActivity() {
 
             if (role == "patient"){
                 patientAccessPoint()
+            } else if (role == "doctor"){
+                doctorAccessPoint()
             }
         }
 
@@ -95,6 +97,17 @@ class Dashboard : AppCompatActivity() {
             val intent = Intent(this, PatientInformation::class.java)
             startActivity(intent)
         }
+    }
+
+    private fun doctorAccessPoint() {
+
+        val doctorAccessSchedule: LinearLayout = findViewById(R.id.doctorAccessSchedule)
+
+        doctorAccessSchedule.setOnClickListener(){
+            val intent = Intent(this, DoctorSchedule::class.java)
+            startActivity(intent)
+        }
+
     }
 
     // STEP 3: Load schedule card section based on role
