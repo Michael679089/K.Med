@@ -4,7 +4,6 @@ import android.content.Context
 import android.widget.EditText
 import android.widget.Toast
 import com.journeyapps.barcodescanner.BarcodeView
-import kotlin.reflect.KClass
 
 class QRCodeScannerClass(private val context: Context, private val scanner: BarcodeView, private val editTextPID: EditText) {
 
@@ -21,8 +20,10 @@ class QRCodeScannerClass(private val context: Context, private val scanner: Barc
             }
         }
     }
+
+
     fun getIsScanning() : Boolean {
-        return isScanning;
+        return isScanning
     }
 
     fun startScanner() {
@@ -37,11 +38,7 @@ class QRCodeScannerClass(private val context: Context, private val scanner: Barc
             scanner.pause()
             isScanning = false
         }
-    }
-
-    fun releaseScanner() {
-        scanner.pause()
-        isScanning = false
+        Toast.makeText(context, "Click on the QR Scanner to start scanning again", Toast.LENGTH_SHORT).show()
     }
 
     fun toggleFlash() {

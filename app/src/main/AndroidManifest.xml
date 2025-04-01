@@ -23,7 +23,7 @@
             android:name=".PatientInformation"
             android:exported="false" />
         <activity
-            android:name=".AccountRegistration"
+            android:name=".AccountRegistrationActivity"
             android:exported="false" />
 <!--        <activity-->
 <!--            android:name=".PatientRegistration"-->

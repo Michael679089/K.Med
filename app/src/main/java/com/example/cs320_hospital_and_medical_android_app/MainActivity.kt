@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
     // Firebase Initialization - And other things
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
-    private var debugQRReader = true
+    private var debugQRReader = false
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String> // this is the permission launcher
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +48,11 @@ class MainActivity : AppCompatActivity() {
 
             Log.d("DEBUG", "Login Page > You are now looking at qr_reader.xml activity")
             setContentView(R.layout.qr_reader)
+            ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+                val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+                v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+                insets
+            }
 
 
 
@@ -59,7 +64,8 @@ class MainActivity : AppCompatActivity() {
             } else {
                 requestPermission()
             }
-        } else {
+        }
+        else {
             setContentView(R.layout.activity_main)
             ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
                 val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -99,7 +105,7 @@ class MainActivity : AppCompatActivity() {
 
             val registerBtn: TextView = findViewById(R.id.registerBtn)
             registerBtn.setOnClickListener {
-                val intent = Intent(this, AccountRegistration::class.java)
+                val intent = Intent(this, AccountRegistrationActivity::class.java)
                 startActivity(intent)
             }
         }
@@ -116,7 +122,10 @@ class MainActivity : AppCompatActivity() {
         requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
                 Log.d("DEBUG", "Camera permission granted ✅")
-                startQRScannerFunction()
+
+                if (debugQRReader) {
+                    startQRScannerFunction()
+                }
             } else {
                 Log.e("DEBUG", "Camera permission denied ❌")
                 Toast.makeText(this, "Camera permission is required!", Toast.LENGTH_SHORT).show()
@@ -140,6 +149,7 @@ class MainActivity : AppCompatActivity() {
 
         val qrFrameContainer : FrameLayout = findViewById(R.id.qrFrameContainer)
         qrFrameContainer.setOnClickListener {
+            Log.d("DEBUG","qrFrameContainer is clicked")
             if (!qrScanner.getIsScanning()) {
                 qrScanner.startScanner()
             }

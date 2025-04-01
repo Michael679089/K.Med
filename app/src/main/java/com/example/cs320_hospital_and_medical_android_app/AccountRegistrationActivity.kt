@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 
-class AccountRegistration : AppCompatActivity() {
+class AccountRegistrationActivity : AppCompatActivity() {
     private lateinit var emailField: EditText
     private lateinit var passwordField: EditText
 
