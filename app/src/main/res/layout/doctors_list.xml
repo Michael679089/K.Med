@@ -73,11 +73,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         tools:listitem="@layout/doctors_card" />
 
-    <!-- Sample Schedule Cards
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fillViewport="true"
+        android:id="@+id/lis"
         app:layout_constraintTop_toBottomOf="@id/screenName"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -85,6 +85,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
+            android:id="@+id/listDoctor"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_marginStart="30dp"
@@ -93,13 +94,8 @@
             android:layout_marginBottom="16dp">
 
             <include layout="@layout/doctors_card" />
-            <include layout="@layout/doctors_card" />
-            <include layout="@layout/doctors_card" />
-            <include layout="@layout/doctors_card" />
-            <include layout="@layout/doctors_card" />
 
         </LinearLayout>
     </ScrollView>
-   -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

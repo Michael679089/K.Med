@@ -7,6 +7,9 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import android.content.Intent
+import android.widget.ImageView
+import android.widget.LinearLayout
 
 
 class Dashboard : AppCompatActivity() {
@@ -15,54 +18,23 @@ class Dashboard : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.dashboard)
 
-        getUserRoleFromFirestore { role ->
-            loadUserInfo()
-            loadRoleButtons(role)
-            loadScheduleCard(role)
-        }
-    }
 
-    private fun getUserRoleFromFirestore(onRoleFetched: (String) -> Unit) {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        val userId = currentUser?.uid
-
-        if (userId != null) {
-            val db = FirebaseFirestore.getInstance()
-            db.collection("users").document(userId).get()
-                .addOnSuccessListener { document ->
-                    val role = document.getString("role") ?: "guest"
-                    onRoleFetched(role)
-                }
-                .addOnFailureListener {
-                    onRoleFetched("guest") //fallback
-                }
-        } else {
-            onRoleFetched("guest")
-        }
-    }
-
-    // STEP 1: Load Account Name & ID
-    private fun loadUserInfo() {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        val userId = currentUser?.uid ?: return
+        // Load User Info
+        val role = intent.getStringExtra("role") ?: return
+        val name = intent.getStringExtra("name") ?: "No Name"
+        val customUid = intent.getStringExtra("uid") ?: "Unknown"
 
         val nameView = findViewById<TextView>(R.id.accountName)
         val idView = findViewById<TextView>(R.id.accountID)
+        nameView.text = name
+        idView.text = customUid
 
-        val db = FirebaseFirestore.getInstance()
-        db.collection("users").document(userId).get()
-            .addOnSuccessListener { doc ->
-                nameView.text = doc.getString("name") ?: "No Name"
-                idView.text = doc.getString("patientId") ?: "PID$userId"
-            }
-            .addOnFailureListener {
-                nameView.text = "Unknown"
-                idView.text = "PID$userId"
-            }
+        loadRoleButtons(role)
+        loadScheduleCard(role)
+
     }
 
-
-    // STEP 2: Load buttons layout depending on role
+    // Load RBA Buttons
     private fun loadRoleButtons(role: String) {
         val container = findViewById<FrameLayout>(R.id.buttonSectionContainer)
         val inflater = LayoutInflater.from(this)
@@ -75,123 +47,135 @@ class Dashboard : AppCompatActivity() {
         }
 
         layoutRes?.let {
-            val view = inflater.inflate(it, container, false)
             container.removeAllViews()
+            val view = inflater.inflate(it, container, false)
             container.addView(view)
+
+            // Now attach role-based listeners
+            when (role) {
+                "patient" -> setupPatientButtons(view)
+                "doctor" -> setupDoctorButtons(view)
+                "nurse"  -> setupNurseButtons(view)
+            }
         }
     }
 
-    // STEP 3: Load schedule card section based on role
+    // Button Listeners
+    private fun setupPatientButtons(view: View) {
+        val doctorBtn = view.findViewById<LinearLayout>(R.id.doctorBtn)
+        val scheduleBtn = view.findViewById<LinearLayout>(R.id.scheduleBtn)
+        val prescriptionBtn = view.findViewById<LinearLayout>(R.id.prescriptionBtn)
+
+        doctorBtn.setOnClickListener {
+            startActivity(Intent(this, DoctorSchedule::class.java))
+        }
+
+        scheduleBtn.setOnClickListener {
+            startActivity(Intent(this, PatientAppointment::class.java))
+        }
+
+        prescriptionBtn.setOnClickListener {
+            startActivity(Intent(this, Prescription::class.java))
+        }
+    }
+
+    private fun setupDoctorButtons(view: View) {
+        val qrBtn = view.findViewById<LinearLayout>(R.id.patientQRBtn)
+        val scheduleBtn = view.findViewById<LinearLayout>(R.id.doctorAccessSchedule)
+
+        qrBtn.setOnClickListener {
+            val intent = Intent(this, QRReader::class.java)
+            intent.putExtra("role", "doctor")
+            startActivity(intent)
+        }
+
+        scheduleBtn.setOnClickListener {
+            startActivity(Intent(this, DoctorSchedule::class.java))
+        }
+    }
+
+    private fun setupNurseButtons(view: View) {
+        val qrBtn = view.findViewById<LinearLayout>(R.id.patientQRBtn)
+        val doctorBtn = view.findViewById<LinearLayout>(R.id.doctorBtn)
+
+        qrBtn.setOnClickListener {
+            val intent = Intent(this, QRReader::class.java)
+            intent.putExtra("role", "nurse")
+            startActivity(intent)
+        }
+
+        doctorBtn.setOnClickListener {
+            startActivity(Intent(this, DoctorSchedule::class.java))
+        }
+    }
+
+
+    // Load Schedule Card Depending on scenario
     private fun loadScheduleCard(role: String) {
         val scheduleContainer = findViewById<FrameLayout>(R.id.scheduleCardContent)
         val inflater = LayoutInflater.from(this)
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val userId = currentUser?.uid ?: return
+        val db = FirebaseFirestore.getInstance()
 
-        // Default scenario — simulate patient booked (change logic later based on data)
-        val layoutRes = when (role) {
-            "patient" -> R.layout.dashboard_schedule_patient_booked
-            // Add more here for different roles (doctor/nurse) later
-            else -> null
-        }
-
-        layoutRes?.let {
-            val view = inflater.inflate(it, scheduleContainer, false)
-
-            // Placeholder content for now
-            val appointmentDate = "March 5, 2025"
-            val doctorName = "Dr. Fillman\nCosman"
-
-            // Only try to update if layout contains these views
-            val dateText = view.findViewById<TextView?>(R.id.textAppointmentDate)
-            val doctorText = view.findViewById<TextView?>(R.id.textDoctorName)
-
-            dateText?.text = appointmentDate
-            doctorText?.text = doctorName
-
+        val setScheduleLayout: (Int, Map<Int, String?>) -> Unit = { layoutRes, textMap ->
+            val view = inflater.inflate(layoutRes, scheduleContainer, false)
+            for ((id, value) in textMap) {
+                view.findViewById<TextView?>(id)?.text = value
+            }
             scheduleContainer.removeAllViews()
             scheduleContainer.addView(view)
         }
+
+        when (role) {
+            "patient" -> {
+                db.collection("appointments").document(userId).get()
+                    .addOnSuccessListener { doc ->
+                        val status = doc.getString("status")
+                        val layoutRes = when (status) {
+                            "booked" -> R.layout.dashboard_schedule_patient_booked
+                            "queue" -> R.layout.dashboard_schedule_patient_queue
+                            else -> R.layout.dashboard_schedule_none
+                        }
+
+                        val textMap = mapOf(
+                            R.id.textAppointmentDate to doc.getString("date"),
+                            R.id.textDoctorName to doc.getString("doctor"),
+                            R.id.textQueueNumber to doc.get("queue")?.toString(),
+                            R.id.textQueueDestination to doc.getString("destination")
+                        )
+
+                        setScheduleLayout(layoutRes, textMap)
+                    }
+            }
+
+            "doctor" -> {
+                db.collection("schedules").document(userId).get()
+                    .addOnSuccessListener { doc ->
+                        val layoutRes = if (doc.getBoolean("hasSchedule") == true)
+                            R.layout.dashboard_schedule_doctor
+                        else
+                            R.layout.dashboard_schedule_none
+
+                        setScheduleLayout(layoutRes, emptyMap())
+                    }
+            }
+
+            "nurse" -> {
+                db.collection("assignments").document(userId).get()
+                    .addOnSuccessListener { doc ->
+                        val layoutRes = if (doc.getBoolean("hasTask") == true)
+                            R.layout.dashboard_schedule_nurse
+                        else
+                            R.layout.dashboard_schedule_none
+
+                        setScheduleLayout(layoutRes, emptyMap())
+                    }
+            }
+
+            else -> {
+                setScheduleLayout(R.layout.dashboard_schedule_none, emptyMap())
+            }
+        }
     }
-
-    // STEP 4: Get user role (for now return static/dummy until Firebase is configured)
-
-
 }
-
-/**
- * private fun loadScheduleCard(role: String) {
- *     val scheduleContainer = findViewById<FrameLayout>(R.id.scheduleCardContent)
- *     val inflater = LayoutInflater.from(this)
- *
- *     val currentUser = FirebaseAuth.getInstance().currentUser
- *     val userId = currentUser?.uid ?: return
- *     val db = FirebaseFirestore.getInstance()
- *
- *     when (role) {
- *         "patient" -> {
- *             db.collection("appointments").document(userId).get()
- *                 .addOnSuccessListener { doc ->
- *                     val status = doc.getString("status") // "booked", "queue", "none"
- *                     val layoutRes = when (status) {
- *                         "booked" -> R.layout.dashboard_schedule_patient_booked
- *                         "queue" -> R.layout.dashboard_schedule_patient_queue
- *                         else -> R.layout.dashboard_schedule_none
- *                     }
- *
- *                     val view = inflater.inflate(layoutRes, scheduleContainer, false)
- *
- *                     view.findViewById<TextView?>(R.id.textAppointmentDate)?.text =
- *                         doc.getString("date") ?: "N/A"
- *
- *                     view.findViewById<TextView?>(R.id.textDoctorName)?.text =
- *                         doc.getString("doctor") ?: "TBA"
- *
- *                     view.findViewById<TextView?>(R.id.textQueueNumber)?.text =
- *                         doc.get("queue")?.toString() ?: "0"
- *
- *                     view.findViewById<TextView?>(R.id.textQueueDestination)?.text =
- *                         doc.getString("destination") ?: "Room"
- *
- *                     scheduleContainer.removeAllViews()
- *                     scheduleContainer.addView(view)
- *                 }
- *         }
- *
- *         "doctor" -> {
- *             db.collection("schedules").document(userId).get()
- *                 .addOnSuccessListener { doc ->
- *                     val hasSchedule = doc.getBoolean("hasSchedule") ?: false
- *                     val layoutRes = if (hasSchedule)
- *                         R.layout.dashboard_schedule_doctor
- *                     else
- *                         R.layout.dashboard_schedule_none
- *
- *                     val view = inflater.inflate(layoutRes, scheduleContainer, false)
- *                     scheduleContainer.removeAllViews()
- *                     scheduleContainer.addView(view)
- *                 }
- *         }
- *
- *         "nurse" -> {
- *             db.collection("assignments").document(userId).get()
- *                 .addOnSuccessListener { doc ->
- *                     val hasTask = doc.getBoolean("hasTask") ?: false
- *                     val layoutRes = if (hasTask)
- *                         R.layout.dashboard_schedule_nurse
- *                     else
- *                         R.layout.dashboard_schedule_none
- *
- *                     val view = inflater.inflate(layoutRes, scheduleContainer, false)
- *                     scheduleContainer.removeAllViews()
- *                     scheduleContainer.addView(view)
- *                 }
- *         }
- *
- *         else -> {
- *             val view = inflater.inflate(R.layout.dashboard_schedule_none, scheduleContainer, false)
- *             scheduleContainer.removeAllViews()
- *             scheduleContainer.addView(view)
- *         }
- *     }
- * }
- *
- * */

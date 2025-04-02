@@ -42,7 +42,7 @@
             android:padding="13dp"
             android:text="Call"
             android:textSize="20sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/exitPatient"
@@ -52,7 +52,7 @@
             android:padding="13dp"
             android:text="For Exit"
             android:textSize="20sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
     </LinearLayout>
 </LinearLayout>

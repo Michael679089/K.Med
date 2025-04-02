@@ -19,6 +19,7 @@
         app:cardElevation="6dp">
 
         <LinearLayout
+            android:id="@+id/patientQRBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
@@ -56,6 +57,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
+            android:id="@+id/doctorAccessSchedule"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal"
