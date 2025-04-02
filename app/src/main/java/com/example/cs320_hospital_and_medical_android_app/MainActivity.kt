@@ -57,30 +57,34 @@ class MainActivity : AppCompatActivity() {
 
             auth.signInWithEmailAndPassword(email, password)
                 .addOnSuccessListener {
-                    val user = auth.currentUser
-                    val firebaseUid = user?.uid
+                    val firebaseUid = auth.currentUser?.uid!!
 
-                    db.collection("users")
-                        .whereEqualTo("firebaseUid", firebaseUid)
-                        .get()
-                        .addOnSuccessListener { documents ->
+                    db.collection("users").document(firebaseUid).get()
+                        .addOnSuccessListener { userDoc ->
                             signInBtn.isEnabled = true
-                            if (!documents.isEmpty) {
-                                val userDoc = documents.documents[0]
+                            if (userDoc.exists()) {
                                 val role = userDoc.getString("role")
-                                val customUid = userDoc.getString("uid")
-                                val name = userDoc.getString("name")
+                                val accountId = userDoc.getString("accountId")
+                                val emailFetched = userDoc.getString("email")
 
-                                if (role != null && customUid != null && name != null) {
-                                    Toast.makeText(this, "Welcome, $role!", Toast.LENGTH_SHORT).show()
-                                    val intent = Intent(this, Dashboard::class.java)
-                                    intent.putExtra("role", role)
-                                    intent.putExtra("uid", customUid)
-                                    intent.putExtra("name", name)
-                                    startActivity(intent)
-                                    finish()
+                                if (role != null && accountId != null && emailFetched != null) {
+
+                                    // Fetch name from role-specific collection
+                                    db.collection("${role}s").document(accountId).get()
+                                        .addOnSuccessListener { profileDoc ->
+                                            val firstName = profileDoc.getString("firstName") ?: ""
+                                            val lastName = profileDoc.getString("lastName") ?: ""
+                                            val name = "$firstName $lastName".trim()
+
+                                            val intent = Intent(this, Dashboard::class.java)
+                                            intent.putExtra("role", role)
+                                            intent.putExtra("uid", accountId)
+                                            intent.putExtra("name", name)
+                                            startActivity(intent)
+                                            finish()
+                                        }
                                 } else {
-                                    Toast.makeText(this, "Invalid user data.", Toast.LENGTH_LONG).show()
+                                    Toast.makeText(this, "Invalid user profile data.", Toast.LENGTH_LONG).show()
                                 }
                             } else {
                                 Toast.makeText(this, "User profile not found.", Toast.LENGTH_LONG).show()
@@ -88,8 +92,7 @@ class MainActivity : AppCompatActivity() {
                         }
                         .addOnFailureListener {
                             signInBtn.isEnabled = true
-                            Log.e("FIRESTORE", "Error fetching user profile", it)
-                            Toast.makeText(this, "Something went wrong: ${it.message}", Toast.LENGTH_LONG).show()
+                            Toast.makeText(this, "Error fetching user data: ${it.message}", Toast.LENGTH_LONG).show()
                         }
                 }
                 .addOnFailureListener {
@@ -117,22 +120,28 @@ class MainActivity : AppCompatActivity() {
         if (user != null) {
             val firebaseUid = user.uid
 
-            db.collection("users")
-                .whereEqualTo("firebaseUid", firebaseUid)
-                .get()
-                .addOnSuccessListener { documents ->
-                    if (!documents.isEmpty) {
-                        val userDoc = documents.documents[0]
+            db.collection("users").document(firebaseUid).get()
+                .addOnSuccessListener { userDoc ->
+                    if (userDoc.exists()) {
                         val role = userDoc.getString("role")
-                        val customUid = userDoc.getString("uid")
-                        val name = userDoc.getString("name")
+                        val accountId = userDoc.getString("accountId")
+                        val emailFetched = userDoc.getString("email")
 
-                        val intent = Intent(this, Dashboard::class.java)
-                        intent.putExtra("role", role)
-                        intent.putExtra("uid", customUid)
-                        intent.putExtra("name", name)
-                        startActivity(intent)
-                        finish()
+                        if (role != null && accountId != null && emailFetched != null) {
+                            db.collection("${role}s").document(accountId).get()
+                                .addOnSuccessListener { profileDoc ->
+                                    val firstName = profileDoc.getString("firstName") ?: ""
+                                    val lastName = profileDoc.getString("lastName") ?: ""
+                                    val name = "$firstName $lastName".trim()
+
+                                    val intent = Intent(this, Dashboard::class.java)
+                                    intent.putExtra("role", role)
+                                    intent.putExtra("uid", accountId)
+                                    intent.putExtra("name", name)
+                                    startActivity(intent)
+                                    finish()
+                                }
+                        }
                     }
                 }
         }
