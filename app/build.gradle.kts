@@ -41,11 +41,14 @@ android {
 }
 
 dependencies {
-    implementation(platform("com.google.firebase:firebase-bom:33.11.0"))
+    implementation(platform("com.google.firebase:firebase-bom:33.12.0"))
 
     // Firebase Services
-    implementation("com.google.firebase:firebase-auth-ktx")
-    implementation("com.google.firebase:firebase-firestore-ktx")
+    implementation(libs.firebase.common.ktx)
+//    implementation("com.google.firebase:firebase-firestore-ktx")
+    implementation(libs.firebase.firestore.ktx)
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.database.ktx)
 
     // UI & AndroidX
     implementation(libs.androidx.core.ktx)
@@ -62,6 +65,9 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
+    // For QR Code Generator
+    implementation(libs.qr.generatorAndScanner)
+
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -71,17 +77,4 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    // CameraX core library
-    implementation("androidx.camera:camera-core:1.4.1")
-    implementation("androidx.camera:camera-camera2:1.4.1")
-
-    // CameraX Lifecycle support
-    implementation("androidx.camera:camera-lifecycle:1.4.1")
-
-    // PreviewView class lives here
-    implementation("androidx.camera:camera-view:1.4.1")
-
-    // CameraX ML Kit library for barcode scanning
-    implementation("androidx.camera:camera-mlkit-vision:1.4.1")
-    implementation("com.google.mlkit:barcode-scanning:17.2.0")
 }

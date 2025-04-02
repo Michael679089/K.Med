@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">CS320_Hospital_and_Medical_Android_App</string>
+    <string name="app_name">K.Med</string>
 
     <string name="add_appointment">Add Appointment</string>
-    <string name="title_activity_prescription">Prescription</string>
+    <string name="guide_overlay_png_imageview_description">guide overlay png imageview description</string>
 
 </resources>
