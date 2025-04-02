@@ -4,11 +4,16 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.icu.util.Calendar
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.Exclude
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.toObject
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -31,15 +36,14 @@ class DoctorSchedule : AppCompatActivity() {
         //Access Flipper
         viewFlipper = findViewById(R.id.viewFlipper)
 
-        //Get all doctors and display
+        //Search doctors and display
         getAllDoctors()
+        searchDoctor()
     }
-
 
     data class Doctor(
         //Data structure for doctor
         val id: String = "",
-        val pid: String = "",
         val firstName: String = "",
         val lastName: String = "",
         val profilePicture: String = "",
@@ -54,6 +58,62 @@ class DoctorSchedule : AppCompatActivity() {
         val time: String = ""
     )
 
+    private fun searchDoctor() {
+        val searchBar: EditText = findViewById(R.id.searchBar)
+        searchBar.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                val searchText = s.toString().trim().toLowerCase().replaceFirstChar { it.uppercase() }
+                if (searchText.isNotEmpty()) {
+                    getFilteredDoctors(searchText)
+
+                } else {
+                    getAllDoctors()
+                }
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+    }
+
+    private fun getFilteredDoctors(searchText: String) {
+        val listDoctors: LinearLayout? = findViewById(R.id.listDoctor)
+        val inflater = LayoutInflater.from(this)
+        listDoctors?.removeAllViews()
+
+        val doctorsCollection = db.collection("Doctors")
+        val uniqueDoctors = HashSet<String>() // To avoid duplicates
+        val doctorList = mutableListOf<Doctor>() // Store results before displaying
+
+        // Search by Name (First/Last)
+        doctorsCollection
+            .orderBy("firstName")
+            .startAt(searchText)
+            .endAt(searchText + "\uf8ff")
+            .get()
+            .addOnSuccessListener { documents ->
+                for (doc in documents) {
+                    val doctor = doc.toObject(Doctor::class.java).copy(id = doc.id)
+                    if (uniqueDoctors.add(doctor.id)) doctorList.add(doctor)
+                }
+                updateDoctorList(doctorList, listDoctors, inflater)
+            }
+
+        // Search by Specialization
+        doctorsCollection
+            .orderBy("specialization")
+            .startAt(searchText)
+            .endAt(searchText + "\uf8ff")
+            .get()
+            .addOnSuccessListener { documents ->
+                for (doc in documents) {
+                    val doctor = doc.toObject(Doctor::class.java).copy(id = doc.id)
+                    if (uniqueDoctors.add(doctor.id)) doctorList.add(doctor)
+                }
+                updateDoctorList(doctorList, listDoctors, inflater)
+            }
+    }
+
     private fun getAllDoctors() {
         //Access the list
         val listDoctors: LinearLayout? = findViewById(R.id.listDoctor)
@@ -66,7 +126,7 @@ class DoctorSchedule : AppCompatActivity() {
             snapshot?.forEach { document ->
                 val doctor = document.toObject(Doctor::class.java).copy(id = document.id)
                 val doctorCard = inflater.inflate(R.layout.doctors_card, listDoctors, false).apply {
-                    findViewById<TextView>(R.id.doctorID).text = doctor.pid
+                    findViewById<TextView>(R.id.doctorID).text = doctor.id
                     findViewById<TextView>(R.id.doctorName).text = "${doctor.firstName} ${doctor.lastName}"
                     findViewById<TextView>(R.id.doctorSpecialization).text = doctor.specialization
 
@@ -81,6 +141,28 @@ class DoctorSchedule : AppCompatActivity() {
         }
     }
 
+    private fun updateDoctorList(
+        doctorList: List<Doctor>,
+        listDoctors: LinearLayout?,
+        inflater: LayoutInflater
+    ) {
+        listDoctors?.removeAllViews()
+        for (doctor in doctorList) {
+            val doctorCard = inflater.inflate(R.layout.doctors_card, listDoctors, false).apply {
+                findViewById<TextView>(R.id.doctorID).text = doctor.id
+                findViewById<TextView>(R.id.doctorName).text = "${doctor.firstName} ${doctor.lastName}"
+                findViewById<TextView>(R.id.doctorSpecialization).text = doctor.specialization
+
+                findViewById<ImageView>(R.id.doctorSchedule).apply {
+                    tag = doctor.id
+                    setOnClickListener { getOneDoctor(doctor.id) }
+                }
+            }
+            listDoctors?.addView(doctorCard)
+        }
+    }
+
+
     private fun getOneDoctor(DID: String) {
         //Flip the layout
         viewFlipper.displayedChild = 1
@@ -92,7 +174,7 @@ class DoctorSchedule : AppCompatActivity() {
                 //Display the doctors' information
                 val profileSection: LinearLayout = findViewById(R.id.profileSection)
                 with(profileSection) {
-                    findViewById<TextView>(R.id.doctorID).text = doctor.pid
+                    findViewById<TextView>(R.id.doctorID).text = doctor.id
                     findViewById<TextView>(R.id.doctorName).text = "${doctor.firstName} ${doctor.lastName}"
                     findViewById<TextView>(R.id.doctorSpecialization).text = doctor.specialization
                 }
@@ -144,25 +226,28 @@ class DoctorSchedule : AppCompatActivity() {
         timeInput.text = null
 
         findViewById<Button>(R.id.setBtn).setOnClickListener {
+            if (dateInput.text.isNotEmpty() && timeInput.text.isNotEmpty()){
+                //Get the day
+                val inputFormat = SimpleDateFormat("MMMM d, yyyy", Locale.getDefault()) // Matches "March 5, 2025"
+                val date = inputFormat.parse(dateInput.text.toString().trim())
+                val dayFormat = SimpleDateFormat("EEEE", Locale.getDefault())
 
-            //Get the day
-            val inputFormat = SimpleDateFormat("MMMM d, yyyy", Locale.getDefault()) // Matches "March 5, 2025"
-            val date = inputFormat.parse(dateInput.text.toString().trim())
-            val dayFormat = SimpleDateFormat("EEEE", Locale.getDefault())
-
-            val schedule = Schedule(
-                date = dateInput.text.toString().trim(),
-                day = dayFormat.format(date).toString(),
-                time = timeInput.text.toString().trim()
-            )
-            //Access the schedule collection from Firebase
-            val scheduleRef = db.collection("Doctors").document(id).collection("schedule").document()
-            //Add the schedule details
-            scheduleRef.set(schedule.copy(id = scheduleRef.id))
-                .addOnSuccessListener { getOneDoctor(id) }
-                .addOnFailureListener { e ->
-                    createToast("FirestoreError: Failed to add schedule: ${e.message}")
-                }
+                val schedule = Schedule(
+                    date = dateInput.text.toString().trim(),
+                    day = dayFormat.format(date).toString(),
+                    time = timeInput.text.toString().trim()
+                )
+                //Access the schedule collection from Firebase
+                val scheduleRef = db.collection("Doctors").document(id).collection("schedule").document()
+                //Add the schedule details
+                scheduleRef.set(schedule.copy(id = scheduleRef.id))
+                    .addOnSuccessListener { getOneDoctor(id) }
+                    .addOnFailureListener { e ->
+                        createToast("Failed to add schedule")
+                    }
+            } else {
+                createToast("Input all fields")
+            }
         }
 
         findViewById<Button>(R.id.cancelBtn).setOnClickListener {
@@ -177,7 +262,7 @@ class DoctorSchedule : AppCompatActivity() {
             //Delete
             .delete()
             .addOnSuccessListener { createToast("Schedule deleted successfully") }
-            .addOnFailureListener { e -> createToast("Error deleting schedule: ${e.message}") }
+            .addOnFailureListener { createToast("Failed to delete schedule") }
     }
 
     private fun createToast(message: String) {
