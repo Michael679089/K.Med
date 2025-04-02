@@ -64,7 +64,7 @@
         android:layout_width="0dp"
         android:layout_height="150dp"
         android:layout_marginTop="12dp"
-        android:hint="Write your reason..."
+        android:hint="Write your prescription..."
         android:inputType="textMultiLine"
         android:gravity="top|start"
         android:paddingTop="20dp"

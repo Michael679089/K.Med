@@ -3,9 +3,12 @@
     android:id="@+id/headerBackground"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="100dp"
     android:background="@drawable/bg_header"
-    android:padding="30dp">
+    android:minHeight="100dp"
+    android:paddingLeft="30dp"
+    android:paddingTop="40dp"
+    android:paddingRight="30dp"
+    android:paddingBottom="30dp">
 
     <!-- Logo -->
     <ImageView
@@ -13,10 +16,10 @@
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_gravity="start|top"
-        android:src="@drawable/logo_kmed_negative"
-        android:contentDescription="Dashboard"
         android:clickable="true"
-        android:focusable="true" />
+        android:contentDescription="Dashboard"
+        android:focusable="true"
+        android:src="@drawable/logo_kmed_negative" />
 
     <!-- Settings icon -->
     <ImageView
@@ -24,9 +27,9 @@
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_gravity="end|top"
-        android:src="@drawable/icon_settings_line"
-        android:contentDescription="Settings"
         android:clickable="true"
-        android:focusable="true" />
+        android:contentDescription="Settings"
+        android:focusable="true"
+        android:src="@drawable/icon_settings_line" />
 
 </FrameLayout>
