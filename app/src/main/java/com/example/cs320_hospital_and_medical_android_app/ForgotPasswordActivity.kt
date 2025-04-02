@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import android.util.Log
 
-class ForgotPassword : AppCompatActivity() {
+class ForgotPasswordActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var emailVerify: LinearLayout
@@ -35,7 +35,7 @@ class ForgotPassword : AppCompatActivity() {
 
         // Handle user verification button click
         emailPassReset.setOnClickListener {
-            val email = emailInput.text.toString()
+            val email = emailInput.text.toString().trim()
 
             if (email.isEmpty()) {
                 emailInputState.text = "Please input a valid email"
@@ -46,11 +46,8 @@ class ForgotPassword : AppCompatActivity() {
                     if (task.isSuccessful) {
                         // Email is valid and exists
                         emailInputState.text = null
-                        Toast.makeText(
-                            this,
-                            "Password reset email sent successfully.",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(this, "Password reset email sent successfully.",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Check email for instructions!",Toast.LENGTH_SHORT).show()
                         emailPassReset.text = "Resend Email"
                     } else {
                         val exception = task.exception

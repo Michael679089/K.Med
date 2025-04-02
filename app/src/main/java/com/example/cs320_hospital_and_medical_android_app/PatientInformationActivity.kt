@@ -1,7 +1,6 @@
 package com.example.cs320_hospital_and_medical_android_app
 
 import android.app.DatePickerDialog
-import android.health.connect.datatypes.units.Length
 import android.icu.util.Calendar
 import android.os.Bundle
 import android.util.Log
@@ -21,7 +20,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 
-class PatientInformation : AppCompatActivity() {
+class PatientInformationActivity : AppCompatActivity() {
 
     private lateinit var firstNameInput: EditText
     private lateinit var lastNameInput: EditText

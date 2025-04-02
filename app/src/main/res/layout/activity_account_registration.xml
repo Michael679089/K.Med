@@ -43,6 +43,22 @@
         app:layout_constraintTop_toBottomOf="@id/emailInput"
         app:layout_constraintWidth_percent="0.8" />
 
+    <EditText
+        android:id="@+id/emailInput"
+        style="@style/BlueTextField"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="16dp"
+        android:drawableStart="@drawable/icon_email"
+        android:hint="Email"
+        android:inputType="text"
+        android:paddingLeft="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.512"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintWidth_percent="0.8" />
+
     <Button
         android:id="@+id/signupBtn"
         android:layout_width="0dp"
@@ -109,22 +125,6 @@
         app:layout_constraintHorizontal_bias="0.161"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/imageView" />
-
-    <EditText
-        android:id="@+id/emailInput"
-        android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="16dp"
-        style="@style/BlueTextField"
-        android:drawableStart="@drawable/icon_email"
-        android:hint="Email"
-        android:inputType="text"
-        android:paddingLeft="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.512"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:layout_constraintWidth_percent="0.8" />
 
     <!-- Register Button -->
 

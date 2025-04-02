@@ -12,35 +12,52 @@
         android:id="@+id/imageView3"
         android:layout_width="329dp"
         android:layout_height="310dp"
-        android:layout_marginStart="290dp"
+        android:layout_marginStart="250dp"
+        android:layout_marginTop="-200dp"
+        android:layout_marginEnd="-200dp"
         android:layout_marginBottom="535dp"
         android:alpha="0.1"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.211"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.701"
         app:srcCompat="@drawable/circle_bg" />
 
     <ImageView
         android:id="@+id/imageView4"
-        android:layout_width="0dp"
-        android:layout_height="496sp"
+        android:layout_width="278dp"
+        android:layout_height="282dp"
+        android:layout_marginStart="-150dp"
+        android:layout_marginBottom="-150dp"
         android:layout_marginTop="532dp"
         android:layout_marginEnd="232dp"
         android:alpha="0.1"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/circle_bg" />
 
     <LinearLayout
-        android:layout_width="339dp"
-        android:layout_height="541dp"
+        android:layout_width="274dp"
+        android:layout_height="466dp"
         android:orientation="vertical"
-        tools:layout_editor_absoluteX="36dp"
-        tools:layout_editor_absoluteY="95dp">
+        app:layout_constraintBottom_toTopOf="@+id/imageView4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView3"
+        app:layout_constraintVertical_bias="0.0">
 
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="81dp"
             android:layout_height="94dp"
+            android:layout_marginBottom="10dp"
             android:scaleType="fitCenter"
             app:layout_constraintHeight_percent="0.2"
             app:layout_constraintWidth_percent="0.2"
@@ -50,7 +67,7 @@
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginBottom="10dp"
             android:fontFamily="@font/montserrat_bold"
             android:text="Login"
             android:textSize="35sp" />
@@ -60,7 +77,7 @@
             style="@style/BlueTextField"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginBottom="10dp"
             android:drawableStart="@drawable/icon_email"
             android:hint="Username"
             app:layout_constraintWidth_percent="0.8" />
@@ -70,7 +87,7 @@
             style="@style/BlueTextField"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginBottom="20dp"
             android:drawableStart="@drawable/icon_password"
             android:hint="Password"
             android:inputType="textPassword"
@@ -81,7 +98,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:layout_marginTop="10dp"
+            android:layout_marginBottom="20dp"
             android:clickable="true"
             android:fontFamily="@font/montserrat_regular"
             android:gravity="end"
@@ -94,8 +111,8 @@
             style="@style/BlueButton"
             android:layout_width="match_parent"
             android:layout_height="55dp"
+            android:layout_marginBottom="10dp"
             android:text="Sign in"
-            android:layout_marginTop="50dp"
             app:backgroundTint="@null"
             app:layout_constraintWidth_percent="0.8" />
 
@@ -103,13 +120,13 @@
             android:layout_width="match_parent"
             android:layout_height="53dp"
             android:gravity="center"
-            android:layout_marginTop="40dp"
             android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/clinicStaff"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
                 android:fontFamily="@font/montserrat_regular"
                 android:text="No account?"
                 android:textSize="15sp" />

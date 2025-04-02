@@ -1,10 +1,13 @@
 package com.example.cs320_hospital_and_medical_android_app
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
@@ -20,6 +23,7 @@ class AccountRegistrationActivity : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d("DEBUG", "You're now in Registration Page.")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_account_registration)
 
@@ -34,6 +38,12 @@ class AccountRegistrationActivity : AppCompatActivity() {
 
         signUpBtn.setOnClickListener {
             registerUser()
+        }
+
+        var loginBtn : TextView = findViewById(R.id.loginBtn)
+        loginBtn.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
         }
     }
 

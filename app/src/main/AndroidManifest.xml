@@ -20,7 +20,7 @@
         android:theme="@style/Theme.CS320_Hospital_and_Medical_Android_App"
         tools:targetApi="31">
         <activity
-            android:name=".PatientInformation"
+            android:name=".PatientInformationActivity"
             android:exported="false" />
         <activity
             android:name=".AccountRegistrationActivity"
@@ -29,7 +29,7 @@
 <!--            android:name=".PatientRegistration"-->
 <!--            android:exported="false" />-->
         <activity
-            android:name=".ForgotPassword"
+            android:name=".ForgotPasswordActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
