@@ -7,10 +7,11 @@ import com.google.zxing.WriterException
 import com.journeyapps.barcodescanner.BarcodeEncoder
 
 class QRCodeGeneratorClass public constructor() {
-     fun generateQRCodeToImageView(imageView: ImageView, textValue : String, qrSIZE : Int) {
+     fun generateQRCodeToImageView(imageView: ImageView, textValue : String) {
         try {
             val encoder = BarcodeEncoder()
-            val bitmap = encoder.encodeBitmap(textValue, BarcodeFormat.QR_CODE, qrSIZE, qrSIZE)
+            val bitmap = encoder.encodeBitmap(textValue, BarcodeFormat.QR_CODE, 300, 300)
+
             imageView.setImageBitmap(bitmap)
 
         } catch (e: WriterException) {

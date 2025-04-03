@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
     <!-- Camera permission -->
     <uses-permission android:name="android.permission.CAMERA" />
-
-    <!-- Declares camera usage but doesn't make it required -->
-    <uses-feature android:name="android.hardware.camera.any" android:required="false" />
-
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
 
     <application
         android:allowBackup="true"
@@ -20,16 +18,28 @@
         android:theme="@style/Theme.CS320_Hospital_and_Medical_Android_App"
         tools:targetApi="31">
         <activity
-            android:name=".PatientInformation"
+            android:name=".QRReader"
+            android:exported="false" />
+        <activity
+            android:name=".Dashboard"
+            android:exported="false" />
+        <activity
+            android:name=".DoctorSchedule"
+            android:exported="false" />
+        <activity
+            android:name=".ForgotPassword"
+            android:exported="false" />
+        <activity
+            android:name=".PatientAppointment"
             android:exported="false" />
         <activity
             android:name=".AccountRegistration"
             android:exported="false" />
-<!--        <activity-->
-<!--            android:name=".PatientRegistration"-->
-<!--            android:exported="false" />-->
         <activity
-            android:name=".ForgotPassword"
+            android:name=".PatientInformation"
+            android:exported="false" />
+        <activity
+            android:name=".Prescription"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

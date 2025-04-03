@@ -38,15 +38,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/includeHeader" />
 
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/doctorInput"
         style="@style/BlueTextField"
         android:layout_width="0dp"
         android:layout_height="60dp"
         android:layout_marginTop="12dp"
-        android:drawableStart="@drawable/icon_person"
-        android:hint="Doctor"
-        android:inputType="time"
+        android:drawableEnd="@drawable/icon_downarrow"
+        android:hint="Select a doctor"
+        android:paddingEnd="20sp"
+        android:inputType="text"
         android:paddingLeft="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.414"
@@ -54,39 +55,23 @@
         app:layout_constraintTop_toBottomOf="@+id/textView"
         app:layout_constraintWidth_percent="0.8" />
 
-    <EditText
-        android:id="@+id/dateInput"
+    <AutoCompleteTextView
+        android:id="@+id/dateTimeInput"
         style="@style/BlueTextField"
+        android:layout_marginTop="12dp"
         android:layout_width="0dp"
         android:layout_height="60dp"
-        android:layout_marginTop="12dp"
-        android:drawableEnd="@drawable/icon_calendar"
-        android:hint="Date"
+        android:drawableEnd="@drawable/icon_downarrow"
+        app:layout_constraintTop_toBottomOf="@+id/doctorInput"
+        android:hint="Select date &amp; time"
         android:inputType="none"
         android:paddingLeft="20dp"
         android:paddingEnd="20sp"
-        android:focusable="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.414"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/doctorInput"
-        app:layout_constraintWidth_percent="0.8" />
-
-    <EditText
-        android:id="@+id/timeInput"
-        style="@style/BlueTextField"
-        android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="12dp"
-        android:drawableStart="@drawable/clock"
-        android:hint="Time"
-        android:inputType="time"
-        android:paddingLeft="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.414"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dateInput"
-        app:layout_constraintWidth_percent="0.8" />
+        app:layout_constraintWidth_percent="0.8"
+        tools:layout_editor_absoluteY="326dp" />
 
     <EditText
         android:id="@+id/reasonInput"
@@ -103,7 +88,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.414"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/timeInput"
+        app:layout_constraintTop_toBottomOf="@+id/dateTimeInput"
         app:layout_constraintWidth_percent="0.8" />
 
 

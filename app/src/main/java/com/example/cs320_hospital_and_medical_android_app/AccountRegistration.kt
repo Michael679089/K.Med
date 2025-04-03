@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -18,6 +19,8 @@ class AccountRegistration : AppCompatActivity() {
     private lateinit var passwordField: EditText
 
     private lateinit var signUpBtn: Button
+    private lateinit var loginBtn: TextView
+
 
     private lateinit var auth: FirebaseAuth
 
@@ -32,8 +35,13 @@ class AccountRegistration : AppCompatActivity() {
 
         // Buttons
         signUpBtn = findViewById(R.id.signupBtn)
+        loginBtn = findViewById(R.id.loginBtn)
 
         auth = FirebaseAuth.getInstance()
+
+        loginBtn.setOnClickListener {
+            startActivity(Intent(this, MainActivity::class.java))
+        }
 
         signUpBtn.setOnClickListener {
             registerUser()
