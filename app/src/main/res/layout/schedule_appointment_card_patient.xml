@@ -50,17 +50,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/doctorSpecialization"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="2dp"
-            android:lineSpacingExtra="0dp"
-            android:text="Dermatologist"
-            android:textColor="@color/lightGray"
-            android:textSize="14sp" />
-
-        <TextView
-            android:id="@+id/scheduleDate"
+            android:id="@+id/scheduleDateTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:lineSpacingExtra="0dp"
@@ -70,14 +60,13 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/scheduleTime"
+            android:id="@+id/reasonOut"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:lineSpacingExtra="0dp"
             android:text="12:00 PM - 5:00 PM"
             android:textColor="@color/darkGray"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textSize="12sp"/>
     </LinearLayout>
 
     <!-- Delete Icon -->
@@ -88,5 +77,5 @@
         android:layout_marginStart="12dp"
         android:contentDescription="Delete"
         android:src="@drawable/icon_trash"
-        android:tint="@color/red" />
+        app:tint="@color/red" />
 </LinearLayout>

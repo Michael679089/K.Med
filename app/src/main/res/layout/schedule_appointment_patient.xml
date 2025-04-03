@@ -95,6 +95,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
+            android:id="@+id/listAppointments"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_marginStart="30dp"
@@ -102,7 +103,6 @@
             android:layout_marginTop="12dp"
             android:layout_marginBottom="16dp">
 
-            <include layout="@layout/schedule_appointment_card_patient" />
             <include layout="@layout/schedule_appointment_card_patient" />
         </LinearLayout>
     </ScrollView>

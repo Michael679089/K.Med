@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         val emailInput: EditText = findViewById(R.id.emailInput)
-        emailInput.setText("nurse1@kmed.com") //For Testing Only
+        emailInput.setText("patient1@kmed.com") //For Testing Only
 
         val passwordInput: EditText = findViewById(R.id.passwordInput)
         passwordInput.setText("12345678") //For Testing Only

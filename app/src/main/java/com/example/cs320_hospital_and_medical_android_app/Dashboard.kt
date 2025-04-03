@@ -27,6 +27,10 @@ class Dashboard : AppCompatActivity() {
 
         val nameView = findViewById<TextView>(R.id.accountName)
         val idView = findViewById<TextView>(R.id.accountID)
+        val qrCode = findViewById<ImageView>(R.id.qrCode)
+
+        val qrGenerator = QRCodeGeneratorClass()
+        qrGenerator.generateQRCodeToImageView(qrCode, customUid)
 
         nameView.text = name
         idView.text = customUid
@@ -37,7 +41,7 @@ class Dashboard : AppCompatActivity() {
 
     }
 
-    private fun patientInformation(role: String, uid: String) {
+    private fun patientInformation(role: String, PID: String) {
         val editPatientBtn = findViewById<ImageView>(R.id.editPatientBtn)
         editPatientBtn.visibility = View.GONE
 
@@ -45,7 +49,7 @@ class Dashboard : AppCompatActivity() {
             editPatientBtn.visibility = View.VISIBLE
             editPatientBtn.setOnClickListener() {
                 val intent = Intent(this, PatientInformation::class.java)
-                intent.putExtra("uid", uid)
+                intent.putExtra("uid", PID)
                 startActivity(intent)
             }
         }
@@ -78,7 +82,7 @@ class Dashboard : AppCompatActivity() {
     }
 
     // Button Listeners
-    private fun PatientButtons(view: View, uid: String, role: String) {
+    private fun PatientButtons(view: View, PID: String, role: String) {
         val doctorBtn = view.findViewById<LinearLayout>(R.id.doctorBtn)
         val scheduleBtn = view.findViewById<LinearLayout>(R.id.scheduleBtn)
         val prescriptionBtn = view.findViewById<LinearLayout>(R.id.prescriptionBtn)
@@ -90,7 +94,9 @@ class Dashboard : AppCompatActivity() {
         }
 
         scheduleBtn.setOnClickListener {
-            startActivity(Intent(this, PatientAppointment::class.java))
+            val intent = Intent(this, PatientAppointment::class.java)
+            intent.putExtra("PID", PID)
+            startActivity(intent)
         }
 
         prescriptionBtn.setOnClickListener {
