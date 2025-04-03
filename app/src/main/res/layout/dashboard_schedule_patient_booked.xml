@@ -24,13 +24,23 @@
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/textAppointmentDate"
+        android:id="@+id/doctorName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="Dr. First and Last Name"
         android:textColor="@color/violet"
-        android:textSize="28sp"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/confirmButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/green"
+        android:layout_marginTop="10dp"
+        android:padding="13dp"
+        android:text="Confirm Arrival"
         android:textStyle="bold" />
 
 </LinearLayout>

@@ -37,10 +37,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         val emailInput: EditText = findViewById(R.id.emailInput)
-        emailInput.setText("james.billate@ciit.edu.ph") //For Testing Only
+        emailInput.setText("patient1@kmed.com") //For Testing Only
 
         val passwordInput: EditText = findViewById(R.id.passwordInput)
-        passwordInput.setText("123456789") //For Testing Only
+        passwordInput.setText("12345678") //For Testing Only
 
         val signInBtn: Button = findViewById(R.id.signinBtn)
 
@@ -70,11 +70,16 @@ class MainActivity : AppCompatActivity() {
                                 if (role != null && accountId != null && emailFetched != null) {
 
                                     // Fetch name from role-specific collection
-                                    db.collection("${role}s").document(accountId).get()
+                                    val collectionName = role.replaceFirstChar { it.uppercase() } + "s"
+                                    db.collection(collectionName).document(accountId).get()
                                         .addOnSuccessListener { profileDoc ->
                                             val firstName = profileDoc.getString("firstName") ?: ""
                                             val lastName = profileDoc.getString("lastName") ?: ""
                                             val name = "$firstName $lastName".trim()
+
+                                            Log.d("LOGIN_INTENT", "Passing -> Role: $role | accountId: $accountId | name: $name")
+                                            Log.d("PROFILE_DOC", "Data from ${role}s/$accountId -> ${profileDoc.data}")
+
 
                                             val intent = Intent(this, Dashboard::class.java)
                                             intent.putExtra("role", role)
@@ -116,35 +121,35 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Auto-login for logged-in users (if not logged out)
-        val user = auth.currentUser
-        if (user != null) {
-            val firebaseUid = user.uid
-
-            db.collection("users").document(firebaseUid).get()
-                .addOnSuccessListener { userDoc ->
-                    if (userDoc.exists()) {
-                        val role = userDoc.getString("role")
-                        val accountId = userDoc.getString("accountId")
-                        val emailFetched = userDoc.getString("email")
-
-                        if (role != null && accountId != null && emailFetched != null) {
-                            db.collection("${role}s").document(accountId).get()
-                                .addOnSuccessListener { profileDoc ->
-                                    val firstName = profileDoc.getString("firstName") ?: ""
-                                    val lastName = profileDoc.getString("lastName") ?: ""
-                                    val name = "$firstName $lastName".trim()
-
-                                    val intent = Intent(this, Dashboard::class.java)
-                                    intent.putExtra("role", role)
-                                    intent.putExtra("uid", accountId)
-                                    intent.putExtra("name", name)
-                                    startActivity(intent)
-                                    finish()
-                                }
-                        }
-                    }
-                }
-        }
+//        val user = auth.currentUser
+//        if (user != null) {
+//            val firebaseUid = user.uid
+//
+//            db.collection("users").document(firebaseUid).get()
+//                .addOnSuccessListener { userDoc ->
+//                    if (userDoc.exists()) {
+//                        val role = userDoc.getString("role")
+//                        val accountId = userDoc.getString("accountId")
+//                        val emailFetched = userDoc.getString("email")
+//
+//                        if (role != null && accountId != null && emailFetched != null) {
+//                            db.collection("${role}s").document(accountId).get()
+//                                .addOnSuccessListener { profileDoc ->
+//                                    val firstName = profileDoc.getString("firstName") ?: ""
+//                                    val lastName = profileDoc.getString("lastName") ?: ""
+//                                    val name = "$firstName $lastName".trim()
+//
+//                                    val intent = Intent(this, Dashboard::class.java)
+//                                    intent.putExtra("role", role)
+//                                    intent.putExtra("uid", accountId)
+//                                    intent.putExtra("name", name)
+//                                    startActivity(intent)
+//                                    finish()
+//                                }
+//                        }
+//                    }
+//                }
+//        }
     }
 
 }
