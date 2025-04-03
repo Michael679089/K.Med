@@ -70,15 +70,18 @@ class QRReader : AppCompatActivity() {
                 requestPermission()
             }
         }
-
-        Log.d("DEBUG", "Reached end")
+        // Ensure width = height. Ratio 1:1
+        qrFrameContainer.viewTreeObserver.addOnGlobalLayoutListener {
+            qrFrameContainer.layoutParams.height = qrFrameContainer.width
+            qrFrameContainer.requestLayout() // Apply changes
+        }
     }
 
     // # QR READING FUNCTIONS
 
     private fun checkCameraPermission(): Boolean {
         Log.d("DEBUG", "Pause everything, ask camera permission first.")
-        return ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) ==
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) ==
                 PackageManager.PERMISSION_GRANTED
     }
 

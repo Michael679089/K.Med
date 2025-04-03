@@ -21,6 +21,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var db: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val testAcc = "nurse1@kmed.com"
+        val testAccPass = "12345678"
 
         //Firebase Initialization
         db = FirebaseFirestore.getInstance()
@@ -37,8 +39,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         val emailInput: EditText = findViewById(R.id.emailInput)
-
         val passwordInput: EditText = findViewById(R.id.passwordInput)
+        emailInput.setText(testAcc)
+        passwordInput.setText(testAccPass)
+
 
         val signInBtn: Button = findViewById(R.id.signinBtn)
 

@@ -24,175 +24,144 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/firstNameInput"
-        style="@style/BlueTextField"
-        android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="8dp"
-        android:drawableStart="@drawable/icon_person"
-        android:hint="First Name"
-        android:inputType="text"
-        android:paddingLeft="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.414"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:layout_constraintWidth_percent="0.8" />
-
-    <EditText
-        android:id="@+id/lastNameInput"
-        style="@style/BlueTextField"
-        android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="12dp"
-        android:drawableStart="@drawable/icon_person"
-        android:hint="Last Name"
-        android:inputType="text"
-        android:paddingLeft="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.414"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/firstNameInput"
-        app:layout_constraintWidth_percent="0.8" />
-
-    <AutoCompleteTextView
-        android:id="@+id/sexInput"
-        style="@style/BlueTextField"
-        android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="12dp"
-        android:drawableEnd="@drawable/icon_downarrow"
-        android:hint="Sex"
-        android:inputType="none"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="530dp"
+        android:layout_marginTop="120dp"
+        android:layout_marginBottom="50dp"
+        android:orientation="vertical"
+        android:overScrollMode="ifContentScrolls"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
-        android:focusable="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.414"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lastNameInput"
-        app:layout_constraintWidth_percent="0.8" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="0dp">
 
-    <EditText
-        android:id="@+id/hmoCompanyInput"
-        style="@style/BlueTextField"
-        android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="4dp"
-        android:drawableStart="@drawable/icon_company"
-        android:hint="HMO Company"
-        android:inputType="text"
-        android:paddingLeft="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.414"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView7"
-        app:layout_constraintWidth_percent="0.8" />
+        <EditText
+            android:id="@+id/firstNameInput"
+            style="@style/BlueTextField"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="8dp"
+            android:drawableStart="@drawable/icon_person"
+            android:hint="First Name"
+            android:inputType="text"
+            android:paddingLeft="20dp"
+            app:layout_constraintWidth_percent="0.8" />
 
-    <Button
-        android:id="@+id/submitBtn"
-        style="@style/GreenButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="Submit"
-        app:backgroundTint="@null"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.414"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/hmoCardNoInput"
-        app:layout_constraintWidth_percent="0.8" />
+        <EditText
+            android:id="@+id/lastNameInput"
+            style="@style/BlueTextField"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="12dp"
+            android:drawableStart="@drawable/icon_person"
+            android:hint="Last Name"
+            android:inputType="text"
+            android:paddingLeft="20dp"
+            app:layout_constraintWidth_percent="0.8" />
 
-    <Button
-        android:id="@+id/cancelBtn"
-        style="@style/RedButton"
-        android:visibility="invisible"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Cancel"
-        app:backgroundTint="@null"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.414"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/submitBtn"
-        app:layout_constraintWidth_percent="0.8" />
+        <AutoCompleteTextView
+            android:id="@+id/sexInput"
+            style="@style/BlueTextField"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="12dp"
+            android:drawableEnd="@drawable/icon_downarrow"
+            android:focusable="true"
+            android:hint="Sex"
+            android:inputType="none"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            app:layout_constraintWidth_percent="0.8" />
 
-    <Button
-        android:id="@+id/updateBtn"
-        android:visibility="invisible"
-        style="@style/GreenButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="Update"
-        app:backgroundTint="@null"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.414"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/hmoCardNoInput"
-        app:layout_constraintWidth_percent="0.8" />
+        <EditText
+            android:id="@+id/hmoCompanyInput"
+            style="@style/BlueTextField"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="4dp"
+            android:drawableStart="@drawable/icon_company"
+            android:hint="HMO Company"
+            android:inputType="text"
+            android:paddingLeft="20dp"
+            app:layout_constraintWidth_percent="0.8" />
 
-    <EditText
-        android:id="@+id/birthdayInput"
-        style="@style/BlueTextField"
-        android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="12dp"
-        android:drawableEnd="@drawable/icon_calendar"
-        android:hint="Birthday"
-        android:inputType="none"
-        android:paddingLeft="20dp"
-        android:paddingEnd="20sp"
-        android:focusable="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.414"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sexInput"
-        app:layout_constraintWidth_percent="0.8" />
+        <EditText
+            android:id="@+id/birthdayInput"
+            style="@style/BlueTextField"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="12dp"
+            android:drawableEnd="@drawable/icon_calendar"
+            android:focusable="true"
+            android:hint="Birthday"
+            android:inputType="none"
+            android:paddingLeft="20dp"
+            android:paddingEnd="20sp"
+            app:layout_constraintWidth_percent="0.8" />
 
-    <TextView
-        android:id="@+id/textView7"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:fontFamily="@font/montserrat_bold"
-        android:text="HMO Holder?"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.125"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/birthdayInput" />
+        <TextView
+            android:id="@+id/textView7"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:fontFamily="@font/montserrat_bold"
+            android:text="HMO Holder?"
+            android:textSize="20sp" />
 
-    <EditText
-        android:id="@+id/hmoCardNoInput"
-        style="@style/BlueTextField"
-        android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="16dp"
-        android:drawableStart="@drawable/icon_card"
-        android:hint="HMO Card No."
-        android:inputType="number"
-        android:paddingLeft="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.414"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/hmoCompanyInput"
-        app:layout_constraintWidth_percent="0.8" />
+        <EditText
+            android:id="@+id/hmoCardNoInput"
+            style="@style/BlueTextField"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="16dp"
+            android:drawableStart="@drawable/icon_card"
+            android:hint="HMO Card No."
+            android:inputType="number"
+            android:paddingLeft="20dp"
+            app:layout_constraintWidth_percent="0.8" />
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/montserrat_bold"
-        android:text="Patient Information"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.161"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/includeHeader"
-        android:layout_marginTop="24dp"
-        tools:layout_editor_absoluteY="126dp" />
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:fontFamily="@font/montserrat_bold"
+            android:text="Patient Information"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/submitBtn"
+            style="@style/GreenButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Submit"
+            app:backgroundTint="@null"
+            app:layout_constraintWidth_percent="0.8" />
+
+        <Button
+            android:id="@+id/cancelBtn"
+            style="@style/RedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Cancel"
+            android:visibility="invisible"
+            app:backgroundTint="@null"
+            app:layout_constraintWidth_percent="0.8" />
+
+        <Button
+            android:id="@+id/updateBtn"
+            style="@style/GreenButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Update"
+            android:visibility="invisible"
+            app:backgroundTint="@null"
+            app:layout_constraintWidth_percent="0.8" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
