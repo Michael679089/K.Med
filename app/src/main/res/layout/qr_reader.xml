@@ -42,11 +42,11 @@
         <!-- QR Scanner -->
         <FrameLayout
             android:layout_width="match_parent"
-            android:id="@+id/barcodeArea"
+            android:id="@+id/qrFrameContainer"
             android:layout_height="320dp">
 
             <com.journeyapps.barcodescanner.BarcodeView
-                android:id="@+id/qrGuideOverlay"
+                android:id="@+id/qrBarcodeScanner"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clickable="false"
