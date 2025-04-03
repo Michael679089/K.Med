@@ -21,8 +21,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var db: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val testAcc = "patient-test@gmail.com"
-        val testAccPass = "1234567"
 
         //Firebase Initialization
         db = FirebaseFirestore.getInstance()
@@ -38,11 +36,9 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        val emailInput: EditText = findViewById(R.id.emailInput) //#patient-testing
-        emailInput.setText(testAcc) //#patient-testing
+        val emailInput: EditText = findViewById(R.id.emailInput)
 
         val passwordInput: EditText = findViewById(R.id.passwordInput)
-        passwordInput.setText(testAccPass) //#patient-testing
 
         val signInBtn: Button = findViewById(R.id.signinBtn)
 
@@ -70,51 +66,29 @@ class MainActivity : AppCompatActivity() {
                             }
 
                             if (userDoc != null && userDoc.exists()) {
-                                val role = userDoc.getString("role")
-                                val accountId = userDoc.getString("accountId")
-                                val emailFetched = userDoc.getString("email")
+                                val ROLE = userDoc.getString("role")
+                                val UID = userDoc.getString("accountId")
 
-                                if (role != null && accountId != null && emailFetched != null) {
-                                    val collectionName = role.replaceFirstChar { it.uppercase() } + "s"
-                                    db.collection(collectionName).document(accountId)
-                                        .addSnapshotListener { profileDoc, profileError ->
-                                            if (profileError != null) {
-                                                Log.e("PROFILE_DOC", "Error fetching profile data: ${profileError.message}")
-                                                return@addSnapshotListener
+                                if (ROLE != null && UID != null) {
+                                    if (ROLE == "patient-notreg") {
+                                        patientRegistration(ROLE)
+                                    } else {
+                                        val collectionName = ROLE.replaceFirstChar { it.uppercase() } + "s"
+                                        db.collection(collectionName).document(UID)
+                                            .addSnapshotListener { profileDoc, profileError ->
+                                                if (profileError != null) {
+                                                    return@addSnapshotListener
+                                                }
+
+                                                if (profileDoc != null) {
+                                                    val firstName = profileDoc.getString("firstName") ?: ""
+                                                    val lastName = profileDoc.getString("lastName") ?: ""
+                                                    val NAME = "$firstName $lastName".trim()
+
+                                                    directToDashboard(ROLE, UID, NAME)
+                                                }
                                             }
-
-                                            if (profileDoc != null) {
-                                                val firstName = profileDoc.getString("firstName") ?: ""
-                                                val lastName = profileDoc.getString("lastName") ?: ""
-                                                val name = "$firstName $lastName".trim()
-
-                                                Log.d("LOGIN_INTENT", "Passing -> Role: $role | accountId: $accountId | name: $name")
-                                                Log.d("PROFILE_DOC", "Data from ${role}s/$accountId -> ${profileDoc.data}")
-
-                                                db.collection("Patients")
-                                                    .document(accountId)
-                                                    .addSnapshotListener { document, patientError ->
-                                                        if (patientError != null) {
-                                                            Log.e("PATIENT_DOC", "Error fetching patient data: ${patientError.message}")
-                                                            return@addSnapshotListener
-                                                        }
-
-                                                        if (document != null && !document.exists() && role == "patient") {
-                                                            val intent = Intent(this, PatientInformation::class.java)
-                                                            intent.putExtra("uid", accountId)
-                                                            startActivity(intent)
-                                                            finish()
-                                                        } else {
-                                                            val intent = Intent(this, Dashboard::class.java)
-                                                            intent.putExtra("role", role)
-                                                            intent.putExtra("uid", accountId)
-                                                            intent.putExtra("name", name)
-                                                            startActivity(intent)
-                                                            finish()
-                                                        }
-                                                    }
-                                            }
-                                        }
+                                    }
                                 } else {
                                     Toast.makeText(this, "Invalid user profile data.", Toast.LENGTH_LONG).show()
                                 }
@@ -132,6 +106,33 @@ class MainActivity : AppCompatActivity() {
 
         initializeOtherAccess()
 //        autoLogin()
+    }
+
+    private fun patientRegistration(ROLE: String) {
+        db.collection("Patients")
+            .document()
+            .addSnapshotListener { document, patientError ->
+                if (patientError != null) {
+                    Log.e("PATIENT_DOC", "Error fetching patient data: ${patientError.message}")
+                    return@addSnapshotListener
+                }
+
+                if (document != null && !document.exists()) {
+                    val intent = Intent(this, PatientInformation::class.java)
+                    intent.putExtra("ROLE", ROLE)
+                    startActivity(intent)
+                    finish()
+                }
+            }
+    }
+
+    private fun directToDashboard(ROLE: String, UID: String, NAME: String) {
+        val intent = Intent(this, Dashboard::class.java)
+        intent.putExtra("ROLE", ROLE)
+        intent.putExtra("UID", UID)
+        intent.putExtra("NAME", NAME)
+        startActivity(intent)
+        finish()
     }
 
     private fun initializeOtherAccess() {
@@ -160,9 +161,8 @@ class MainActivity : AppCompatActivity() {
                     if (userDoc.exists()) {
                         val role = userDoc.getString("role")
                         val accountId = userDoc.getString("accountId")
-                        val emailFetched = userDoc.getString("email")
 
-                        if (role != null && accountId != null && emailFetched != null) {
+                        if (role != null && accountId != null) {
                             db.collection("${role}s").document(accountId).get()
                                 .addOnSuccessListener { profileDoc ->
                                     val firstName = profileDoc.getString("firstName") ?: ""

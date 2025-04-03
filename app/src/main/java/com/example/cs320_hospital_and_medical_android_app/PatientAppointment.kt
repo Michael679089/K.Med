@@ -50,7 +50,7 @@ class PatientAppointment : AppCompatActivity() {
 
         val addAppointmentBtn: ImageButton = findViewById(R.id.addAppointmentBtn)
         addAppointmentBtn.setOnClickListener(){
-            appointmentForm(PID)
+            addAppointment(PID)
         }
 
     }
@@ -95,7 +95,7 @@ class PatientAppointment : AppCompatActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun appointmentForm(PID: String){
+    private fun addAppointment(PID: String){
         viewFlipper.displayedChild = 1
 
         val doctorInput: AutoCompleteTextView = findViewById(R.id.doctorInput)
