@@ -13,6 +13,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.firestore.FirebaseFirestore
 
 class AccountRegistration : AppCompatActivity() {
     private lateinit var emailField: EditText
@@ -21,13 +22,14 @@ class AccountRegistration : AppCompatActivity() {
     private lateinit var signUpBtn: Button
     private lateinit var loginBtn: TextView
 
-
     private lateinit var auth: FirebaseAuth
-
+    private lateinit var db: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_account_registration)
+
+        db = FirebaseFirestore.getInstance()
 
         // Account Info Fields
         emailField = findViewById(R.id.emailInput)
@@ -48,6 +50,11 @@ class AccountRegistration : AppCompatActivity() {
         }
     }
 
+    data class AccountUser (
+        val accountId: String = "",
+        val role: String = "",
+    )
+
     private fun registerUser() {
 
         val email = emailField.text.toString().trim()
@@ -57,6 +64,18 @@ class AccountRegistration : AppCompatActivity() {
 
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
             if (task.isSuccessful) {
+
+                val accountuser = AccountUser(
+                    accountId = "",
+                    role = "patient-notreg"
+                )
+
+                auth.uid?.let {
+                    db.collection("users")
+                        .document(it)
+                        .set(accountuser)
+                }
+
                 Toast.makeText(this, "Registration successful!", Toast.LENGTH_SHORT).show()
                 startActivity(Intent(this, MainActivity::class.java))
                 finish()

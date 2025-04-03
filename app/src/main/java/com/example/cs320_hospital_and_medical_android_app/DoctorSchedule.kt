@@ -27,8 +27,8 @@ class DoctorSchedule : AppCompatActivity() {
     //Initialize firebase
     private lateinit var db: FirebaseFirestore
 
-    private var role: String = ""
-    private var uid: String = ""
+    private var ROLE: String = ""
+    private var UID: String = ""
 
     private var flipperNo: Int = 0
 
@@ -37,8 +37,8 @@ class DoctorSchedule : AppCompatActivity() {
         setContentView(R.layout.doctor_schedule)
 
         // Load User Info
-        role = intent.getStringExtra("role") ?: return
-        uid = intent.getStringExtra("uid") ?: "Unknown"
+        ROLE = intent.getStringExtra("role") ?: return
+        UID = intent.getStringExtra("uid") ?: "Unknown"
 
         //Initialize firebase
         db = FirebaseFirestore.getInstance()
@@ -48,14 +48,14 @@ class DoctorSchedule : AppCompatActivity() {
 
         //Search doctors and display
 
-        if (role == "doctor") {
+        if (ROLE == "doctor") {
             flipperNo = 1
         }
 
-       when(role) {
+       when(ROLE) {
            "patient" -> general()
            "nurse" -> general()
-           "doctor" -> getOneDoctor(uid)
+           "doctor" -> getOneDoctor(UID)
        }
     }
 
@@ -204,7 +204,7 @@ class DoctorSchedule : AppCompatActivity() {
 
                 val addSchedule: Button = findViewById(R.id.btnSetSchedule)
 
-                if (role == "patient") {
+                if (ROLE == "patient") {
                     addSchedule.visibility = View.GONE
                 }
 
@@ -233,7 +233,7 @@ class DoctorSchedule : AppCompatActivity() {
 
                     val deleteBtn: ImageView = findViewById<ImageView>(R.id.deleteBtn)
 
-                    if (role == "patient") {
+                    if (ROLE == "patient") {
                         deleteBtn.visibility = View.GONE
                     }
 
@@ -248,7 +248,7 @@ class DoctorSchedule : AppCompatActivity() {
         }
     }
 
-    private fun addDoctorSchedule(id: String) {
+    private fun addDoctorSchedule(DID: String) {
         //Flip the view
         viewFlipper.displayedChild = 2
         //Initialize Calendar & Time
@@ -273,10 +273,10 @@ class DoctorSchedule : AppCompatActivity() {
                     time = timeInput.text.toString().trim()
                 )
                 //Access the schedule collection from Firebase
-                val scheduleRef = db.collection("Doctors").document(id).collection("schedule").document()
+                val scheduleRef = db.collection("Doctors").document(DID).collection("schedule").document()
                 //Add the schedule details
                 scheduleRef.set(schedule.copy(id = scheduleRef.id))
-                    .addOnSuccessListener { getOneDoctor(id) }
+                    .addOnSuccessListener { getOneDoctor(DID) }
                     .addOnFailureListener { e ->
                         createToast("Failed to add schedule")
                     }
@@ -286,14 +286,14 @@ class DoctorSchedule : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.cancelBtn).setOnClickListener {
-            getOneDoctor(id)
+            getOneDoctor(DID)
         }
     }
 
-    private fun deleteDoctorSchedule(doctorId: String, scheduleId: String) {
+    private fun deleteDoctorSchedule(DID: String, SCHEDID: String) {
         //Access the collection of schedule
-        db.collection("Doctors").document(doctorId)
-            .collection("schedule").document(scheduleId)
+        db.collection("Doctors").document(DID)
+            .collection("schedule").document(SCHEDID)
             //Delete
             .delete()
             .addOnSuccessListener { createToast("Schedule deleted successfully") }

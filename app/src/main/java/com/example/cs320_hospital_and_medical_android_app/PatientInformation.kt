@@ -1,6 +1,7 @@
 package com.example.cs320_hospital_and_medical_android_app
 
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.health.connect.datatypes.units.Length
 import android.icu.util.Calendar
 import android.os.Bundle
@@ -18,6 +19,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.Locale
+import com.google.firebase.firestore.AggregateSource
 
 
 class PatientInformation : AppCompatActivity() {
@@ -35,11 +37,13 @@ class PatientInformation : AppCompatActivity() {
 
     //Firebase Initialization
     private lateinit var db: FirebaseFirestore
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
         //Firebase Initialization
         db = FirebaseFirestore.getInstance()
+        auth = FirebaseAuth.getInstance()
 
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -61,6 +65,9 @@ class PatientInformation : AppCompatActivity() {
         updateBtn = findViewById(R.id.updateBtn)
         cancelBtn = findViewById(R.id.cancelBtn)
 
+        //Fetching role
+        val ROLE = intent.getStringExtra("ROLE") ?: "patient"
+
         val userId = intent.getStringExtra("uid") ?: "Unknown"
 
         initializeFucntionalities()
@@ -71,10 +78,10 @@ class PatientInformation : AppCompatActivity() {
                 .get()
                 .addOnSuccessListener { document ->
                     if(document.exists()) {
-                        getData(userId)
+                        getPatient(userId)
                     }else {
                         submitBtn.setOnClickListener(){
-                            pushData(userId, "added")
+                            addPatient(userId, "added", ROLE)
                         }
                     }
                 }
@@ -108,7 +115,7 @@ class PatientInformation : AppCompatActivity() {
         }
     }
 
-    fun getData(userId: String) {
+    fun getPatient(UID: String) {
 
         editTextAccess(false)
 
@@ -117,7 +124,7 @@ class PatientInformation : AppCompatActivity() {
         updateBtn.visibility = View.VISIBLE
 
         db.collection("Patients")
-            .document(userId)
+            .document(UID)
             .get()
             .addOnSuccessListener { document ->
                 if (document != null) {
@@ -137,12 +144,12 @@ class PatientInformation : AppCompatActivity() {
                         updateBtn.visibility = View.INVISIBLE
 
                         submitBtn.setOnClickListener() {
-                            pushData(userId, "updated")
-                            getData(userId)
+                            addPatient(UID, "updated", "")
+                            getPatient(UID)
                         }
 
                         cancelBtn.setOnClickListener() {
-                            getData(userId)
+                            getPatient(UID)
                         }
                     }
                 }
@@ -152,7 +159,8 @@ class PatientInformation : AppCompatActivity() {
             }
     }
 
-    fun pushData(userId: String, status: String) {
+    fun addPatient(UID: String, status: String, ROLE: String) {
+
         var firstName = firstNameInput.text.toString()
         val lastName = lastNameInput.text.toString()
         val sex = sexInput.text.toString()
@@ -169,15 +177,50 @@ class PatientInformation : AppCompatActivity() {
             hmoCardNo = hmoCardNo
         )
 
-        db.collection("Patients")
-            .document(userId)
-            .set(patient)
-            .addOnSuccessListener {
-                Toast.makeText(this, "Patient information ${status}!", Toast.LENGTH_SHORT).show()
-            }
-            .addOnFailureListener { e ->
-                Toast.makeText(this, "Error: $e", Toast.LENGTH_SHORT).show()
-            }
+        if (ROLE == "patient-notreg") {
+            val patientCollection = db.collection("Patients")
+            patientCollection.count().get(AggregateSource.SERVER)
+                .addOnSuccessListener { snapshot ->
+                    var countPatients = snapshot.count.toInt()
+                    val formatNumber = String.format("PID%08d", countPatients + 1)
+                    var ASSIGN_UID = formatNumber
+
+                    val userData = mapOf("accountId" to ASSIGN_UID, "role" to "patient")
+                    val userCollection = db.collection("users")
+                    auth.uid?.let {
+                        userCollection.document(it)
+                            .set(userData)
+
+                        db.collection("Patients")
+                            .document(ASSIGN_UID)
+                            .set(patient)
+                            .addOnSuccessListener {
+                                Toast.makeText(this, "Patient information ${status}!", Toast.LENGTH_SHORT).show()
+                                val intent = Intent(this, Dashboard::class.java)
+                                intent.putExtra("ROLE", "patient")
+                                intent.putExtra("UID", ASSIGN_UID)
+                                intent.putExtra("NAME", "${firstName} ${lastName}")
+
+                                startActivity(intent)
+                            }
+                            .addOnFailureListener { e ->
+                                Toast.makeText(this, "Error: $e", Toast.LENGTH_SHORT).show()
+                            }
+                    }
+                }
+        } else {
+            db.collection("Patients")
+                .document(UID)
+                .set(patient)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "Patient information ${status}!", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, Dashboard::class.java)
+                    startActivity(intent)
+                }
+                .addOnFailureListener { e ->
+                    Toast.makeText(this, "Error: $e", Toast.LENGTH_SHORT).show()
+                }
+        }
     }
 
     fun initializeFucntionalities() {
@@ -218,5 +261,4 @@ class PatientInformation : AppCompatActivity() {
         }
     }
 }
-
 

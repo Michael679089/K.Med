@@ -21,31 +21,31 @@ class Dashboard : AppCompatActivity() {
         setContentView(R.layout.dashboard)
 
         // Load User Info
-        val role = intent.getStringExtra("role") ?: return
-        val name = intent.getStringExtra("name") ?: "No Name"
-        val customUid = intent.getStringExtra("uid") ?: "Unknown"
+        val ROLE = intent.getStringExtra("ROLE") ?: return
+        val NAME = intent.getStringExtra("NAME") ?: "No Name"
+        val UID = intent.getStringExtra("UID") ?: "Unknown"
 
         val nameView = findViewById<TextView>(R.id.accountName)
         val idView = findViewById<TextView>(R.id.accountID)
         val qrCode = findViewById<ImageView>(R.id.qrCode)
 
         val qrGenerator = QRCodeGeneratorClass()
-        qrGenerator.generateQRCodeToImageView(qrCode, customUid)
+        qrGenerator.generateQRCodeToImageView(qrCode, UID)
 
-        nameView.text = name
-        idView.text = customUid
+        nameView.text = NAME
+        idView.text = UID
 
-        patientInformation(role, customUid)
-        loadRoleButtons(role, customUid)
-        loadScheduleCard(role)
+        patientInformation(ROLE, UID)
+        loadRoleButtons(ROLE, UID)
+        loadScheduleCard(ROLE)
 
     }
 
-    private fun patientInformation(role: String, PID: String) {
+    private fun patientInformation(ROLE: String, PID: String) {
         val editPatientBtn = findViewById<ImageView>(R.id.editPatientBtn)
         editPatientBtn.visibility = View.GONE
 
-        if (role == "patient") {
+        if (ROLE == "patient") {
             editPatientBtn.visibility = View.VISIBLE
             editPatientBtn.setOnClickListener() {
                 val intent = Intent(this, PatientInformation::class.java)
@@ -56,11 +56,11 @@ class Dashboard : AppCompatActivity() {
     }
 
     // Load RBA Buttons
-    private fun loadRoleButtons(role: String, uid: String) {
+    private fun loadRoleButtons(ROLE: String, UID: String) {
         val container = findViewById<FrameLayout>(R.id.buttonSectionContainer)
         val inflater = LayoutInflater.from(this)
 
-        val layoutRes = when (role) {
+        val layoutRes = when (ROLE) {
             "patient" -> R.layout.dashboard_buttons_patient
             "doctor" -> R.layout.dashboard_buttons_doctor
             "nurse" -> R.layout.dashboard_buttons_nurse
@@ -73,29 +73,29 @@ class Dashboard : AppCompatActivity() {
             container.addView(view)
 
             // Role-based listeners
-            when (role) {
-                "patient" -> PatientButtons(view, uid, role)
-                "doctor" -> DoctorButtons(view, uid, role)
-                "nurse"  -> NurseButtons(view, uid, role)
+            when (ROLE) {
+                "patient" -> PatientButtons(view, UID, ROLE)
+                "doctor" -> DoctorButtons(view, UID, ROLE)
+                "nurse"  -> NurseButtons(view, UID, ROLE)
             }
         }
     }
 
     // Button Listeners
-    private fun PatientButtons(view: View, PID: String, role: String) {
+    private fun PatientButtons(view: View, UID: String, ROLE: String) {
         val doctorBtn = view.findViewById<LinearLayout>(R.id.doctorBtn)
         val scheduleBtn = view.findViewById<LinearLayout>(R.id.scheduleBtn)
         val prescriptionBtn = view.findViewById<LinearLayout>(R.id.prescriptionBtn)
 
         doctorBtn.setOnClickListener {
             val intent = Intent(this, DoctorSchedule::class.java)
-            intent.putExtra("role", role)
+            intent.putExtra("role", ROLE)
             startActivity(intent)
         }
 
         scheduleBtn.setOnClickListener {
             val intent = Intent(this, PatientAppointment::class.java)
-            intent.putExtra("PID", PID)
+            intent.putExtra("UID", UID)
             startActivity(intent)
         }
 
@@ -104,38 +104,38 @@ class Dashboard : AppCompatActivity() {
         }
     }
 
-    private fun DoctorButtons(view: View, uid: String, role: String) {
+    private fun DoctorButtons(view: View, UID: String, ROLE: String) {
         val qrBtn = view.findViewById<LinearLayout>(R.id.patientQRBtn)
         val scheduleBtn = view.findViewById<LinearLayout>(R.id.doctorAccessSchedule)
 
         qrBtn.setOnClickListener {
             val intent = Intent(this, QRReader::class.java)
-            intent.putExtra("role", role)
+            intent.putExtra("ROLE", ROLE)
             startActivity(intent)
         }
 
         scheduleBtn.setOnClickListener {
             val intent = Intent(this, DoctorSchedule::class.java)
-            intent.putExtra("role", role)
-            intent.putExtra("uid", uid)
+            intent.putExtra("ROLE", ROLE)
+            intent.putExtra("UID", UID)
             startActivity(intent)
         }
     }
 
-    private fun NurseButtons(view: View, uid: String, role: String) {
+    private fun NurseButtons(view: View, UID: String, ROLE: String) {
         val qrBtn = view.findViewById<LinearLayout>(R.id.patientQRBtn)
         val doctorBtn = view.findViewById<LinearLayout>(R.id.doctorBtn)
 
         qrBtn.setOnClickListener {
             val intent = Intent(this, QRReader::class.java)
-            intent.putExtra("role", role)
-            intent.putExtra("uid", uid)
+            intent.putExtra("ROLE", ROLE)
+            intent.putExtra("UID", UID)
             startActivity(intent)
         }
 
         doctorBtn.setOnClickListener {
             val intent = Intent(this, DoctorSchedule::class.java)
-            intent.putExtra("role", role)
+            intent.putExtra("ROLE", ROLE)
             startActivity(intent)
         }
     }
@@ -144,8 +144,8 @@ class Dashboard : AppCompatActivity() {
     private fun loadScheduleCard(role: String) {
         val scheduleContainer = findViewById<FrameLayout>(R.id.scheduleCardContent)
         val inflater = LayoutInflater.from(this)
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        val userId = intent.getStringExtra("uid") ?: return
+        val USER = FirebaseAuth.getInstance().currentUser
+        val UID = intent.getStringExtra("UID") ?: return
         val db = FirebaseFirestore.getInstance()
 
         val setScheduleLayout: (Int, Map<Int, String?>) -> Unit = { layoutRes, textMap ->
@@ -161,7 +161,7 @@ class Dashboard : AppCompatActivity() {
             // Patient Schedule Card
             "patient" -> {
                 db.collection("appointments")
-                    .whereEqualTo("patientId", userId)
+                    .whereEqualTo("patientId", UID)
                     .orderBy("createdAt", com.google.firebase.firestore.Query.Direction.DESCENDING)
                     .limit(1)
                     .get()
@@ -177,7 +177,7 @@ class Dashboard : AppCompatActivity() {
                             val layoutRes: Int
                             val textMap: Map<Int, String?>
 
-                            Log.d("LOAD_CARD_DEBUG", "Loading appointment for UID: $userId")
+                            Log.d("LOAD_CARD_DEBUG", "Loading appointment for UID: $UID")
                             Log.d("DATE_DEBUG", "today = $today, appointment date = $date")
                             Log.d("FIRESTORE", "Fetched doc with status: ${doc.getString("status")} and date: $date")
 
@@ -228,7 +228,7 @@ class Dashboard : AppCompatActivity() {
 
             // Nurse Schedule Card
             "nurse" -> {
-                db.collection("assignments").document(userId).get()
+                db.collection("assignments").document(UID).get()
                     .addOnSuccessListener { doc ->
                         if (doc.getBoolean("hasTask") == true) {
                             val layoutRes = R.layout.dashboard_schedule_nurse
@@ -251,7 +251,7 @@ class Dashboard : AppCompatActivity() {
                 val today = java.text.SimpleDateFormat("MMMM d, yyyy", java.util.Locale.ENGLISH).format(java.util.Date())
 
                 db.collection("appointments")
-                    .whereEqualTo("doctorId", userId)
+                    .whereEqualTo("doctorId", UID)
                     .whereEqualTo("status", "queue_doctor")
                     .whereEqualTo("readyToCall", true)
                     .whereEqualTo("date", today)
@@ -277,7 +277,7 @@ class Dashboard : AppCompatActivity() {
 
             // No Schedule View for Patient, Doctor & Nurse
             else -> {
-                Log.d("FIRESTORE", "No appointment document found for $userId")
+                Log.d("FIRESTORE", "No appointment document found for $UID")
                 setScheduleLayout(R.layout.dashboard_schedule_none, emptyMap())
             }
         }
