@@ -36,11 +36,11 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        val emailInput: EditText = findViewById(R.id.emailInput)
-        emailInput.setText("patient1@kmed.com") //For Testing Only
+        val emailInput: EditText = findViewById(R.id.emailInput) //#patient-testing
+        emailInput.setText("patient1@kmed.com") //#patient-testing
 
         val passwordInput: EditText = findViewById(R.id.passwordInput)
-        passwordInput.setText("12345678") //For Testing Only
+        passwordInput.setText("12345678") //#patient-testing
 
         val signInBtn: Button = findViewById(R.id.signinBtn)
 
