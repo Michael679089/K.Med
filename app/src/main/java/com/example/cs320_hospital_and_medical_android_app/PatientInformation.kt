@@ -61,8 +61,7 @@ class PatientInformation : AppCompatActivity() {
         updateBtn = findViewById(R.id.updateBtn)
         cancelBtn = findViewById(R.id.cancelBtn)
 
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        val userId = currentUser?.uid
+        val userId = intent.getStringExtra("uid") ?: "Unknown"
 
         initializeFucntionalities()
 

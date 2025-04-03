@@ -20,16 +20,25 @@
         android:theme="@style/Theme.CS320_Hospital_and_Medical_Android_App"
         tools:targetApi="31">
         <activity
-            android:name=".PatientInformation"
+            android:name=".Dashboard"
+            android:exported="false" />
+        <activity
+            android:name=".DoctorSchedule"
+            android:exported="false" />
+        <activity
+            android:name=".ForgotPassword"
+            android:exported="false" />
+        <activity
+            android:name=".PatientAppointment"
             android:exported="false" />
         <activity
             android:name=".AccountRegistration"
             android:exported="false" />
-<!--        <activity-->
-<!--            android:name=".PatientRegistration"-->
-<!--            android:exported="false" />-->
         <activity
-            android:name=".ForgotPassword"
+            android:name=".PatientInformation"
+            android:exported="false" />
+        <activity
+            android:name=".Prescription"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

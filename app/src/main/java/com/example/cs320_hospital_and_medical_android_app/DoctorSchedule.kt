@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.tasks.Task
@@ -26,9 +27,18 @@ class DoctorSchedule : AppCompatActivity() {
     //Initialize firebase
     private lateinit var db: FirebaseFirestore
 
+    private var role: String = ""
+    private var uid: String = ""
+
+    private var flipperNo: Int = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.doctor_schedule)
+
+        // Load User Info
+        role = intent.getStringExtra("role") ?: return
+        uid = intent.getStringExtra("uid") ?: "Unknown"
 
         //Initialize firebase
         db = FirebaseFirestore.getInstance()
@@ -37,6 +47,19 @@ class DoctorSchedule : AppCompatActivity() {
         viewFlipper = findViewById(R.id.viewFlipper)
 
         //Search doctors and display
+
+        if (role == "doctor") {
+            flipperNo = 1
+        }
+
+       when(role) {
+           "patient" -> general()
+           "nurse" -> general()
+           "doctor" -> getOneDoctor(uid)
+       }
+    }
+
+    private fun general() {
         getAllDoctors()
         searchDoctor()
     }
@@ -179,7 +202,13 @@ class DoctorSchedule : AppCompatActivity() {
                     findViewById<TextView>(R.id.doctorSpecialization).text = doctor.specialization
                 }
 
-                findViewById<Button>(R.id.btnSetSchedule).apply {
+                val addSchedule: Button = findViewById(R.id.btnSetSchedule)
+
+                if (role == "patient") {
+                    addSchedule.visibility = View.GONE
+                }
+
+                addSchedule.apply {
                     tag = doctor.id
                     setOnClickListener { addDoctorSchedule(DID) }
                 }
@@ -202,7 +231,13 @@ class DoctorSchedule : AppCompatActivity() {
                     findViewById<TextView>(R.id.scheduleDate).text = schedule.date
                     findViewById<TextView>(R.id.scheduleTime).text = "${schedule.day}: ${schedule.time}"
 
-                    findViewById<ImageView>(R.id.deleteBtn).apply {
+                    val deleteBtn: ImageView = findViewById<ImageView>(R.id.deleteBtn)
+
+                    if (role == "patient") {
+                        deleteBtn.visibility = View.GONE
+                    }
+
+                    deleteBtn.apply {
                         tag = document.id
                         setOnClickListener { deleteDoctorSchedule(DID, document.id) }
                     }
@@ -334,7 +369,7 @@ class DoctorSchedule : AppCompatActivity() {
 
     override fun onBackPressed() {
         //Flipping the view layouts
-        if (viewFlipper.displayedChild > 0) {
+        if (viewFlipper.displayedChild > flipperNo) {
             viewFlipper.showPrevious()
         } else {
             super.onBackPressed()

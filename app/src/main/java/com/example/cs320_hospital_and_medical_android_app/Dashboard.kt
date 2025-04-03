@@ -20,25 +20,39 @@ class Dashboard : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.dashboard)
 
-
         // Load User Info
         val role = intent.getStringExtra("role") ?: return
         val name = intent.getStringExtra("name") ?: "No Name"
-        Log.d("DASHBOARD_INTENT", "Received name: $name")
         val customUid = intent.getStringExtra("uid") ?: "Unknown"
 
         val nameView = findViewById<TextView>(R.id.accountName)
         val idView = findViewById<TextView>(R.id.accountID)
+
         nameView.text = name
         idView.text = customUid
 
-        loadRoleButtons(role)
+        patientInformation(role, customUid)
+        loadRoleButtons(role, customUid)
         loadScheduleCard(role)
 
     }
 
+    private fun patientInformation(role: String, uid: String) {
+        val editPatientBtn = findViewById<ImageView>(R.id.editPatientBtn)
+        editPatientBtn.visibility = View.GONE
+
+        if (role == "patient") {
+            editPatientBtn.visibility = View.VISIBLE
+            editPatientBtn.setOnClickListener() {
+                val intent = Intent(this, PatientInformation::class.java)
+                intent.putExtra("uid", uid)
+                startActivity(intent)
+            }
+        }
+    }
+
     // Load RBA Buttons
-    private fun loadRoleButtons(role: String) {
+    private fun loadRoleButtons(role: String, uid: String) {
         val container = findViewById<FrameLayout>(R.id.buttonSectionContainer)
         val inflater = LayoutInflater.from(this)
 
@@ -56,21 +70,23 @@ class Dashboard : AppCompatActivity() {
 
             // Role-based listeners
             when (role) {
-                "patient" -> PatientButtons(view)
-                "doctor" -> DoctorButtons(view)
-                "nurse"  -> NurseButtons(view)
+                "patient" -> PatientButtons(view, uid, role)
+                "doctor" -> DoctorButtons(view, uid, role)
+                "nurse"  -> NurseButtons(view, uid, role)
             }
         }
     }
 
     // Button Listeners
-    private fun PatientButtons(view: View) {
+    private fun PatientButtons(view: View, uid: String, role: String) {
         val doctorBtn = view.findViewById<LinearLayout>(R.id.doctorBtn)
         val scheduleBtn = view.findViewById<LinearLayout>(R.id.scheduleBtn)
         val prescriptionBtn = view.findViewById<LinearLayout>(R.id.prescriptionBtn)
 
         doctorBtn.setOnClickListener {
-            startActivity(Intent(this, DoctorSchedule::class.java))
+            val intent = Intent(this, DoctorSchedule::class.java)
+            intent.putExtra("role", role)
+            startActivity(intent)
         }
 
         scheduleBtn.setOnClickListener {
@@ -81,32 +97,40 @@ class Dashboard : AppCompatActivity() {
             startActivity(Intent(this, Prescription::class.java))
         }
     }
-    private fun DoctorButtons(view: View) {
+
+    private fun DoctorButtons(view: View, uid: String, role: String) {
         val qrBtn = view.findViewById<LinearLayout>(R.id.patientQRBtn)
         val scheduleBtn = view.findViewById<LinearLayout>(R.id.doctorAccessSchedule)
 
         qrBtn.setOnClickListener {
             val intent = Intent(this, QRReader::class.java)
-            intent.putExtra("role", "doctor")
+            intent.putExtra("role", role)
             startActivity(intent)
         }
 
         scheduleBtn.setOnClickListener {
-            startActivity(Intent(this, DoctorSchedule::class.java))
+            val intent = Intent(this, DoctorSchedule::class.java)
+            intent.putExtra("role", role)
+            intent.putExtra("uid", uid)
+            startActivity(intent)
         }
     }
-    private fun NurseButtons(view: View) {
+
+    private fun NurseButtons(view: View, uid: String, role: String) {
         val qrBtn = view.findViewById<LinearLayout>(R.id.patientQRBtn)
         val doctorBtn = view.findViewById<LinearLayout>(R.id.doctorBtn)
 
         qrBtn.setOnClickListener {
             val intent = Intent(this, QRReader::class.java)
-            intent.putExtra("role", "nurse")
+            intent.putExtra("role", role)
+            intent.putExtra("uid", uid)
             startActivity(intent)
         }
 
         doctorBtn.setOnClickListener {
-            startActivity(Intent(this, DoctorSchedule::class.java))
+            val intent = Intent(this, DoctorSchedule::class.java)
+            intent.putExtra("role", role)
+            startActivity(intent)
         }
     }
 
