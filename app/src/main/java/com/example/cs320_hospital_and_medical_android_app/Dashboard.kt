@@ -9,6 +9,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import android.content.Intent
 import android.util.Log
+import android.util.TypedValue
 import android.widget.ImageView
 import android.view.View
 import android.widget.LinearLayout
@@ -16,7 +17,8 @@ import android.widget.LinearLayout
 
 class Dashboard : AppCompatActivity() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) { // MAIN FUNCTION
+        Log.d("DEBUG", "You are now in Dashboard Page")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.dashboard)
 
@@ -29,6 +31,8 @@ class Dashboard : AppCompatActivity() {
         val idView = findViewById<TextView>(R.id.accountID)
         val qrCode = findViewById<ImageView>(R.id.qrCode)
 
+        Log.d("DEBUG", ROLE)
+
         val qrGenerator = QRCodeGeneratorClass()
         qrGenerator.generateQRCodeToImageView(qrCode, UID)
 
@@ -39,6 +43,14 @@ class Dashboard : AppCompatActivity() {
         loadRoleButtons(ROLE, UID)
         loadScheduleCard(ROLE)
 
+        val scheduleCard = findViewById<LinearLayout>(R.id.scheduleCardContent)
+        scheduleCard.post {
+            if (scheduleCard.height > 800) { // Hardcoded max height in pixels
+                scheduleCard.layoutParams.height = 800
+                scheduleCard.requestLayout()
+            }
+        }
+        val maxHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics).toInt()
     }
 
     private fun patientInformation(ROLE: String, PID: String) {
@@ -142,7 +154,7 @@ class Dashboard : AppCompatActivity() {
 
     // Load Schedule Card
     private fun loadScheduleCard(role: String) {
-        val scheduleContainer = findViewById<FrameLayout>(R.id.scheduleCardContent)
+        val scheduleContainer = findViewById<LinearLayout>(R.id.scheduleCardContent)
         val inflater = LayoutInflater.from(this)
         val USER = FirebaseAuth.getInstance().currentUser
         val UID = intent.getStringExtra("UID") ?: return
