@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@android:color/white"
+    android:padding="50dp"
+    tools:ignore="HardcodedText" >
+
+    <ImageView
+        android:id="@+id/qrCodeIV"
+        android:layout_width="match_parent"
+        android:layout_height="278dp"
+        app:srcCompat="@drawable/icon_qr_placeholder" />
+
+    <TextView
+        android:id="@+id/qrZoomedInIDNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="&lt;insert PID number&gt;"
+        android:textAlignment="center"
+        />
+
+    <TextView
+        android:id="@+id/qrZoomedInUsername"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="&lt;insert user's name&gt;"
+        android:textAlignment="center"
+        android:textSize="30sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/qrZoomedInRole"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="&lt;insert role&gt;"
+        android:textAlignment="center" />
+
+    <Button
+        android:id="@+id/qrZoomedInGoBackBTN"
+        style="@style/GreenButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Go Back"
+        app:backgroundTint="@color/material_dynamic_neutral0"
+        app:layout_constraintWidth_percent="0.8" />
+</LinearLayout>

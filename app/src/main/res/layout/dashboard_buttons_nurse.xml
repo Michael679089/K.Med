@@ -46,7 +46,6 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- Doctors -->
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -82,5 +81,7 @@
                 android:textStyle="bold" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
+
+    <!-- Doctors -->
 
 </LinearLayout>

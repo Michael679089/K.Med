@@ -88,6 +88,12 @@ class PatientInformation : AppCompatActivity() {
         }
     }
 
+    // Okay so Patient Information is both an activity script.
+    // and a class script.
+    // Since it has:
+    // 1. constructor
+    // 2. getters and setters.
+
     data class Patient (
         var firstName: String? = null,
         var lastName: String? = null,
@@ -161,12 +167,12 @@ class PatientInformation : AppCompatActivity() {
 
     fun addPatient(UID: String, status: String, ROLE: String) {
 
-        var firstName = firstNameInput.text.toString()
-        val lastName = lastNameInput.text.toString()
-        val sex = sexInput.text.toString()
-        val birthday = birthdayInput.text.toString()
-        val hmoCompany = hmoCompanyInput.text.toString()
-        val hmoCardNo = hmoCardNoInput.text.toString()
+        var firstName = firstNameInput.text.toString().trim()
+        val lastName = lastNameInput.text.toString().trim()
+        val sex = sexInput.text.toString().trim()
+        val birthday = birthdayInput.text.toString().trim()
+        val hmoCompany = hmoCompanyInput.text.toString().trim()
+        val hmoCardNo = hmoCardNoInput.text.toString().trim()
 
         val patient = Patient(
             firstName = firstName,

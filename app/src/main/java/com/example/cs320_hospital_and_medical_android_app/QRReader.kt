@@ -6,6 +6,7 @@ import android.util.Log
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageButton
+import android.widget.Button
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
@@ -133,6 +134,11 @@ class QRReader : AppCompatActivity() {
         btnToggleAutoFocus.setOnClickListener {
             qrScanner.toggleAutoFocus()
         }
+
+        val btnSubmit: Button = findViewById(R.id.btnSubmit)
+        btnSubmit.setOnClickListener {
+            Toast.makeText(this, editTextPid.text.toString(), Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun openAppSettings() {
@@ -147,7 +153,7 @@ class QRReader : AppCompatActivity() {
         super.onResume()
 
         // Check if camera permission is granted when the user returns from settings
-        if (checkCameraPermission()) {
+        if (checkCameraPermission() && !qrScanner.getIsScanning()) {
             // If permission is granted, start the scanner
             startQRScannerFunction()
         }

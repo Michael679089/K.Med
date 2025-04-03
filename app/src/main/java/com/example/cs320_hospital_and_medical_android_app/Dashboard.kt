@@ -12,7 +12,9 @@ import android.util.Log
 import android.util.TypedValue
 import android.widget.ImageView
 import android.view.View
+import android.widget.Button
 import android.widget.LinearLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 
 
 class Dashboard : AppCompatActivity() {
@@ -43,14 +45,56 @@ class Dashboard : AppCompatActivity() {
         loadRoleButtons(ROLE, UID)
         loadScheduleCard(ROLE)
 
-        val scheduleCard = findViewById<LinearLayout>(R.id.scheduleCardContent)
-        scheduleCard.post {
-            if (scheduleCard.height > 800) { // Hardcoded max height in pixels
-                scheduleCard.layoutParams.height = 800
-                scheduleCard.requestLayout()
+        val buttonSectionContainer = findViewById<FrameLayout>(R.id.buttonSectionContainer)
+        val maxHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics).toInt()
+        buttonSectionContainer.post {
+            if (buttonSectionContainer.height > maxHeight) { // Hardcoded max height in pixels
+                buttonSectionContainer.layoutParams.height = maxHeight
+                buttonSectionContainer.requestLayout()
             }
         }
-        val maxHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics).toInt()
+
+        // QR Code - Zoomed In - Overlay
+        qrCode.setOnClickListener {
+            Log.d("DEBUG", "Going to qr zoomed in")
+
+            // Ensure the root layout is a FrameLayout (we want to stack views)
+            val rootView = findViewById<ConstraintLayout>(R.id.main)
+            val inflater = LayoutInflater.from(this)
+            val qrZoomedInView = inflater.inflate(R.layout.qr_zoomed_in, rootView, false)
+            Log.d("DEBUG", "reached here")
+
+            // Populate data in the zoomed-in layout
+            val qrCodeIV = qrZoomedInView.findViewById<ImageView>(R.id.qrCodeIV)
+            qrGenerator.generateQRCodeToImageView(qrCodeIV, UID)
+
+            val qrZoomedInIDNumber = qrZoomedInView.findViewById<TextView>(R.id.qrZoomedInIDNumber)
+            qrZoomedInIDNumber.text = UID
+
+            val qrZoomedInUsername = qrZoomedInView.findViewById<TextView>(R.id.qrZoomedInUsername)
+            qrZoomedInUsername.text = NAME
+
+            val qrZoomedInRole = qrZoomedInView.findViewById<TextView>(R.id.qrZoomedInRole)
+            qrZoomedInRole.text = ROLE
+
+            val goBackBTN = qrZoomedInView.findViewById<Button>(R.id.qrZoomedInGoBackBTN)
+            goBackBTN.setOnClickListener {
+                rootView.removeView(qrZoomedInView)  // Remove the overlay when clicking "Go Back"
+            }
+
+            // Set layout params to ensure it covers the full screen
+            val params = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+            )
+            qrZoomedInView.layoutParams = params
+
+            // Set the elevation (z-index) to ensure it's on top of other views
+            qrZoomedInView.elevation = 1000f  // You can adjust this value for desired stacking order
+
+            // Add the zoomed-in view on top of the dashboard
+            rootView.addView(qrZoomedInView)
+        }
     }
 
     private fun patientInformation(ROLE: String, PID: String) {
@@ -169,6 +213,7 @@ class Dashboard : AppCompatActivity() {
             scheduleContainer.addView(view)
         }
 
+        Log.d("DEBUG", "Displaying schedule cards")
         when (role) {
             // Patient Schedule Card
             "patient" -> {
