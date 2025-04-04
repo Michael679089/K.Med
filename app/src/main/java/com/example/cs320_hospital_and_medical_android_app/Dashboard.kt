@@ -283,37 +283,44 @@ class Dashboard : AppCompatActivity() {
 
             // Nurse Schedule Card
             "nurse" -> {
-                db.collection("assignments").document(UID).get()
-                    .addOnSuccessListener { doc ->
-                        if (doc.getBoolean("hasTask") == true) {
+                db.collection("assignments").document(UID)
+                    .addSnapshotListener { documents, exception ->
+                        if (exception != null) {
+                            Log.e("FIRESTORE", "Failed to fetch nurse assignment", exception)
+                            setScheduleLayout(R.layout.dashboard_schedule_none, emptyMap())
+                        }
+
+                        if (documents != null && documents.getBoolean("hasTask") == true) {
                             val layoutRes = R.layout.dashboard_schedule_nurse
                             val textMap = mapOf(
-                                R.id.patientName to doc.getString("patientName")
+                                R.id.patientName to documents.getString("patientName")
                             )
                             setScheduleLayout(layoutRes, textMap)
                         } else {
                             setScheduleLayout(R.layout.dashboard_schedule_none, emptyMap())
                         }
                     }
-                    .addOnFailureListener {
-                        Log.e("FIRESTORE", "Failed to fetch nurse assignment", it)
-                        setScheduleLayout(R.layout.dashboard_schedule_none, emptyMap())
-                    }
             }
 
             // Doctor Schedule Card
             "doctor" -> {
-                val today = java.text.SimpleDateFormat("MMMM d, yyyy", java.util.Locale.ENGLISH).format(java.util.Date())
+                val today = java.text.SimpleDateFormat("MMMM d, yyyy", java.util.Locale.ENGLISH)
+                    .format(java.util.Date())
 
                 db.collection("appointments")
-                    .whereEqualTo("doctorId", UID)
+                    .whereEqualTo("doctorID", UID)
                     .whereEqualTo("status", "queue_doctor")
                     .whereEqualTo("readyToCall", true)
                     .whereEqualTo("date", today)
                     .limit(1)
-                    .get()
-                    .addOnSuccessListener { documents ->
-                        if (!documents.isEmpty) {
+                    .addSnapshotListener { documents, exception ->
+
+                        if (exception != null) {
+                            Log.e("FIRESTORE", "Failed to fetch doctor queue", exception)
+                            setScheduleLayout(R.layout.dashboard_schedule_none, emptyMap())
+                        }
+
+                        if (documents != null && !documents.isEmpty) {
                             val doc = documents.first()
                             val layoutRes = R.layout.dashboard_schedule_doctor
                             val textMap = mapOf(
@@ -323,10 +330,6 @@ class Dashboard : AppCompatActivity() {
                         } else {
                             setScheduleLayout(R.layout.dashboard_schedule_none, emptyMap())
                         }
-                    }
-                    .addOnFailureListener {
-                        Log.e("FIRESTORE", "Failed to fetch doctor queue", it)
-                        setScheduleLayout(R.layout.dashboard_schedule_none, emptyMap())
                     }
             }
 

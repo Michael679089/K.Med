@@ -17,6 +17,7 @@ import android.widget.Toast
 import android.widget.ViewFlipper
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.core.snap
 import com.example.cs320_hospital_and_medical_android_app.DoctorSchedule.Schedule
 import com.google.firebase.firestore.FirebaseFirestore
 import java.time.format.DateTimeFormatter
@@ -33,6 +34,8 @@ class PatientAppointment : AppCompatActivity() {
     private val doctorList = mutableListOf<Doctor>()
     private val dateTimeList = mutableListOf<Schedule>()
     private var selectedDoctorId: String? = null
+    private var patientName: String? = null
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -121,6 +124,13 @@ class PatientAppointment : AppCompatActivity() {
             }
         }
 
+        db.collection("Patients").document(PID)
+            .addSnapshotListener {snapshot, _ ->
+                if (snapshot != null) {
+                    patientName = "${snapshot.getString("firstName")} ${snapshot.getString("lastName")}"
+                }
+            }
+
         // Book appointment logic
         val bookBtn: Button = findViewById(R.id.bookBtn)
         bookBtn.setOnClickListener {
@@ -134,11 +144,13 @@ class PatientAppointment : AppCompatActivity() {
 
             // Create the appointment object
             val appointment = hashMapOf(
-                "createdAt" to ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_DATE_TIME),
+                "patientID" to PID,
+                "patientName" to patientName,
+                "doctorID" to selectedDoctorId,
                 "doctorName" to selectedDoctorName,
+                "createdAt" to ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_DATE_TIME),
                 "date" to selectedDate,
                 "time" to selectedTime,
-                "patientID" to PID,
                 "reason" to selectedReason,
                 "queueLocation" to "TBD",
                 "queueNumber" to 0,
