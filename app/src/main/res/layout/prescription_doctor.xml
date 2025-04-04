@@ -62,7 +62,8 @@
                 android:textAlignment="viewStart"
                 android:textColor="@color/gray"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                tools:ignore="HardcodedText" />
 
             <EditText
                 android:id="@+id/reasonInput"
@@ -73,10 +74,11 @@
                 android:gravity="top|start"
                 android:hint="Write your prescription..."
                 android:inputType="textMultiLine"
-                android:paddingLeft="20dp"
+                android:paddingStart="20dp"
                 android:paddingTop="20dp"
                 android:scrollbars="vertical"
-                app:layout_constraintWidth_percent="0.8" />
+                app:layout_constraintWidth_percent="0.8"
+                tools:ignore="HardcodedText" />
 
             <TextView
                 android:id="@+id/prescirbed"
@@ -87,16 +89,18 @@
                 android:text="Prescribed by:"
                 android:textAlignment="viewStart"
                 android:textColor="@color/gray"
-                android:textSize="15sp" />
+                android:textSize="15sp"
+                tools:ignore="HardcodedText" />
 
             <TextView
                 android:id="@+id/doctor"
                 android:layout_width="345dp"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/montserrat_bold"
-                android:text="<insert doctor>"
+                android:text="insert doctor here"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                tools:ignore="HardcodedText" />
 
             <Button
                 android:id="@+id/publishBtn"
@@ -106,7 +110,8 @@
                 android:layout_marginTop="24dp"
                 android:text="Publish"
                 app:backgroundTint="@null"
-                app:layout_constraintWidth_percent="0.8" />
+                app:layout_constraintWidth_percent="0.8"
+                tools:ignore="HardcodedText" />
 
             <Button
                 android:id="@+id/cancelBtn"

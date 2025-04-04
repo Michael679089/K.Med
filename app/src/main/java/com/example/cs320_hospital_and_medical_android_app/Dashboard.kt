@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import android.content.Intent
 import android.util.Log
@@ -16,7 +15,6 @@ import android.widget.ImageView
 import android.view.View
 import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.google.firebase.firestore.Query
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -160,20 +158,20 @@ class Dashboard : AppCompatActivity() {
 
             // Role-based listeners
             when (ROLE) {
-                "patient" -> PatientButtons(view, UID, ROLE)
-                "doctor" -> DoctorButtons(view, UID, ROLE)
+                "patient" -> patientButtons(view, UID, ROLE)
+                "doctor" -> doctorButtons(view, UID, ROLE)
                 "nurse"  -> NurseButtons(view, UID, ROLE)
             }
         }
     }
 
     // Button Listeners
-    private fun PatientButtons(view: View, UID: String, ROLE: String) {
-        val doctorBtn = view.findViewById<LinearLayout>(R.id.doctorBtn)
+    private fun patientButtons(view: View, UID: String, ROLE: String) {
+        val doctorsBtn = view.findViewById<LinearLayout>(R.id.doctorBtn)
         val scheduleBtn = view.findViewById<LinearLayout>(R.id.scheduleBtn) // Appointment button.
         val prescriptionBtn = view.findViewById<LinearLayout>(R.id.prescriptionBtn)
 
-        doctorBtn.setOnClickListener {
+        doctorsBtn.setOnClickListener {
             val intent = Intent(this, DoctorSchedule::class.java)
             intent.putExtra("ROLE", ROLE)
             intent.putExtra("UID", UID)
@@ -191,7 +189,7 @@ class Dashboard : AppCompatActivity() {
         }
     }
 
-    private fun DoctorButtons(view: View, UID: String, ROLE: String) {
+    private fun doctorButtons(view: View, UID: String, ROLE: String) {
         val qrBtn = view.findViewById<LinearLayout>(R.id.patientQRBtn)
         val scheduleBtn = view.findViewById<LinearLayout>(R.id.doctorAccessSchedule)
 
