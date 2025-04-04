@@ -9,7 +9,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import android.content.Intent
 import android.util.Log
-import android.util.TypedValue
 import android.widget.ImageView
 import android.view.View
 import android.widget.Button
@@ -19,8 +18,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 
 class Dashboard : AppCompatActivity() {
 
-    override fun onCreate(savedInstanceState: Bundle?) { // MAIN FUNCTION
-        Log.d("DEBUG", "You are now in Dashboard Page")
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.dashboard)
 
@@ -33,8 +31,6 @@ class Dashboard : AppCompatActivity() {
         val idView = findViewById<TextView>(R.id.accountID)
         val qrCode = findViewById<ImageView>(R.id.qrCode)
 
-        Log.d("DEBUG", ROLE)
-
         val qrGenerator = QRCodeGeneratorClass()
         qrGenerator.generateQRCodeToImageView(qrCode, UID)
 
@@ -45,6 +41,7 @@ class Dashboard : AppCompatActivity() {
         loadRoleButtons(ROLE, UID)
         loadScheduleCard(ROLE)
 
+<<<<<<< HEAD
         val buttonSectionContainer = findViewById<FrameLayout>(R.id.buttonSectionContainer)
         val maxHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics).toInt()
         buttonSectionContainer.post {
@@ -95,6 +92,8 @@ class Dashboard : AppCompatActivity() {
             // Add the zoomed-in view on top of the dashboard
             rootView.addView(qrZoomedInView)
         }
+=======
+>>>>>>> parent of 5243eae (Merge branch 'master' of https://github.com/Michael679089/K.Med)
     }
 
     private fun patientInformation(ROLE: String, PID: String) {
@@ -199,7 +198,7 @@ class Dashboard : AppCompatActivity() {
 
     // Load Schedule Card
     private fun loadScheduleCard(role: String) {
-        val scheduleContainer = findViewById<LinearLayout>(R.id.scheduleCardContent)
+        val scheduleContainer = findViewById<FrameLayout>(R.id.scheduleCardContent)
         val inflater = LayoutInflater.from(this)
         val USER = FirebaseAuth.getInstance().currentUser
         val UID = intent.getStringExtra("UID") ?: return

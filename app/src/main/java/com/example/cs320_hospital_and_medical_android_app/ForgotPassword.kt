@@ -33,7 +33,7 @@ class ForgotPassword : AppCompatActivity() {
 
         // Handle user verification button click
         emailPassReset.setOnClickListener {
-            val email = emailInput.text.toString().trim()
+            val email = emailInput.text.toString()
 
             if (email.isEmpty()) {
                 emailInputState.text = "Please input a valid email"

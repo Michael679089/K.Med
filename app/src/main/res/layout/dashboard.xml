@@ -109,15 +109,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/patientCard">
 
-        <LinearLayout
+        <FrameLayout
             android:id="@+id/scheduleCardContent"
             android:layout_width="match_parent"
+<<<<<<< HEAD
             android:layout_height="70dp"
             android:orientation="vertical"
             android:paddingLeft="10dp"
             android:paddingTop="5dp"
             android:paddingRight="10dp"
             android:paddingBottom="5dp" />
+=======
+            android:layout_height="wrap_content"
+            android:padding="20dp" />
+>>>>>>> parent of 5243eae (Merge branch 'master' of https://github.com/Michael679089/K.Med)
     </androidx.cardview.widget.CardView>
 
 

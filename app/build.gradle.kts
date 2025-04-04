@@ -41,10 +41,11 @@ android {
 }
 
 dependencies {
-    implementation(libs.firebase.bom);
+    implementation(platform("com.google.firebase:firebase-bom:33.12.0"));
 
     // Firebase Services
     implementation(libs.firebase.common.ktx)
+    implementation("com.google.firebase:firebase-firestore-ktx")
     implementation(libs.firebase.firestore.ktx)
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.database.ktx)
