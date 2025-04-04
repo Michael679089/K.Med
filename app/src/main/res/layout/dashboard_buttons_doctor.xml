@@ -4,7 +4,9 @@
     android:id="@+id/buttonSection"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp">
 
     <!-- Patient QR -->
     <androidx.cardview.widget.CardView
@@ -21,9 +23,9 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingLeft="50dp"
+            android:paddingStart="16dp"
             android:paddingTop="25dp"
-            android:paddingRight="25dp"
+            android:paddingEnd="16dp"
             android:paddingBottom="25dp">
 
             <ImageView
@@ -57,9 +59,9 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingLeft="50dp"
+            android:paddingStart="16dp"
             android:paddingTop="25dp"
-            android:paddingRight="25dp"
+            android:paddingEnd="16dp"
             android:paddingBottom="25dp">
 
             <ImageView
@@ -78,7 +80,5 @@
                 android:textStyle="bold" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
-
-    <!-- Schedule -->
 
 </LinearLayout>
