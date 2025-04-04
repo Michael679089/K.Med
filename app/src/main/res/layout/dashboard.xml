@@ -123,7 +123,7 @@
 
     <!-- Buttons Section -->
     <ScrollView
-        android:layout_width="307dp"
+        android:layout_width="350dp"
         android:layout_height="308dp"
         android:layout_marginTop="36dp"
         android:contentDescription="Scrolling for the buttons"

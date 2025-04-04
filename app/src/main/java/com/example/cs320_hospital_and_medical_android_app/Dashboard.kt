@@ -145,7 +145,8 @@ class Dashboard : AppCompatActivity() {
 
         doctorBtn.setOnClickListener {
             val intent = Intent(this, DoctorSchedule::class.java)
-            intent.putExtra("role", ROLE)
+            intent.putExtra("ROLE", ROLE)
+            intent.putExtra("UID", UID)
             startActivity(intent)
         }
 
