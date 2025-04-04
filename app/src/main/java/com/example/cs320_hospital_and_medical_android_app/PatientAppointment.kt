@@ -44,7 +44,7 @@ class PatientAppointment : AppCompatActivity() {
 
         viewFlipper = findViewById(R.id.viewFlipper)
 
-        val PID = intent.getStringExtra("PID") ?: "Unknown"
+        val PID = intent.getStringExtra("UID") ?: "Unknown"
 
         getAppointment(PID)
 
@@ -69,7 +69,7 @@ class PatientAppointment : AppCompatActivity() {
                 val schedule = document.toObject(Appointment::class.java)
                 val appointmentCard = inflater.inflate(R.layout.schedule_appointment_card_patient, listAppointments, false).apply {
                     findViewById<TextView>(R.id.doctorName).text = "Dr. ${schedule.doctorName}"
-                    findViewById<TextView>(R.id.scheduleDateTime).text = schedule.schedule
+                    findViewById<TextView>(R.id.scheduleDateTime).text = "${schedule.date} at ${schedule.time}"
                     findViewById<TextView>(R.id.reasonOut).text = "Reason: ${schedule.reason}"
 
                     val deleteBtn: ImageView = findViewById(R.id.deleteBtn)
@@ -119,29 +119,39 @@ class PatientAppointment : AppCompatActivity() {
         }
 
         val bookBtn: Button = findViewById(R.id.bookBtn)
-        bookBtn.setOnClickListener() {
+        bookBtn.setOnClickListener {
+            val selectedDoctorName = doctorInput.text.toString().trim()
+            val selectedReason = reasonInput.text.toString().trim()
 
-            val appointment = Appointment(
-                createdAt = ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_DATE_TIME),
-                doctorName = doctorInput.text.toString().trim(),
-                schedule = dateTimeInput.text.toString().trim(),
-                patientID = PID,
-                reason = reasonInput.text.toString().trim(),
-                queueLocation = "TBD",
-                queueNumber = 0,
-                readyToCall = false,
-                status = "Booked",
+            // Retrieve (date, time) pair from tag
+            val selectedDateTimePair = dateTimeInput.getTag(R.id.dateTimeInput) as? Pair<String, String>
+            val selectedDate = selectedDateTimePair?.first ?: "Unknown Date"
+            val selectedTime = selectedDateTimePair?.second ?: "Unknown Time"
+
+            // Create an Appointment object
+            val appointment = hashMapOf(
+                "createdAt" to ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_DATE_TIME),
+                "doctorName" to selectedDoctorName,
+                "date" to selectedDate,  // Stored separately in Firebase
+                "time" to selectedTime,  // Stored separately in Firebase
+                "patientID" to PID,
+                "reason" to selectedReason,
+                "queueLocation" to "TBD",
+                "queueNumber" to 0,
+                "readyToCall" to false,
+                "status" to "booked"
             )
 
+            // Push appointment to Firebase
             db.collection("appointments").document()
                 .set(appointment)
+                .addOnSuccessListener {
+                    createToast("Scheduled Successfully!")
+                }
+                .addOnFailureListener {
+                    createToast("Failed to Schedule Appointment.")
+                }
 
-            createToast("Scheduled!")
-            listAppointment()
-        }
-
-        val cancelBtn: Button = findViewById(R.id.cancelBtn)
-        cancelBtn.setOnClickListener() {
             listAppointment()
         }
     }
@@ -150,7 +160,8 @@ class PatientAppointment : AppCompatActivity() {
     data class Schedule(val id: String = "", val dateTime: String = "")
     data class Appointment(
         val createdAt: String = "",
-        val schedule: String = "",
+        val date: String = "",
+        val time: String = "",
         val doctorName: String = "",
         val patientID: String = "",
         val reason: String = "",
@@ -181,20 +192,42 @@ class PatientAppointment : AppCompatActivity() {
     }
 
     private fun loadDoctorSchedule(doctorId: String, dateTimeInput: AutoCompleteTextView) {
-        db.collection("Doctors").document(doctorId).collection("schedule").addSnapshotListener{
-                snapshot, _ ->
-            snapshot?.forEach {
-                    document ->
-                val dateTime = document.getString("date") + ": " + document.getString("time")
-                val id = document.id
-                val schedule = Schedule(id, dateTime)
-                dateTimeList.add(schedule)
+        db.collection("Doctors").document(doctorId).collection("schedule").addSnapshotListener { snapshot, _ ->
+            // Clear the map before adding new values to avoid old data persisting
+            val scheduleList = mutableListOf<String>()
+            val scheduleMap = mutableMapOf<String, Pair<String, String>>() // (ID -> (date, time))
+
+            snapshot?.forEach { document ->
+                val date = document.getString("date") ?: "Unknown Date"
+                val time = document.getString("time") ?: "Unknown Time"
+                val scheduleId = document.id
+
+                // Store (date, time) pair in map
+                scheduleMap[scheduleId] = Pair(date, time)
+
+                // Show joined date & time in dropdown
+                scheduleList.add("$date at $time")
             }
 
-            val dateTime = dateTimeList.map { it.dateTime }
-            dropdown(dateTimeInput, dateTime) { }
+            // Store the map inside EditText tag for later use
+            dateTimeInput.setTag(R.id.dateTimeInput, scheduleMap)
+
+            // Populate the dropdown
+            dropdown(dateTimeInput, scheduleList) { selectedScheduleText ->
+                // Find the selected pair (date, time)
+                val selectedEntry = scheduleMap.entries.find {
+                    "${it.value.first} at ${it.value.second}" == selectedScheduleText
+                }
+
+                selectedEntry?.let {
+                    // Store only (date, time) pair in the tag
+                    dateTimeInput.setTag(R.id.dateTimeInput, it.value)
+                    Log.d("DEBUG", "Selected: Date=${it.value.first}, Time=${it.value.second}")
+                }
+            }
         }
     }
+
 
     private fun listAppointment() {
         viewFlipper.displayedChild = 0
