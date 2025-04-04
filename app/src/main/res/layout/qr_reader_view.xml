@@ -57,7 +57,7 @@
 
             <TextView
                 android:id="@+id/patientName"
-                android:text="Nurse Doe Cruz"
+                android:text="Patient Doe Cruz"
                 android:textSize="18sp"
                 android:textColor="@color/black"
                 android:layout_width="match_parent"
