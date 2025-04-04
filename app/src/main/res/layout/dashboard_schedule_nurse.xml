@@ -10,10 +10,11 @@
 
     <TextView
         android:layout_width="wrap_content"
+        android:id="@+id/textQueueLabel"
         android:layout_height="wrap_content"
         android:text="Queue to:"
         android:textColor="@color/lightGray"
-        android:textSize="14sp"/>
+        android:textSize="14sp" />
 
     <TextView
         android:id="@+id/patientName"
