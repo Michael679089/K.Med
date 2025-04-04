@@ -45,6 +45,7 @@ class Dashboard : AppCompatActivity() {
         loadRoleButtons(ROLE, UID)
         loadScheduleCard(ROLE, UID)
 
+        // Force Button to max height.
         val buttonSectionContainer = findViewById<FrameLayout>(R.id.buttonSectionContainer)
         val maxHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics).toInt()
         buttonSectionContainer.post {
@@ -140,7 +141,7 @@ class Dashboard : AppCompatActivity() {
     // Button Listeners
     private fun PatientButtons(view: View, UID: String, ROLE: String) {
         val doctorBtn = view.findViewById<LinearLayout>(R.id.doctorBtn)
-        val scheduleBtn = view.findViewById<LinearLayout>(R.id.scheduleBtn)
+        val scheduleBtn = view.findViewById<LinearLayout>(R.id.scheduleBtn) // Appointment button.
         val prescriptionBtn = view.findViewById<LinearLayout>(R.id.prescriptionBtn)
 
         doctorBtn.setOnClickListener {
