@@ -5,28 +5,15 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="-50dp"
-        android:layout_marginBottom="-50dp"
+    <ImageView
+        android:id="@+id/logoWatermark"
+        android:layout_width="471dp"
+        android:layout_height="442dp"
+        android:alpha="0.2"
+        android:scaleType="fitCenter"
+        android:src="@drawable/logo_kmed_primary"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <ImageView
-            android:id="@+id/logoWatermark"
-            android:layout_width="217dp"
-            android:layout_height="220dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="20dp"
-            android:alpha="0.2"
-            android:scaleType="fitCenter"
-            android:src="@drawable/logo_kmed_primary"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-
-    </LinearLayout>
-
-
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="-80dp"
+        android:layout_marginBottom="-80dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -100,7 +100,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="50dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="40dp"
         android:layout_marginEnd="50dp"
         android:backgroundTint="#F5F5F5"
         app:cardCornerRadius="20dp"
@@ -112,36 +112,24 @@
         <LinearLayout
             android:id="@+id/scheduleCardContent"
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingLeft="10dp"
-            android:paddingTop="5dp"
-            android:paddingRight="10dp"
-            android:paddingBottom="5dp" />
+            android:padding="20dp" />
     </androidx.cardview.widget.CardView>
 
 
     <!-- Buttons Section -->
-    <ScrollView
-        android:layout_width="307dp"
-        android:layout_height="308dp"
-        android:layout_marginTop="36dp"
-        android:contentDescription="Scrolling for the buttons"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <FrameLayout
+        android:id="@+id/buttonSectionContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="20dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/scheduleCard"
-        app:layout_constraintVertical_bias="0.0">
-
-        <FrameLayout
-            android:id="@+id/buttonSectionContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="20dp"
-            android:paddingBottom="100dp" />
-    </ScrollView>
+        app:layout_constraintTop_toBottomOf="@+id/scheduleCard" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

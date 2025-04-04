@@ -95,17 +95,16 @@ class PatientAppointment : AppCompatActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun addAppointment(PID: String){
+    private fun addAppointment(PID: String) {
         viewFlipper.displayedChild = 1
 
         val doctorInput: AutoCompleteTextView = findViewById(R.id.doctorInput)
         val dateTimeInput: AutoCompleteTextView = findViewById(R.id.dateTimeInput)
         val reasonInput: EditText = findViewById(R.id.reasonInput)
 
-        db.collection("Doctors").addSnapshotListener{
-                snapshot, _ ->
-            snapshot?.forEach {
-                    document ->
+        // Fetch doctors and populate the doctor dropdown
+        db.collection("Doctors").addSnapshotListener { snapshot, _ ->
+            snapshot?.forEach { document ->
                 val fullName = document.getString("firstName") + " " + document.getString("lastName")
                 val id = document.id
                 val doctor = Doctor(id, fullName)
@@ -113,11 +112,16 @@ class PatientAppointment : AppCompatActivity() {
             }
 
             val doctorNames = doctorList.map { it.fullName }
-            dropdown(doctorInput, doctorNames) {
-                selectedDoctorId -> loadDoctorSchedule(selectedDoctorId, dateTimeInput)
+            dropdown(doctorInput, doctorNames) { selectedDoctorName ->
+                val selectedDoctor = doctorList.find { it.fullName == selectedDoctorName }
+                selectedDoctor?.let {
+                    selectedDoctorId = it.id
+                    loadDoctorSchedule(it.id, dateTimeInput) // Load schedule for the selected doctor
+                }
             }
         }
 
+        // Book appointment logic
         val bookBtn: Button = findViewById(R.id.bookBtn)
         bookBtn.setOnClickListener {
             val selectedDoctorName = doctorInput.text.toString().trim()
@@ -128,12 +132,12 @@ class PatientAppointment : AppCompatActivity() {
             val selectedDate = selectedDateTimePair?.first ?: "Unknown Date"
             val selectedTime = selectedDateTimePair?.second ?: "Unknown Time"
 
-            // Create an Appointment object
+            // Create the appointment object
             val appointment = hashMapOf(
                 "createdAt" to ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_DATE_TIME),
                 "doctorName" to selectedDoctorName,
-                "date" to selectedDate,  // Stored separately in Firebase
-                "time" to selectedTime,  // Stored separately in Firebase
+                "date" to selectedDate,
+                "time" to selectedTime,
                 "patientID" to PID,
                 "reason" to selectedReason,
                 "queueLocation" to "TBD",
@@ -156,78 +160,52 @@ class PatientAppointment : AppCompatActivity() {
         }
     }
 
-    data class Doctor(val id: String = "", val fullName: String = "")
-    data class Schedule(val id: String = "", val dateTime: String = "")
-    data class Appointment(
-        val createdAt: String = "",
-        val date: String = "",
-        val time: String = "",
-        val doctorName: String = "",
-        val patientID: String = "",
-        val reason: String = "",
-        val queueLocation: String = "",
-        val queueNumber: Int = 0,
-        val readyToCall: Boolean = false,
-        val status: String = "",
-    )
+    private fun loadDoctorSchedule(doctorId: String, dateTimeInput: AutoCompleteTextView) {
+        db.collection("Doctors").document(doctorId).collection("schedule")
+            .addSnapshotListener { snapshot, _ ->
+                val scheduleList = mutableListOf<String>()
+                val scheduleMap = mutableMapOf<String, Pair<String, String>>() // (ID -> (date, time))
 
+                snapshot?.forEach { document ->
+                    val date = document.getString("date") ?: "Unknown Date"
+                    val time = document.getString("time") ?: "Unknown Time"
+                    scheduleMap[document.id] = Pair(date, time)
+                    scheduleList.add("$date at $time")
+                }
+
+                // Store the map inside EditText tag for later use
+                dateTimeInput.setTag(R.id.dateTimeInput, scheduleMap)
+
+                // Populate the schedule dropdown
+                dropdown(dateTimeInput, scheduleList) { selectedScheduleText ->
+                    Log.d("DEBUG", "Selected Schedule: $selectedScheduleText")
+
+                    val selectedEntry = scheduleMap.entries.find {
+                        "${it.value.first} at ${it.value.second}" == selectedScheduleText
+                    }
+
+                    selectedEntry?.let {
+                        dateTimeInput.setTag(R.id.dateTimeInput, it.value)
+                        Log.d("DEBUG", "Stored in tag: Date=${it.value.first}, Time=${it.value.second}")
+                    } ?: Log.e("ERROR", "Selected schedule not found in map")
+                }
+            }
+    }
+
+    // Dropdown helper function for populating AutoCompleteTextView
     private fun dropdown(input: AutoCompleteTextView, list: List<String>, onItemSelected: (String) -> Unit) {
-        val items = list
-        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, items)
+        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, list)
         input.setAdapter(adapter)
-        input.setOnClickListener() {
+        input.setOnClickListener {
             input.showDropDown()
         }
         input.threshold = 1
 
         input.setOnItemClickListener { parent, _, position, _ ->
-            val selectedDoctorName = parent.getItemAtPosition(position).toString()
-
-            // Find doctor by name and get the ID
-            val selectedDoctor = doctorList.find { it.fullName == selectedDoctorName }
-            if (selectedDoctor != null) {
-                onItemSelected(selectedDoctor.id!!)
-            }
+            val selectedText = parent.getItemAtPosition(position).toString()
+            onItemSelected(selectedText)  // Let the caller handle it
         }
     }
-
-    private fun loadDoctorSchedule(doctorId: String, dateTimeInput: AutoCompleteTextView) {
-        db.collection("Doctors").document(doctorId).collection("schedule").addSnapshotListener { snapshot, _ ->
-            // Clear the map before adding new values to avoid old data persisting
-            val scheduleList = mutableListOf<String>()
-            val scheduleMap = mutableMapOf<String, Pair<String, String>>() // (ID -> (date, time))
-
-            snapshot?.forEach { document ->
-                val date = document.getString("date") ?: "Unknown Date"
-                val time = document.getString("time") ?: "Unknown Time"
-                val scheduleId = document.id
-
-                // Store (date, time) pair in map
-                scheduleMap[scheduleId] = Pair(date, time)
-
-                // Show joined date & time in dropdown
-                scheduleList.add("$date at $time")
-            }
-
-            // Store the map inside EditText tag for later use
-            dateTimeInput.setTag(R.id.dateTimeInput, scheduleMap)
-
-            // Populate the dropdown
-            dropdown(dateTimeInput, scheduleList) { selectedScheduleText ->
-                // Find the selected pair (date, time)
-                val selectedEntry = scheduleMap.entries.find {
-                    "${it.value.first} at ${it.value.second}" == selectedScheduleText
-                }
-
-                selectedEntry?.let {
-                    // Store only (date, time) pair in the tag
-                    dateTimeInput.setTag(R.id.dateTimeInput, it.value)
-                    Log.d("DEBUG", "Selected: Date=${it.value.first}, Time=${it.value.second}")
-                }
-            }
-        }
-    }
-
 
     private fun listAppointment() {
         viewFlipper.displayedChild = 0
@@ -244,5 +222,20 @@ class PatientAppointment : AppCompatActivity() {
             super.onBackPressed()
         }
     }
+
+    data class Doctor(val id: String = "", val fullName: String = "")
+    data class Schedule(val id: String = "", val dateTime: String = "")
+    data class Appointment(
+        val createdAt: String = "",
+        val date: String = "",
+        val time: String = "",
+        val doctorName: String = "",
+        val patientID: String = "",
+        val reason: String = "",
+        val queueLocation: String = "",
+        val queueNumber: Int = 0,
+        val readyToCall: Boolean = false,
+        val status: String = "",
+    )
 
 }

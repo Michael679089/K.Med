@@ -43,7 +43,7 @@ class Dashboard : AppCompatActivity() {
 
         patientInformation(ROLE, UID)
         loadRoleButtons(ROLE, UID)
-        loadScheduleCard(ROLE)
+        loadScheduleCard(ROLE, UID)
 
         val buttonSectionContainer = findViewById<FrameLayout>(R.id.buttonSectionContainer)
         val maxHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics).toInt()
@@ -145,7 +145,8 @@ class Dashboard : AppCompatActivity() {
 
         doctorBtn.setOnClickListener {
             val intent = Intent(this, DoctorSchedule::class.java)
-            intent.putExtra("role", ROLE)
+            intent.putExtra("ROLE", ROLE)
+            intent.putExtra("UID", UID)
             startActivity(intent)
         }
 
@@ -197,11 +198,9 @@ class Dashboard : AppCompatActivity() {
     }
 
     // Load Schedule Card
-    private fun loadScheduleCard(role: String) {
+    private fun loadScheduleCard(ROLE: String, UID: String) {
         val scheduleContainer = findViewById<LinearLayout>(R.id.scheduleCardContent)
         val inflater = LayoutInflater.from(this)
-        val USER = FirebaseAuth.getInstance().currentUser
-        val UID = intent.getStringExtra("UID") ?: return
         val db = FirebaseFirestore.getInstance()
 
         val setScheduleLayout: (Int, Map<Int, String?>) -> Unit = { layoutRes, textMap ->
@@ -214,18 +213,21 @@ class Dashboard : AppCompatActivity() {
         }
 
         Log.d("DEBUG", "Displaying schedule cards")
-        when (role) {
+        when (ROLE) {
             // Patient Schedule Card
             "patient" -> {
                 db.collection("appointments")
-                    .whereEqualTo("patientId", UID)
+                    .whereEqualTo("patientID", UID)
                     .orderBy("createdAt", com.google.firebase.firestore.Query.Direction.DESCENDING)
                     .limit(1)
-                    .get()
-                    .addOnSuccessListener { documents ->
-                        Log.d("FIRESTORE", "Query returned ${documents.size()} document(s)")
+                    .addSnapshotListener { documents, exception ->
+                        if (exception != null) {
+                            Log.e("FIRESTORE", "Failed to fetch patient appointment", exception)
+                            setScheduleLayout(R.layout.dashboard_schedule_none, emptyMap())
+                            return@addSnapshotListener
+                        }
 
-                        if (!documents.isEmpty) {
+                        if (documents != null && !documents.isEmpty) {
                             val doc = documents.first()
                             val status = doc.getString("status") ?: "none"
                             val date = doc.getString("date")
@@ -244,7 +246,7 @@ class Dashboard : AppCompatActivity() {
                                     layoutRes = R.layout.dashboard_schedule_patient_booked
                                     textMap = mapOf(
                                         R.id.textAppointmentDate to date,
-                                        R.id.doctorName to doc.getString("doctorName")
+                                        R.id.doctorName to "Dr. ${doc.getString("doctorName")}"
                                     )
                                 }
 
@@ -276,10 +278,6 @@ class Dashboard : AppCompatActivity() {
                         } else {
                             setScheduleLayout(R.layout.dashboard_schedule_none, emptyMap())
                         }
-                    }
-                    .addOnFailureListener {
-                        Log.e("FIRESTORE", "Failed to fetch patient appointment", it)
-                        setScheduleLayout(R.layout.dashboard_schedule_none, emptyMap())
                     }
             }
 

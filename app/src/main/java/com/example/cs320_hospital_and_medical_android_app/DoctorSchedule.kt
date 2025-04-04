@@ -37,8 +37,8 @@ class DoctorSchedule : AppCompatActivity() {
         setContentView(R.layout.doctor_schedule)
 
         // Load User Info
-        ROLE = intent.getStringExtra("role") ?: return
-        UID = intent.getStringExtra("uid") ?: "Unknown"
+        ROLE = intent.getStringExtra("ROLE") ?: return
+        UID = intent.getStringExtra("UID") ?: "Unknown"
 
         //Initialize firebase
         db = FirebaseFirestore.getInstance()

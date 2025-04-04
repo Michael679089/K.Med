@@ -21,8 +21,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var db: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val testAcc = "apple@gmail.com"
-        val testAccPass = "1234567"
+        val testAcc = "james.billate@ciit.edu.ph"
+        val testAccPass = "123456789"
 
         //Firebase Initialization
         db = FirebaseFirestore.getInstance()
