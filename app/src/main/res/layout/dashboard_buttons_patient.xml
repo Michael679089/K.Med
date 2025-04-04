@@ -15,7 +15,7 @@
         android:layout_marginBottom="12dp"
         android:backgroundTint="@color/emerald"
         app:cardCornerRadius="100dp"
-        app:cardElevation="6dp">
+        app:cardElevation="2dp">
 
         <LinearLayout
             android:id="@+id/scheduleBtn"
@@ -51,7 +51,7 @@
         android:layout_marginBottom="12dp"
         android:backgroundTint="@color/violet"
         app:cardCornerRadius="100dp"
-        app:cardElevation="6dp">
+        app:cardElevation="2dp">
 
         <LinearLayout
             android:id="@+id/doctorBtn"
@@ -86,7 +86,7 @@
         android:layout_height="wrap_content"
         android:backgroundTint="@color/yellowGold"
         app:cardCornerRadius="100dp"
-        app:cardElevation="6dp">
+        app:cardElevation="2dp">
 
         <LinearLayout
             android:id="@+id/prescriptionBtn"

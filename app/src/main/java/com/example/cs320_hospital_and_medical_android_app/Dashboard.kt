@@ -10,11 +10,16 @@ import com.google.firebase.firestore.FirebaseFirestore
 import android.content.Intent
 import android.util.Log
 import android.util.TypedValue
+import android.widget.Button
+import android.widget.Toast
 import android.widget.ImageView
 import android.view.View
-import android.widget.Button
 import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.google.firebase.firestore.Query
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 class Dashboard : AppCompatActivity() {
@@ -208,6 +213,7 @@ class Dashboard : AppCompatActivity() {
             textMap.forEach { (id, value) ->
                 view.findViewById<TextView?>(id)?.text = value ?: ""
             }
+
             scheduleContainer.removeAllViews()
             scheduleContainer.addView(view)
         }
@@ -231,7 +237,7 @@ class Dashboard : AppCompatActivity() {
                             val doc = documents.first()
                             val status = doc.getString("status") ?: "none"
                             val date = doc.getString("date")
-                            val today = java.text.SimpleDateFormat("MMMM d, yyyy", java.util.Locale.ENGLISH).format(java.util.Date())
+                            val today = SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).format(Date())
 
                             val layoutRes: Int
                             val textMap: Map<Int, String?>
@@ -242,16 +248,51 @@ class Dashboard : AppCompatActivity() {
 
                             when {
                                 status == "booked" && date != today -> {
-                                    // Appointment booked
                                     layoutRes = R.layout.dashboard_schedule_patient_booked
                                     textMap = mapOf(
                                         R.id.textAppointmentDate to date,
                                         R.id.doctorName to "Dr. ${doc.getString("doctorName")}"
                                     )
+
+                                    // Inflate the booked card manually
+                                    val view = inflater.inflate(layoutRes, scheduleContainer, false)
+                                    view.findViewById<TextView>(R.id.textAppointmentDate)?.text = date
+                                    view.findViewById<TextView>(R.id.doctorName)?.text = doc.getString("doctorName")
+
+                                    val confirmBtn = view.findViewById<Button>(R.id.confirmArrivalBtn)
+                                    confirmBtn.setOnClickListener {
+                                        val appointmentId = doc.id
+                                        val patientName = doc.getString("patientName") ?: "Unknown"
+                                        val nurseUid = "NID00000001"
+
+                                        db.collection("appointments").document(appointmentId)
+                                            .update(
+                                                mapOf(
+                                                    "status" to "queue_onboarding",
+                                                    "queueNumber" to 1,
+                                                    "queueType" to "onboarding",
+                                                    "readyToCall" to false
+                                                )
+                                            )
+
+                                        db.collection("assignments").document(nurseUid)
+                                            .set(
+                                                mapOf(
+                                                    "hasTask" to true,
+                                                    "patientName" to patientName,
+                                                    "appointmentId" to appointmentId
+                                                )
+                                            )
+
+                                        Toast.makeText(this, "Arrival confirmed!", Toast.LENGTH_SHORT).show()
+                                        loadScheduleCard("patient", UID)
+                                    }
+
+                                    scheduleContainer.removeAllViews()
+                                    scheduleContainer.addView(view)
                                 }
 
                                 status == "queue_onboarding" && date == today -> {
-                                    // Patient at Onboarding Desk
                                     layoutRes = R.layout.dashboard_schedule_patient_queue
                                     textMap = mapOf(
                                         R.id.textQueueLocation to "Onboarding Desk",
@@ -260,7 +301,6 @@ class Dashboard : AppCompatActivity() {
                                 }
 
                                 status == "queue_doctor" && date == today -> {
-                                    // Patient Queued to Doctor
                                     layoutRes = R.layout.dashboard_schedule_patient_queue
                                     textMap = mapOf(
                                         R.id.textQueueLocation to "ROOM 504",

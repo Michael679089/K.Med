@@ -34,7 +34,7 @@
         android:textStyle="bold" />
 
     <Button
-        android:id="@+id/confirmButton"
+        android:id="@+id/confirmArrivalBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/green"
