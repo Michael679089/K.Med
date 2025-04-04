@@ -246,6 +246,7 @@ class Dashboard : AppCompatActivity() {
                             when {
                                 // FIXED: Check if status is 'booked' and date is TODAY
                                 status == "booked" && date == today -> {
+
                                     val view = inflater.inflate(R.layout.dashboard_schedule_patient_booked, scheduleContainer, false)
 
                                     view.findViewById<TextView>(R.id.textAppointmentDate)?.text = date
@@ -255,7 +256,7 @@ class Dashboard : AppCompatActivity() {
                                     confirmBtn.setOnClickListener {
                                         val appointmentId = doc.id
                                         val patientName = doc.getString("patientName") ?: "Unknown"
-                                        val nurseUid = "NID00000001" // Replace with actual logic later
+                                        val nurseUid = "NID234567891"
 
                                         db.collection("appointments").document(appointmentId)
                                             .update(
@@ -267,9 +268,10 @@ class Dashboard : AppCompatActivity() {
                                                 )
                                             )
                                             .addOnSuccessListener {
-                                                db.collection("assignments").document(nurseUid)
+                                                db.collection("assignments").document()
                                                     .set(
                                                         mapOf(
+                                                            "nurseId" to nurseUid,
                                                             "hasTask" to true,
                                                             "patientName" to patientName,
                                                             "appointmentId" to appointmentId
@@ -292,7 +294,7 @@ class Dashboard : AppCompatActivity() {
                                     setScheduleLayout(
                                         R.layout.dashboard_schedule_patient_queue,
                                         mapOf(
-                                            R.id.textQueueLocation to "Onboarding Desk",
+                                            R.id.textQueueLocation to "Nurse Station",
                                             R.id.textQueueNumber to doc.get("queueNumber")?.toString()
                                         )
                                     )
@@ -320,7 +322,8 @@ class Dashboard : AppCompatActivity() {
 
             // Nurse Schedule Card
             "nurse" -> {
-                db.collection("assignments").document(UID)
+                db.collection("assignments")
+                    .whereEqualTo("nurseId", UID)
                     .addSnapshotListener { documents, exception ->
                         if (exception != null) {
                             Log.e("FIRESTORE", "Failed to fetch nurse assignment", exception)
@@ -380,11 +383,15 @@ class Dashboard : AppCompatActivity() {
                             val scheduleContainer = findViewById<LinearLayout>(R.id.scheduleCardContent)
                             scheduleContainer.removeAllViews()
                             scheduleContainer.addView(view)
+
                         } else {
+                            Log.e("FIRESTORE", "No documents found for this nurseId")
                             setScheduleLayout(R.layout.dashboard_schedule_none, emptyMap())
                         }
                     }
             }
+
+
 
             // Doctor Schedule Card
             "doctor" -> {
@@ -405,6 +412,7 @@ class Dashboard : AppCompatActivity() {
 
                         if (documents != null && !documents.isEmpty) {
                             val doc = documents.first()
+
                             val appointmentId = doc.id
                             val patientName = doc.getString("patientName") ?: "Unknown"
 

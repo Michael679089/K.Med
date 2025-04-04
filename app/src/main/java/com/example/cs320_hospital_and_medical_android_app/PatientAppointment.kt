@@ -158,16 +158,26 @@ class PatientAppointment : AppCompatActivity() {
                 "status" to "booked"
             )
 
-            // Push appointment to Firebase
-            db.collection("appointments").document()
-                .set(appointment)
-                .addOnSuccessListener {
-                    createToast("Scheduled Successfully!")
-                }
-                .addOnFailureListener {
-                    createToast("Failed to Schedule Appointment.")
-                }
+            if (!selectedDoctorName.isEmpty() && !selectedReason.isEmpty() && !selectedDateTimePair.toString().isEmpty()){
+                // Push appointment to Firebase
+                db.collection("appointments").document()
+                    .set(appointment)
+                    .addOnSuccessListener {
+                        createToast("Scheduled Successfully!")
+                    }
+                    .addOnFailureListener {
+                        createToast("Failed to Schedule Appointment.")
+                    }
 
+                listAppointment()
+            } else {
+                createToast("Input all fields")
+            }
+
+        }
+
+        val cancelBtn: Button = findViewById(R.id.cancelBtn)
+        cancelBtn.setOnClickListener {
             listAppointment()
         }
     }
