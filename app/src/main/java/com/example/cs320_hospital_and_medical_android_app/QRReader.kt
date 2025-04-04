@@ -21,6 +21,7 @@ import android.provider.Settings
 import android.content.Intent
 import android.net.Uri
 import android.Manifest
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -171,13 +172,12 @@ class QRReader : AppCompatActivity() {
                 reasonForConsultationTextView.text = reasonVal
 
                 // continue function from here 🚩
-                Toast.makeText(this, "Input the patient's Blood Pressure and Weight", Toast.LENGTH_LONG).show()
-
                 val bloodPressureET : EditText = findViewById(R.id.editBloodPressure)
                 val weightInPoundsET : EditText = findViewById(R.id.editWeight)
 
                 if (userROLE == "nurse") {
                     Log.d("DEBUG", "you are nurse")
+                    Toast.makeText(this, "Input the patient's Blood Pressure and Weight", Toast.LENGTH_LONG).show()
                     val nurseSubmitBTN : Button = findViewById(R.id.btnNurseSubmit)
                     nurseSubmitBTN.setOnClickListener {
                         val bloodPressureETVal = bloodPressureET.text.toString().toDoubleOrNull()
@@ -188,7 +188,6 @@ class QRReader : AppCompatActivity() {
                             Toast.makeText(this, "ERROR: Blood and Weight have empty values. Input the values.", Toast.LENGTH_LONG).show()
                         } else {
                             Toast.makeText(this, "Patient's Blood Pressure: $bloodPressureETVal | Weight: $weightInPoundsETVal", Toast.LENGTH_LONG).show()
-
                             // set readyToCall to True. 🚩
                             dbHandler.setReadyToCall(true, editTextPIDValue)
                         }
@@ -196,7 +195,7 @@ class QRReader : AppCompatActivity() {
                 }
                 else if (userROLE == "doctor") {
                     Log.d("DEBUG", "you are doctor")
-
+                    Toast.makeText(this, "Give patient prescription or ", Toast.LENGTH_LONG).show()
                     // android:visibility == gone for: Blood Pressure and Weight Edit Text (Disable Nurse-specific UI elements):
                     val bloodPressureWeightInstructionTextView : TextView = findViewById(R.id.textView4)
                     bloodPressureWeightInstructionTextView.visibility = View.GONE
@@ -210,12 +209,31 @@ class QRReader : AppCompatActivity() {
                     // switch android:visibility to the following (Doctor-specific UI elements):
                     val doctorVitalsContainerLinearLayout : LinearLayout = findViewById(R.id.doctorVitalsContainer)
                     val doctorButtonContainerLinearLayout : LinearLayout = findViewById(R.id.doctorButtonContainer)
-
                     doctorVitalsContainerLinearLayout.visibility = View.VISIBLE
                     doctorButtonContainerLinearLayout.visibility = View.VISIBLE
+
+                    // Inflate qr_reader_button_doctor.xml and add it to doctorButtonContainerLinearLayout
+                    val inflater = LayoutInflater.from(this)
+                    val qrReaderButtonView = inflater.inflate(R.layout.qr_reader_button_doctor, doctorButtonContainerLinearLayout, false)
+                    doctorButtonContainerLinearLayout.addView(qrReaderButtonView)
+
+                    // Inside inflated layout
+                    val prescriptionBTN : Button = findViewById(R.id.btnSubmitDoctor)
+                    prescriptionBTN.setOnClickListener {
+                        val intent = Intent(this, Prescription::class.java)
+                        intent.putExtra("UID", userUID)
+                        intent.putExtra("ROLE", userROLE)
+                        startActivity(intent)
+                    }
+                    val forExitBTN : Button = findViewById(R.id.btnDoctorAction)
+                    forExitBTN.setOnClickListener {
+                        Log.d("DEBUG", "Clicked For Exit")
+                        Toast.makeText(this, "For Exit", Toast.LENGTH_SHORT).show()
+                    }
+
                 }
             }
-            else {
+            else { // if no appointments found, return user to dashboard.
                 Toast.makeText(this, "ERROR: No appointments found.", Toast.LENGTH_SHORT).show()
                 Log.d("DEBUG", "ERROR: No appointments found.")
 

@@ -1,6 +1,7 @@
 package com.example.cs320_hospital_and_medical_android_app
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -28,6 +29,7 @@ class Prescription : AppCompatActivity() {
     private var selectedPatientName: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d("DEBUG", "You are in Prescription Activity View")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.prescription)
 
@@ -36,7 +38,7 @@ class Prescription : AppCompatActivity() {
         db = FirebaseFirestore.getInstance()
 
         // Extract role & patient info from Intent
-        userRole = intent.getStringExtra("role") ?: "patient"
+        userRole = intent.getStringExtra("ROLE") ?: "patient"
         selectedPatientId = intent.getStringExtra("patientId")
         selectedPatientName = intent.getStringExtra("patientName")
 

@@ -53,6 +53,8 @@ class Dashboard : AppCompatActivity() {
                     }
                 }
             }
+        } else {
+            updateUI()
         }
     }
 
