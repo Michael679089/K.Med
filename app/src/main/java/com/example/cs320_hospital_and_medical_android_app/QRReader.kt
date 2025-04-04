@@ -21,12 +21,16 @@ import android.provider.Settings
 import android.content.Intent
 import android.net.Uri
 import android.Manifest
+import android.widget.TextView
 
 
 class QRReader : AppCompatActivity() {
 
     private lateinit var requestCameraPermissionLauncher: ActivityResultLauncher<String> // this is the permission launcher
     private lateinit var qrScanner: QRCodeScannerClass
+
+    private lateinit var userROLE : String
+    private lateinit var userUID : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d("DEBUG", "You are now in QR Reader View")
@@ -38,6 +42,10 @@ class QRReader : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        // Get the Intent Extra Information
+        userROLE = intent.getStringExtra("ROLE") ?: "Unknown Role"
+        userUID = intent.getStringExtra("UID") ?: "Unknown UID"
 
         // Initialize permission launcher
         initPermissionLauncher()
@@ -51,6 +59,7 @@ class QRReader : AppCompatActivity() {
         }
 
         // I want to pause everything during the cameraPermission.
+        Log.d("DEBUG", "Pause everything, ask camera permission first.")
         if (checkCameraPermission()) {
             // Check Permission is asynchronous, this code runs only after user input camera permission.
             Log.d("DEBUG", "Camera permission already granted ✅")
@@ -78,30 +87,9 @@ class QRReader : AppCompatActivity() {
         }
     }
 
+
+
     // # QR READING FUNCTIONS
-
-    private fun checkCameraPermission(): Boolean {
-        Log.d("DEBUG", "Pause everything, ask camera permission first.")
-        return ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) ==
-                PackageManager.PERMISSION_GRANTED
-    }
-
-    private fun initPermissionLauncher() { // ## initializes camera permission launcher
-        requestCameraPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) {
-                Log.d("DEBUG", "Camera permission granted ✅")
-                startQRScannerFunction()
-            } else {
-                Log.e("DEBUG", "Camera permission denied ❌")
-                Toast.makeText(this, "Camera permission is required!", Toast.LENGTH_SHORT).show()
-                Toast.makeText(this, "Tap the QR Scanner to open permission settings!", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    private fun requestPermission() {
-        requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
-    }
 
     private fun startQRScannerFunction() { // ## The Function after permission.
         Log.d("DEBUG", "Camera Permission finished, unpause everything.")
@@ -137,8 +125,109 @@ class QRReader : AppCompatActivity() {
 
         val btnSubmit: Button = findViewById(R.id.btnSubmit)
         btnSubmit.setOnClickListener {
-            Toast.makeText(this, editTextPid.text.toString(), Toast.LENGTH_SHORT).show()
+            val editTextPIDValue = editTextPid.text.toString().trim()
+            if (editTextPIDValue.isNotEmpty()) {
+                Toast.makeText(this, editTextPid.text.toString(), Toast.LENGTH_SHORT).show()
+                openQRReaderDisplayPatientInfoActivity(editTextPIDValue)
+            }
+            else {
+                Log.d("DEBUG", "ERROR: Input is empty or null")
+                Toast.makeText(this, "ERROR: Input is empty or null", Toast.LENGTH_SHORT).show()
+            }
         }
+    }
+
+    private fun openQRReaderDisplayPatientInfoActivity(editTextPIDValue: String) {
+        setContentView(R.layout.qr_reader_view)
+
+        userROLE = intent.getStringExtra("ROLE").toString()
+
+        // Get the latest Appointment (⏰ asynchronous function)
+        val dbHandler = DBHandlerClass()
+        dbHandler.getLatestAppointment(editTextPIDValue) { latestAppointment -> // asynchronous function
+            if (latestAppointment != null) { // appointment is not null
+                Log.d("DEBUG", "Result from new object dbhandler: $latestAppointment")
+
+                // getting the values from firestore db
+                val patientNameVal = latestAppointment["patientName"] as? String
+                val patientIDVal = latestAppointment["patientID"] as? String
+                val doctorNameVal = latestAppointment["doctorName"] as? String
+                var scheduledDateVal = latestAppointment["date"] as? String
+                scheduledDateVal += " " + latestAppointment["time"] as? String
+                val reasonVal = latestAppointment["reason"] as? String
+
+                // setting the text
+                val patientNameTextView : TextView = findViewById(R.id.patientName)
+                patientNameTextView.text = patientNameVal
+                val patientIDTextView : TextView = findViewById(R.id.patientID)
+                patientIDTextView.text = patientIDVal
+                val doctorNameTextView : TextView = findViewById(R.id.doctorName)
+                doctorNameTextView.text = doctorNameVal
+                val doctorScheduleTextView : TextView = findViewById(R.id.doctorSchedule)
+                doctorScheduleTextView.text = scheduledDateVal
+                val reasonForConsultationTextView : TextView = findViewById(R.id.patientSymptom)
+                reasonForConsultationTextView.text = reasonVal
+
+                // continue function from here 🚩
+                Toast.makeText(this, "Input the patient's Blood Pressure and Weight", Toast.LENGTH_LONG).show()
+
+                if (userROLE == "nurse") {
+                    Log.d("DEBUG", "you are nurse")
+
+                    val bloodPressureET : EditText = findViewById(R.id.editBloodPressure)
+                    val weightInPoundsET : EditText = findViewById(R.id.editWeight)
+                    val nurseSubmitBTN : Button = findViewById(R.id.btnNurseSubmit)
+                    nurseSubmitBTN.setOnClickListener {
+                        val bloodPressureETVal = bloodPressureET.text.toString().toDoubleOrNull()
+                        val weightInPoundsETVal = weightInPoundsET.text.toString().toDoubleOrNull()
+
+                        // check if they are numbers.
+                        if (bloodPressureETVal == null || weightInPoundsETVal == null) {
+                            Toast.makeText(this, "ERROR: Blood and Weight have empty values. Input the values.", Toast.LENGTH_LONG).show()
+                        } else {
+                            Toast.makeText(this, "Patient's Blood Pressure: $bloodPressureETVal | Weight: $weightInPoundsETVal", Toast.LENGTH_LONG).show()
+
+                            // set readyToCall to True. 🚩
+                            dbHandler.setReadyToCall(true, editTextPIDValue)
+                        }
+                    }
+                }
+                else if (userROLE == "doctor") {
+                    Log.d("DEBUG", "you are doctor")
+
+                    // Remove Blood Pressure and Weight Edit Text
+
+                }
+            }
+            else {
+                Toast.makeText(this, "ERROR: No appointments found.", Toast.LENGTH_SHORT).show()
+                Log.d("DEBUG", "ERROR: No appointments found.")
+            }
+        }
+
+    }
+
+
+    private fun checkCameraPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) ==
+                PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun initPermissionLauncher() { // ## initializes camera permission launcher
+        requestCameraPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                Log.d("DEBUG", "Camera permission granted ✅")
+                startQRScannerFunction()
+            } else {
+                Log.e("DEBUG", "Camera permission denied ❌")
+                Toast.makeText(this, "Camera permission is required!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Tap the QR Scanner to open permission settings!", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun requestPermission() {
+        requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
     }
 
     private fun openAppSettings() {
@@ -159,3 +248,4 @@ class QRReader : AppCompatActivity() {
         }
     }
 }
+
