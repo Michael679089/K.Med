@@ -42,10 +42,15 @@
         <!-- QR Scanner -->
         <FrameLayout
             android:layout_width="match_parent"
-            android:id="@+id/barcodeArea"
+            android:id="@+id/qrFrameContainer"
             android:layout_height="320dp">
 
             <com.journeyapps.barcodescanner.BarcodeView
+                android:id="@+id/qrBarcodeScanner"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <ImageView
                 android:id="@+id/qrGuideOverlay"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -53,7 +58,8 @@
                 android:focusable="false"
                 android:padding="40dp"
                 android:scaleType="fitXY"
-                android:src="@drawable/icon_focus_thin" />
+                android:src="@drawable/icon_focus_thin"
+                android:contentDescription="@string/guide_overlay_png_imageview_description"/>
         </FrameLayout>
 
         <!-- Toggle Light and Camera Focus -->
