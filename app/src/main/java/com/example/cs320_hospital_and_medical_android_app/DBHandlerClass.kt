@@ -86,4 +86,63 @@ class DBHandlerClass() {
             }
         }
     }
+
+    fun getNameOfLoggedInUser(userID: String, userRole: String, callback: (String) -> Unit) {
+        val collectionName = when (userRole.lowercase()) {
+            "patient" -> "Patients"
+            "nurse" -> "Nurses"
+            "doctor" -> "Doctors"
+            else -> {
+                Log.e("DEBUG", "Invalid user role: $userRole")
+                callback("")
+                return
+            }
+        }
+
+        val dbTable = db.collection(collectionName)
+        dbTable.document(userID).get() // Access the document with ID = userID
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    // Extract firstName and lastName from the document
+                    val firstName = document.getString("firstName") ?: ""
+                    val lastName = document.getString("lastName") ?: ""
+
+                    // Combine firstName and lastName to form the full name
+                    val fullName = "$firstName $lastName".trim()
+
+                    Log.d("DEBUG", "User Full Name: $fullName")
+                    callback(fullName) // Pass the full name to the callback
+                } else {
+                    Log.e("DEBUG", "No document found with ID: $userID")
+                    callback("") // No document found
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("DEBUG", "Failed to fetch user data", e)
+                callback("")
+            }
+    }
+
+    fun getRoleOfLoggedInUser(accountId: String, callback: (String) -> Unit) {
+        val dbTable = db.collection("users")
+
+        // Query directly by accountId instead of userID
+        dbTable.whereEqualTo("accountId", accountId).limit(1).get()
+            .addOnSuccessListener { documents ->
+                if (!documents.isEmpty) {
+                    val document = documents.documents.first()
+                    val userRole = document.getString("role")?.lowercase() ?: ""
+
+                    Log.d("DEBUG", "Fetched user role: $userRole for accountId: $accountId")
+                    callback(userRole)
+                } else {
+                    Log.e("DEBUG", "No user found with accountId: $accountId")
+                    callback("")
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("DEBUG", "Failed to fetch user role", e)
+                callback("")
+            }
+    }
 }

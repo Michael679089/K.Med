@@ -21,6 +21,8 @@ import android.provider.Settings
 import android.content.Intent
 import android.net.Uri
 import android.Manifest
+import android.view.View
+import android.widget.LinearLayout
 import android.widget.TextView
 
 
@@ -137,14 +139,14 @@ class QRReader : AppCompatActivity() {
         }
     }
 
-    private fun openQRReaderDisplayPatientInfoActivity(editTextPIDValue: String) {
+    private fun openQRReaderDisplayPatientInfoActivity(editTextPIDValue: String) { // ## The Function after scanning.
         setContentView(R.layout.qr_reader_view)
 
         userROLE = intent.getStringExtra("ROLE").toString()
 
         // Get the latest Appointment (⏰ asynchronous function)
         val dbHandler = DBHandlerClass()
-        dbHandler.getLatestAppointment(editTextPIDValue) { latestAppointment -> // asynchronous function
+        dbHandler.getLatestAppointment(editTextPIDValue) { latestAppointment -> // ⏰ asynchronous function
             if (latestAppointment != null) { // appointment is not null
                 Log.d("DEBUG", "Result from new object dbhandler: $latestAppointment")
 
@@ -171,11 +173,11 @@ class QRReader : AppCompatActivity() {
                 // continue function from here 🚩
                 Toast.makeText(this, "Input the patient's Blood Pressure and Weight", Toast.LENGTH_LONG).show()
 
+                val bloodPressureET : EditText = findViewById(R.id.editBloodPressure)
+                val weightInPoundsET : EditText = findViewById(R.id.editWeight)
+
                 if (userROLE == "nurse") {
                     Log.d("DEBUG", "you are nurse")
-
-                    val bloodPressureET : EditText = findViewById(R.id.editBloodPressure)
-                    val weightInPoundsET : EditText = findViewById(R.id.editWeight)
                     val nurseSubmitBTN : Button = findViewById(R.id.btnNurseSubmit)
                     nurseSubmitBTN.setOnClickListener {
                         val bloodPressureETVal = bloodPressureET.text.toString().toDoubleOrNull()
@@ -195,13 +197,32 @@ class QRReader : AppCompatActivity() {
                 else if (userROLE == "doctor") {
                     Log.d("DEBUG", "you are doctor")
 
-                    // Remove Blood Pressure and Weight Edit Text
+                    // android:visibility == gone for: Blood Pressure and Weight Edit Text (Disable Nurse-specific UI elements):
+                    val bloodPressureWeightInstructionTextView : TextView = findViewById(R.id.textView4)
+                    bloodPressureWeightInstructionTextView.visibility = View.GONE
+                    bloodPressureET.visibility = View.GONE
+                    weightInPoundsET.visibility = View.GONE
 
+                    // android:visibility == gone for: Remove Queue to Doctor Button from Context
+                    val nurseSubmitBTN : Button = findViewById(R.id.btnNurseSubmit)
+                    nurseSubmitBTN.visibility = View.GONE
+
+                    // switch android:visibility to the following (Doctor-specific UI elements):
+                    val doctorVitalsContainerLinearLayout : LinearLayout = findViewById(R.id.doctorVitalsContainer)
+                    val doctorButtonContainerLinearLayout : LinearLayout = findViewById(R.id.doctorButtonContainer)
+
+                    doctorVitalsContainerLinearLayout.visibility = View.VISIBLE
+                    doctorButtonContainerLinearLayout.visibility = View.VISIBLE
                 }
             }
             else {
                 Toast.makeText(this, "ERROR: No appointments found.", Toast.LENGTH_SHORT).show()
                 Log.d("DEBUG", "ERROR: No appointments found.")
+
+                val intent = Intent(this, Dashboard::class.java)
+
+                intent.putExtra("UID", userUID)
+                startActivity(intent)
             }
         }
 
