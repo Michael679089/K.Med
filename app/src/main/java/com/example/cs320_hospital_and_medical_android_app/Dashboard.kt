@@ -40,6 +40,7 @@ class Dashboard : AppCompatActivity() {
         val idView = findViewById<TextView>(R.id.accountID)
         val qrCode = findViewById<ImageView>(R.id.qrCode)
         val settings = findViewById<ImageView>(R.id.settings)
+        settings.visibility = View.VISIBLE
 
         Log.d("DEBUG", ROLE)
 
