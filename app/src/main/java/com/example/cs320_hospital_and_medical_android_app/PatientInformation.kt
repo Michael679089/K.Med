@@ -69,7 +69,7 @@ class PatientInformation : AppCompatActivity() {
 
         //Fetching role
         val ROLE = intent.getStringExtra("ROLE") ?: "patient"
-        val userId = intent.getStringExtra("uid") ?: null
+        val userId = intent.getStringExtra("UID") ?: null
 
         initializeFucntionalities()
 
