@@ -144,17 +144,17 @@ class PatientAppointment : AppCompatActivity() {
 
             // Create the appointment object
             val appointment = hashMapOf(
+                "createdAt" to ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_DATE_TIME),
                 "patientID" to PID,
                 "patientName" to patientName,
                 "doctorID" to selectedDoctorId,
                 "doctorName" to selectedDoctorName,
-                "createdAt" to ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_DATE_TIME),
                 "date" to selectedDate,
                 "time" to selectedTime,
                 "reason" to selectedReason,
-                "queueLocation" to "TBD",
                 "queueNumber" to 0,
-                "readyToCall" to false,
+                "queueStation" to "",
+                "toCall" to false,
                 "status" to "booked"
             )
 
@@ -249,15 +249,17 @@ class PatientAppointment : AppCompatActivity() {
     data class Schedule(val id: String = "", val dateTime: String = "")
     data class Appointment(
         val createdAt: String = "",
+        val patientID: String = "",
+        val patientName: String = "",
+        val doctorID: String = "",
+        val doctorName: String = "",
         val date: String = "",
         val time: String = "",
-        val doctorName: String = "",
-        val patientID: String = "",
         val reason: String = "",
-        val queueLocation: String = "",
         val queueNumber: Int = 0,
-        val readyToCall: Boolean = false,
-        val status: String = "",
+        val queueStation: String = "",
+        val toCall: Boolean = false,
+        val status: String = ""
     )
 
 }

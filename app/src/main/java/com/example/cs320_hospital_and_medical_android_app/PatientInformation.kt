@@ -22,7 +22,6 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import com.google.firebase.firestore.AggregateSource
 
-
 class PatientInformation : AppCompatActivity() {
 
     private lateinit var firstNameInput: EditText
@@ -69,31 +68,25 @@ class PatientInformation : AppCompatActivity() {
 
         //Fetching role
         val ROLE = intent.getStringExtra("ROLE") ?: "patient"
-        val userId = intent.getStringExtra("uid") ?: null
+        val UID = intent.getStringExtra("UID") ?: null
 
         initializeFucntionalities()
 
-        if (userId != null) {
+        if (UID != null) {
             db.collection("Patients")
-                .document(userId)
+                .document(UID)
                 .get()
                 .addOnSuccessListener { document ->
                     if(document.exists()) {
-                        getPatient(userId)
+                        getPatient(UID)
                     }else {
                         submitBtn.setOnClickListener(){
-                            addPatient(userId, "added", ROLE)
+                            addPatient(UID, "added", ROLE)
                         }
                     }
                 }
         }
     }
-
-    // Okay so Patient Information is both an activity script.
-    // and a class script.
-    // Since it has:
-    // 1. constructor
-    // 2. getters and setters.
 
     data class Patient (
         var firstName: String? = null,
@@ -126,8 +119,8 @@ class PatientInformation : AppCompatActivity() {
 
         editTextAccess(false)
 
-        submitBtn.visibility = View.INVISIBLE
-        cancelBtn.visibility = View.INVISIBLE
+        submitBtn.visibility = View.GONE
+        cancelBtn.visibility = View.GONE
         updateBtn.visibility = View.VISIBLE
 
         db.collection("Patients")
@@ -148,7 +141,7 @@ class PatientInformation : AppCompatActivity() {
 
                         submitBtn.visibility = View.VISIBLE
                         cancelBtn.visibility = View.VISIBLE
-                        updateBtn.visibility = View.INVISIBLE
+                        updateBtn.visibility = View.GONE
 
                         submitBtn.setOnClickListener() {
                             addPatient(UID, "updated", "")
@@ -202,13 +195,7 @@ class PatientInformation : AppCompatActivity() {
                             .document(ASSIGN_UID)
                             .set(patient)
                             .addOnSuccessListener {
-                                Toast.makeText(this, "Patient information ${status}!", Toast.LENGTH_SHORT).show()
-                                val intent = Intent(this, Dashboard::class.java)
-                                intent.putExtra("ROLE", "patient")
-                                intent.putExtra("UID", ASSIGN_UID)
-                                intent.putExtra("NAME", "${firstName} ${lastName}")
-
-                                startActivity(intent)
+                                directToDashboard(status, "patient", UID, "${firstName} ${lastName}")
                             }
                             .addOnFailureListener { e ->
                                 Toast.makeText(this, "Error: $e", Toast.LENGTH_SHORT).show()
@@ -220,14 +207,23 @@ class PatientInformation : AppCompatActivity() {
                 .document(UID)
                 .set(patient)
                 .addOnSuccessListener {
-                    Toast.makeText(this, "Patient information ${status}!", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(this, Dashboard::class.java)
-                    startActivity(intent)
+                    directToDashboard(status, ROLE, UID, "${firstName} ${lastName}")
                 }
                 .addOnFailureListener { e ->
                     Toast.makeText(this, "Error: $e", Toast.LENGTH_SHORT).show()
                 }
         }
+    }
+
+    fun directToDashboard(status: String, ROLE: String, UID: String, NAME: String){
+        Toast.makeText(this, "Patient information ${status}!", Toast.LENGTH_SHORT).show()
+
+        val intent = Intent(this, Dashboard::class.java)
+        intent.putExtra("ROLE", "patient")
+        intent.putExtra("UID", UID)
+        intent.putExtra("NAME", NAME)
+
+        startActivity(intent)
     }
 
     fun initializeFucntionalities() {
