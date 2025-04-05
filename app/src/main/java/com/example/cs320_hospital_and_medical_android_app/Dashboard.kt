@@ -170,7 +170,11 @@ class Dashboard : AppCompatActivity() {
         }
 
         prescriptionBtn.setOnClickListener {
-            startActivity(Intent(this, Prescription::class.java))
+            val intent = Intent(this, Prescription::class.java)
+            intent.putExtra("ROLE", ROLE)
+            intent.putExtra("UID", UID)
+            startActivity(intent)
+
         }
     }
 
@@ -181,6 +185,7 @@ class Dashboard : AppCompatActivity() {
         qrBtn.setOnClickListener {
             val intent = Intent(this, QRReader::class.java)
             intent.putExtra("ROLE", ROLE)
+            intent.putExtra("UID", UID)
             startActivity(intent)
         }
 
@@ -366,8 +371,6 @@ class Dashboard : AppCompatActivity() {
 
                                 // Call Button
                                 callBtn.setOnClickListener {
-                                    Log.d("CALL_PATIENT", "Calling patient with appointmentId: $appointmentId")
-
                                     db.collection("appointments").document(appointmentId)
                                         .update(
                                             mapOf(
@@ -378,10 +381,6 @@ class Dashboard : AppCompatActivity() {
                                         )
                                         .addOnSuccessListener {
                                             Toast.makeText(this, "Patient called to nurse station.", Toast.LENGTH_SHORT).show()
-//                                            // Remove task from nurse SA QR
-//                                            db.collection("assignments").document(UID)
-//                                                .delete()
-//                                            loadScheduleCard("nurse", UID)
                                         }
                                         .addOnFailureListener {
                                             Toast.makeText(this, "Failed to call the patient.", Toast.LENGTH_SHORT).show()

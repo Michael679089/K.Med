@@ -19,7 +19,9 @@ class Prescription : AppCompatActivity() {
     private lateinit var viewFlipper: ViewFlipper
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
-    private lateinit var userRole: String
+
+    private lateinit var ROLE: String
+    private lateinit var UID: String
 
     private lateinit var recyclerPrescription: RecyclerView
     private val prescriptions = mutableListOf<PrescriptionModel>()
@@ -38,7 +40,9 @@ class Prescription : AppCompatActivity() {
         db = FirebaseFirestore.getInstance()
 
         // Extract role & patient info from Intent
-        userRole = intent.getStringExtra("ROLE") ?: "patient"
+        ROLE = intent.getStringExtra("ROLE").toString()
+        UID = intent.getStringExtra("UID").toString()
+
         selectedPatientId = intent.getStringExtra("patientId")
         selectedPatientName = intent.getStringExtra("patientName")
 
@@ -47,7 +51,7 @@ class Prescription : AppCompatActivity() {
 
         // Show add button
         val addPrescriptionBtn: ImageButton = findViewById(R.id.addPrescriptionBtn)
-        if (userRole == "doctor") {
+        if (ROLE == "doctor") {
             addPrescriptionBtn.visibility = View.VISIBLE
             addPrescriptionBtn.setOnClickListener { prescriptionForm() }
         } else {
@@ -61,26 +65,31 @@ class Prescription : AppCompatActivity() {
     private fun listPrescription() {
         viewFlipper.displayedChild = 0
 
-        val currentUserId = auth.currentUser?.uid ?: return
+        var dbAccessFlow = db.collection("prescriptions").whereEqualTo("patientId", UID).orderBy("createdAt")
 
-        db.collection("prescriptions")
-            .whereEqualTo(if (userRole == "doctor") "doctorId" else "patientId", currentUserId)
-            .orderBy("createdAt")
-            .get()
-            .addOnSuccessListener { result ->
-                prescriptions.clear()
-                for (document in result) {
-                    val item = document.toObject(PrescriptionModel::class.java)
-                    prescriptions.add(item)
+        if (ROLE == "doctor") {
+            dbAccessFlow = db.collection("prescriptions").whereEqualTo("patientId", selectedPatientId).whereEqualTo("doctorId", UID).orderBy("createdAt")
+        }
+
+        dbAccessFlow.addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    createToast("Failed to load prescriptions: ${error.message}")
+                    return@addSnapshotListener
                 }
 
-                recyclerPrescription.adapter = PrescriptionAdapter(prescriptions) { selected ->
-                    viewPrescription(selected)
+                if (snapshot != null) {
+                    prescriptions.clear()
+                    for (document in snapshot) {
+                        val item = document.toObject(PrescriptionModel::class.java)
+                        prescriptions.add(item)
+                    }
+
+                    recyclerPrescription.adapter = PrescriptionAdapter(prescriptions) { selected ->
+                        viewPrescription(selected)
+                    }
                 }
             }
-            .addOnFailureListener {
-                createToast("Failed to load prescriptions")
-            }
+
     }
 
     // View a selected prescription in detail view
@@ -95,7 +104,7 @@ class Prescription : AppCompatActivity() {
         val btnEdit: ImageButton = findViewById(R.id.btnEditPrescription)
         val btnDelete: ImageButton = findViewById(R.id.btnDeletePrescription)
 
-        if (userRole == "doctor") {
+        if (ROLE == "doctor") {
             btnEdit.visibility = View.VISIBLE
             btnDelete.visibility = View.VISIBLE
 
@@ -127,8 +136,6 @@ class Prescription : AppCompatActivity() {
         val doctorName: TextView = findViewById(R.id.doctor)
         val dateText: TextView = findViewById(R.id.date)
 
-        val uid = auth.currentUser?.uid ?: return
-
         // Edit existing
         if (existing != null) {
             reasonInput.setText(existing.details)
@@ -138,8 +145,13 @@ class Prescription : AppCompatActivity() {
             // New entry
             reasonInput.setText("")
 
-            val currentUser = auth.currentUser
-            doctorName.text = currentUser?.displayName ?: "Dr. Unknown"
+            db.collection("Doctors").document(UID)
+                .get()
+                .addOnSuccessListener { document ->
+                    val firstName = document.getString("firstName") ?: "Unknown"
+                    val lastName = document.getString("lastName") ?: "Unknown"
+                    doctorName.text = "$firstName $lastName"
+                }
 
             val formatter = SimpleDateFormat("MMMM d, yyyy", Locale.getDefault())
             val today = formatter.format(Date())
@@ -147,9 +159,12 @@ class Prescription : AppCompatActivity() {
         }
 
         publishBtn.setOnClickListener {
+
+            Log.d("LOLAPOP", "$UID")
+
             val newPrescription = PrescriptionModel(
                 id = existing?.id ?: db.collection("prescriptions").document().id,
-                doctorId = uid,
+                doctorId = UID,
                 doctorName = doctorName.text.toString(),
                 patientId = existing?.patientId ?: selectedPatientId.orEmpty(), // ✅ FIXED: Uses passed patientId
                 date = dateText.text.toString(),

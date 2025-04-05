@@ -32,8 +32,8 @@ class QRReader : AppCompatActivity() {
     private lateinit var requestCameraPermissionLauncher: ActivityResultLauncher<String> // this is the permission launcher
     private lateinit var qrScanner: QRCodeScannerClass
 
-    private lateinit var userROLE : String
-    private lateinit var userUID : String
+    private lateinit var ROLE : String
+    private lateinit var UID : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d("DEBUG", "You are now in QR Reader View")
@@ -47,13 +47,12 @@ class QRReader : AppCompatActivity() {
         }
 
         // Get the Intent Extra Information
-        userROLE = intent.getStringExtra("ROLE") ?: "Unknown Role"
-        userUID = intent.getStringExtra("UID") ?: "Unknown UID"
+        ROLE = intent.getStringExtra("ROLE").toString()
+        UID = intent.getStringExtra("UID").toString()
 
         // Initialize permission launcher
         initPermissionLauncher()
 
-        Log.d("DEBUG", "Login Page > You are now looking at qr_reader.xml activity")
         setContentView(R.layout.qr_reader)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -143,8 +142,6 @@ class QRReader : AppCompatActivity() {
     private fun openQRReaderDisplayPatientInfoActivity(editTextPIDValue: String) { // ## The Function after scanning.
         setContentView(R.layout.qr_reader_view)
 
-        userROLE = intent.getStringExtra("ROLE").toString()
-
         // Get the latest Appointment (⏰ asynchronous function)
         val dbHandler = DBHandlerClass()
         dbHandler.getLatestAppointment(editTextPIDValue) { latestAppointment -> // ⏰ asynchronous function
@@ -175,7 +172,7 @@ class QRReader : AppCompatActivity() {
                 val bloodPressureET : EditText = findViewById(R.id.editBloodPressure)
                 val weightInPoundsET : EditText = findViewById(R.id.editWeight)
 
-                if (userROLE == "nurse") {
+                if (ROLE == "nurse") {
                     Log.d("DEBUG", "you are nurse")
                     Toast.makeText(this, "Input the patient's Blood Pressure and Weight", Toast.LENGTH_LONG).show()
                     val nurseSubmitBTN : Button = findViewById(R.id.btnNurseSubmit)
@@ -193,9 +190,8 @@ class QRReader : AppCompatActivity() {
                         }
                     }
                 }
-                else if (userROLE == "doctor") {
+                else if (ROLE == "doctor") {
                     Log.d("DEBUG", "you are doctor")
-                    Toast.makeText(this, "Give patient prescription or ", Toast.LENGTH_LONG).show()
                     // android:visibility == gone for: Blood Pressure and Weight Edit Text (Disable Nurse-specific UI elements):
                     val bloodPressureWeightInstructionTextView : TextView = findViewById(R.id.textView4)
                     bloodPressureWeightInstructionTextView.visibility = View.GONE
@@ -217,16 +213,19 @@ class QRReader : AppCompatActivity() {
                     val qrReaderButtonView = inflater.inflate(R.layout.qr_reader_button_doctor, doctorButtonContainerLinearLayout, false)
                     doctorButtonContainerLinearLayout.addView(qrReaderButtonView)
 
+
                     // Inside inflated layout
                     val prescriptionBTN : Button = findViewById(R.id.btnSubmitDoctor)
                     prescriptionBTN.setOnClickListener {
                         val intent = Intent(this, Prescription::class.java)
-                        intent.putExtra("ROLE", userROLE) //
-                        intent.putExtra("UID", userUID) //
+                        intent.putExtra("ROLE", ROLE)
+                        intent.putExtra("UID", UID)
                         intent.putExtra("patientId", patientIDVal)
                         intent.putExtra("patientName", patientNameVal)
                         startActivity(intent)
                     }
+
+
                     val forExitBTN : Button = findViewById(R.id.btnDoctorAction)
                     forExitBTN.setOnClickListener {
                         Log.d("DEBUG", "Clicked For Exit")
@@ -240,8 +239,8 @@ class QRReader : AppCompatActivity() {
                 Log.d("DEBUG", "ERROR: No appointments found.")
 
                 val intent = Intent(this, Dashboard::class.java)
-
-                intent.putExtra("UID", userUID)
+                intent.putExtra("ROLE", ROLE)
+                intent.putExtra("UID", UID)
                 startActivity(intent)
             }
         }
