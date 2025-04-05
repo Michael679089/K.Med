@@ -45,8 +45,7 @@ class Prescription : AppCompatActivity() {
         selectedPatientId = intent.getStringExtra("patientId")
         selectedPatientName = intent.getStringExtra("patientName")
 
-        viewFlipper = findViewById(R.id.viewFlipper)
-
+        viewFlipper = findViewById(R.id.prescription_main)
         recyclerPrescription = findViewById(R.id.recyclerPrescription)
         recyclerPrescription.layoutManager = LinearLayoutManager(this)
         recyclerPrescription.adapter = PrescriptionAdapter(prescriptions) { selected ->
