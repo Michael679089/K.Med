@@ -64,8 +64,7 @@ class PatientAppointment : AppCompatActivity() {
         //For inserting card
         val inflater = LayoutInflater.from(this)
         //Access the schedule from Firebase
-        db.collection("appointments")
-            .whereEqualTo("patientID", PID).addSnapshotListener { snapshots, _ ->
+        db.collection("appointments").whereEqualTo("patientID", PID).addSnapshotListener { snapshots, _ ->
             listAppointments?.removeAllViews()
             //Display the schedule info
             snapshots?.forEach { document ->

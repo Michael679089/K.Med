@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:ignore="HardcodedText">
 
     <!-- Watermark Logo -->
     <include
@@ -104,6 +105,16 @@
             android:layout_marginBottom="16dp">
 
             <include layout="@layout/schedule_appointment_card_patient" />
+
+            <TextView
+                android:id="@+id/noAppointmentTV"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="20dp"
+                android:text="No appointments available, click the green plus button to add appointment."
+                android:textAlignment="center"
+                android:textSize="20sp"
+                android:visibility="gone"/>
         </LinearLayout>
     </ScrollView>
 
