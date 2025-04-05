@@ -145,7 +145,6 @@ class PatientInformation : AppCompatActivity() {
 
                         submitBtn.setOnClickListener() {
                             addPatient(UID, "updated", "")
-                            getPatient(UID)
                         }
 
                         cancelBtn.setOnClickListener() {
