@@ -28,7 +28,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Title and Add Button -->
+        <!-- Title + Add Button -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/titleContainer"
             android:layout_width="0dp"
@@ -51,7 +51,8 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/addPrescriptionBtn" />
+                app:layout_constraintEnd_toStartOf="@id/addPrescriptionBtn"
+                app:layout_goneMarginEnd="16dp" />
 
             <ImageButton
                 android:id="@+id/addPrescriptionBtn"
@@ -70,19 +71,19 @@
                 app:tint="@color/white" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!-- RecyclerView only -->
+        <!-- RecyclerView (for dynamic prescription cards) -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerPrescription"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_margin="20dp"
             android:clipToPadding="false"
             android:paddingBottom="12dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="16dp"
             app:layout_constraintTop_toBottomOf="@id/titleContainer"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             tools:listitem="@layout/prescription_card" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ViewFlipper>

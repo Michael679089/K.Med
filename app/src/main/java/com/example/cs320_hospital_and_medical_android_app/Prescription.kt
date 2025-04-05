@@ -4,8 +4,11 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ViewFlipper
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cs320_hospital_and_medical_android_app.models.PrescriptionModel
 import com.google.firebase.Timestamp
@@ -26,7 +29,6 @@ class Prescription : AppCompatActivity() {
     private lateinit var recyclerPrescription: RecyclerView
     private val prescriptions = mutableListOf<PrescriptionModel>()
 
-    // Patient info passed via Intent
     private var selectedPatientId: String? = null
     private var selectedPatientName: String? = null
 
@@ -35,22 +37,30 @@ class Prescription : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.prescription)
 
-        // Firebase Auth & Firestore
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 
-        // Extract role & patient info from Intent
         ROLE = intent.getStringExtra("ROLE").toString()
         UID = intent.getStringExtra("UID").toString()
-
         selectedPatientId = intent.getStringExtra("patientId")
         selectedPatientName = intent.getStringExtra("patientName")
 
-        viewFlipper = findViewById(R.id.viewFlipper)
+        viewFlipper = findViewById(R.id.prescription_main)
         recyclerPrescription = findViewById(R.id.recyclerPrescription)
+        recyclerPrescription.layoutManager = LinearLayoutManager(this)
+        recyclerPrescription.adapter = PrescriptionAdapter(prescriptions) { selected ->
+            viewPrescription(selected)
+        }
 
-        // Show add button
+        listPrescription()
+    }
+
+    private fun listPrescription() {
+        viewFlipper.displayedChild = 0
+
         val addPrescriptionBtn: ImageButton = findViewById(R.id.addPrescriptionBtn)
+
+        // Add Prescription Button: Only visible for doctors
         if (ROLE == "doctor") {
             addPrescriptionBtn.visibility = View.VISIBLE
             addPrescriptionBtn.setOnClickListener { prescriptionForm() }
@@ -58,43 +68,36 @@ class Prescription : AppCompatActivity() {
             addPrescriptionBtn.visibility = View.GONE
         }
 
-        listPrescription()
-    }
-
-    // Load prescriptions from Firestore
-    private fun listPrescription() {
-        viewFlipper.displayedChild = 0
-
-        var dbAccessFlow = db.collection("prescriptions").whereEqualTo("patientId", UID).orderBy("createdAt")
-
-        if (ROLE == "doctor") {
-            dbAccessFlow = db.collection("prescriptions").whereEqualTo("patientId", selectedPatientId).whereEqualTo("doctorId", UID).orderBy("createdAt")
+        // Fetch prescriptions from Firestore based on user role
+        val query = if (ROLE == "doctor") {
+            // Doctor views prescriptions for the selected patient
+            db.collection("prescriptions")
+                .whereEqualTo("patientId", selectedPatientId)
+                .orderBy("createdAt")
+        } else {
+            // Patient views their own prescriptions
+            db.collection("prescriptions")
+                .whereEqualTo("patientId", UID)
+                .orderBy("createdAt")
         }
 
-        dbAccessFlow.addSnapshotListener { snapshot, error ->
-                if (error != null) {
-                    createToast("Failed to load prescriptions: ${error.message}")
-                    return@addSnapshotListener
-
-                    Log.e("LOLPOP", "${error.message}")
-                }
-
-                if (snapshot != null) {
-                    prescriptions.clear()
-                    for (document in snapshot) {
-                        val item = document.toObject(PrescriptionModel::class.java)
-                        prescriptions.add(item)
-                    }
-
-                    recyclerPrescription.adapter = PrescriptionAdapter(prescriptions) { selected ->
-                        viewPrescription(selected)
-                    }
-                }
+        query.addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                createToast("Failed to load prescriptions: ${error.message}")
+                return@addSnapshotListener
             }
 
+            if (snapshot != null) {
+                prescriptions.clear()
+                for (document in snapshot) {
+                    val item = document.toObject(PrescriptionModel::class.java)
+                    prescriptions.add(item)
+                }
+                recyclerPrescription.adapter?.notifyDataSetChanged()
+            }
+        }
     }
 
-    // View a selected prescription in detail view
     private fun viewPrescription(prescription: PrescriptionModel) {
         viewFlipper.displayedChild = 1
 
@@ -128,7 +131,6 @@ class Prescription : AppCompatActivity() {
         }
     }
 
-    // Create or edit a prescription
     private fun prescriptionForm(existing: PrescriptionModel? = null) {
         viewFlipper.displayedChild = 2
 
@@ -138,15 +140,16 @@ class Prescription : AppCompatActivity() {
         val doctorName: TextView = findViewById(R.id.doctor)
         val dateText: TextView = findViewById(R.id.date)
 
-        // Edit existing
+        // If we are editing an existing prescription, populate fields
         if (existing != null) {
             reasonInput.setText(existing.details)
             doctorName.text = existing.doctorName
             dateText.text = existing.date
         } else {
-            // New entry
+            // Initialize for creating a new prescription
             reasonInput.setText("")
 
+            // Fetch the doctor's name asynchronously from Firestore
             db.collection("Doctors").document(UID)
                 .get()
                 .addOnSuccessListener { document ->
@@ -155,29 +158,28 @@ class Prescription : AppCompatActivity() {
                     doctorName.text = "$firstName $lastName"
                 }
 
+            // Set today's date
             val formatter = SimpleDateFormat("MMMM d, yyyy", Locale.getDefault())
             val today = formatter.format(Date())
             dateText.text = today
         }
 
         publishBtn.setOnClickListener {
-
-            Log.d("LOLAPOP", "$UID")
-
             val newPrescription = PrescriptionModel(
-                id = existing?.id ?: db.collection("prescriptions").document().id,
+                id = existing?.id ?: db.collection("prescriptions").document().id, // Generate new ID if no existing prescription
                 doctorId = UID,
                 doctorName = doctorName.text.toString(),
-                patientId = existing?.patientId ?: selectedPatientId.orEmpty(), // ✅ FIXED: Uses passed patientId
+                patientId = existing?.patientId ?: selectedPatientId.orEmpty(), // Use selectedPatientId for new prescription
                 date = dateText.text.toString(),
                 details = reasonInput.text.toString(),
                 createdAt = Timestamp.now()
             )
 
+            // Save the prescription to Firestore
             db.collection("prescriptions").document(newPrescription.id).set(newPrescription)
                 .addOnSuccessListener {
                     createToast("Prescription saved")
-                    listPrescription()
+                    listPrescription() // Refresh list after saving
                 }
                 .addOnFailureListener {
                     createToast("Failed to save prescription")
@@ -185,9 +187,10 @@ class Prescription : AppCompatActivity() {
         }
 
         cancelBtn.setOnClickListener {
-            listPrescription()
+            listPrescription() // Go back to the prescription list
         }
     }
+
 
     private fun createToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()

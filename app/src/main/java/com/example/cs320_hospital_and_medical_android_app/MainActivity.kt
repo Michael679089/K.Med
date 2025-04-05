@@ -111,7 +111,6 @@ class MainActivity : AppCompatActivity() {
             .document()
             .addSnapshotListener { document, patientError ->
                 if (patientError != null) {
-                    Log.e("PATIENT_DOC", "Error fetching patient data: ${patientError.message}")
                     return@addSnapshotListener
                 }
 

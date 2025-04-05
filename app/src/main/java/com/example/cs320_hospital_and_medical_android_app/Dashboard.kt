@@ -174,8 +174,6 @@ class Dashboard : AppCompatActivity() {
             intent.putExtra("ROLE", ROLE)
             intent.putExtra("UID", UID)
             startActivity(intent)
-
-            startActivity(Intent(this, Prescription::class.java))
         }
     }
 
