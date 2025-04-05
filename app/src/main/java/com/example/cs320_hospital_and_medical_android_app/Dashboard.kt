@@ -15,6 +15,7 @@ import android.widget.Toast
 import android.widget.ImageView
 import android.view.View
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.firebase.firestore.Query
 import java.text.SimpleDateFormat
@@ -58,7 +59,7 @@ class Dashboard : AppCompatActivity() {
             startActivity(intent)
         }
 
-        val buttonSectionContainer = findViewById<FrameLayout>(R.id.buttonSectionContainer)
+        val buttonSectionContainer = findViewById<ScrollView>(R.id.buttonSectionContainer)
         val maxHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics).toInt()
         buttonSectionContainer.post {
             if (buttonSectionContainer.height > maxHeight) { // Hardcoded max height in pixels
@@ -75,7 +76,6 @@ class Dashboard : AppCompatActivity() {
             val rootView = findViewById<ConstraintLayout>(R.id.main)
             val inflater = LayoutInflater.from(this)
             val qrZoomedInView = inflater.inflate(R.layout.qr_zoomed_in, rootView, false)
-            Log.d("DEBUG", "reached here")
 
             // Populate data in the zoomed-in layout
             val qrCodeIV = qrZoomedInView.findViewById<ImageView>(R.id.qrCodeIV)
@@ -127,7 +127,7 @@ class Dashboard : AppCompatActivity() {
 
     // Load RBA Buttons
     private fun loadRoleButtons(ROLE: String, UID: String) {
-        val container = findViewById<FrameLayout>(R.id.buttonSectionContainer)
+        val container = findViewById<ScrollView>(R.id.buttonSectionContainer)
         val inflater = LayoutInflater.from(this)
 
         val layoutRes = when (ROLE) {
