@@ -15,7 +15,6 @@ class QRCodeScannerClass(private val context: Context, private val scanner: Barc
     init {
         scanner.decodeContinuous { result ->
             if (result != null && isScanning) {
-                Toast.makeText(context, "Scanned: ${result.text}", Toast.LENGTH_SHORT).show()
                 Log.d("DEBUG",  "Scanned: ${result.text}")
                 editTextPID.setText(result.text) // Set scanned text to EditText
                 stopScanner()
@@ -41,7 +40,6 @@ class QRCodeScannerClass(private val context: Context, private val scanner: Barc
             scanner.pause()
             isScanning = false
         }
-        Toast.makeText(context, "Click on the QR Scanner to start scanning again", Toast.LENGTH_SHORT).show()
     }
 
     fun toggleFlash() {

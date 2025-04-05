@@ -143,11 +143,12 @@
                 android:textSize="18sp" />
 
             <!-- Nurse ONLY Vitals Display -->
+
             <TextView
                 android:id="@+id/textView4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="input patient's blood pressure and weight." />
+                android:text="Input patient's blood pressure and weight." />
 
             <EditText
                 android:id="@+id/editBloodPressure"
@@ -219,7 +220,7 @@
 
             <!-- Buttons -->
             <Button
-                android:id="@+id/btnNurseSubmit"
+                android:id="@+id/btnQueueDoctor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="#00BFA5"
