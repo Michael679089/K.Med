@@ -42,6 +42,9 @@ class Prescription : AppCompatActivity() {
         selectedPatientId = intent.getStringExtra("patientId")
         selectedPatientName = intent.getStringExtra("patientName")
 
+        Log.d("DEBUG", "Intent patientId: $selectedPatientId")
+        Log.d("DEBUG", "Intent patientName: $selectedPatientName")
+
         viewFlipper = findViewById(R.id.viewFlipper)
         recyclerPrescription = findViewById(R.id.recyclerPrescription)
 
@@ -156,6 +159,8 @@ class Prescription : AppCompatActivity() {
                 details = reasonInput.text.toString(),
                 createdAt = Timestamp.now()
             )
+
+            Log.d("DEBUG", "Saving prescription: $newPrescription")
 
             db.collection("prescriptions").document(newPrescription.id).set(newPrescription)
                 .addOnSuccessListener {
