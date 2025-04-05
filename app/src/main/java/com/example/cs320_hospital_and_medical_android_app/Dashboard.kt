@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import android.content.Intent
 import android.util.Log
@@ -16,7 +15,6 @@ import android.widget.ImageView
 import android.view.View
 import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.google.firebase.firestore.Query
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -24,83 +22,108 @@ import java.util.Locale
 
 class Dashboard : AppCompatActivity() {
 
+    private lateinit var UID : String
+    private lateinit var ROLE : String
+    private lateinit var NAME : String
+
     override fun onCreate(savedInstanceState: Bundle?) { // MAIN FUNCTION
         Log.d("DEBUG", "You are now in Dashboard Page")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.dashboard)
 
         // Load User Info
-        val ROLE = intent.getStringExtra("ROLE") ?: return
-        val NAME = intent.getStringExtra("NAME") ?: "No Name"
-        val UID = intent.getStringExtra("UID") ?: "Unknown"
+        UID = intent.getStringExtra("UID") ?: "Unknown"
+        ROLE = intent.getStringExtra("ROLE") ?: ""
+        NAME = intent.getStringExtra("NAME") ?: ""
 
+        val dbHandler = DBHandlerClass()
+
+        if (ROLE.isBlank()) {
+            dbHandler.getRoleOfLoggedInUser(UID) { retrievedRole ->
+                if (retrievedRole != "") {
+                    ROLE = retrievedRole
+
+                    dbHandler.getNameOfLoggedInUser(UID, retrievedRole) { retrievedName ->
+                        if (retrievedName != "") {
+                            NAME = retrievedName
+                            updateUI()
+                        }
+                    }
+                }
+            }
+        } else {
+            updateUI()
+        }
+    }
+
+    // # FUNCTIONS
+
+    // ## updating UI
+    private fun updateUI() {
         val nameView = findViewById<TextView>(R.id.accountName)
         val idView = findViewById<TextView>(R.id.accountID)
         val qrCode = findViewById<ImageView>(R.id.qrCode)
 
-        Log.d("DEBUG", ROLE)
-
-        val qrGenerator = QRCodeGeneratorClass()
-        qrGenerator.generateQRCodeToImageView(qrCode, UID)
-
         nameView.text = NAME
         idView.text = UID
+        Log.d("DEBUG", "Final ROLE: $ROLE")
 
         patientInformation(ROLE, UID)
         loadRoleButtons(ROLE, UID)
         loadScheduleCard(ROLE, UID)
 
+        // Generate QR Code
+        val qrGenerator = QRCodeGeneratorClass()
+        qrGenerator.generateQRCodeToImageView(qrCode, UID)
+
+        // Adjust Button Section Height
         val buttonSectionContainer = findViewById<FrameLayout>(R.id.buttonSectionContainer)
         val maxHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics).toInt()
         buttonSectionContainer.post {
-            if (buttonSectionContainer.height > maxHeight) { // Hardcoded max height in pixels
+            if (buttonSectionContainer.height > maxHeight) {
                 buttonSectionContainer.layoutParams.height = maxHeight
                 buttonSectionContainer.requestLayout()
             }
         }
 
-        // QR Code - Zoomed In - Overlay
+        // QR Code Click - Zoom In
         qrCode.setOnClickListener {
-            Log.d("DEBUG", "Going to qr zoomed in")
+            Log.d("DEBUG", "Going to QR zoomed in")
 
-            // Ensure the root layout is a FrameLayout (we want to stack views)
             val rootView = findViewById<ConstraintLayout>(R.id.main)
             val inflater = LayoutInflater.from(this)
             val qrZoomedInView = inflater.inflate(R.layout.qr_zoomed_in, rootView, false)
-            Log.d("DEBUG", "reached here")
 
-            // Populate data in the zoomed-in layout
+            // Populate zoomed-in layout
             val qrCodeIV = qrZoomedInView.findViewById<ImageView>(R.id.qrCodeIV)
-            qrGenerator.generateQRCodeToImageView(qrCodeIV, UID)
-
             val qrZoomedInIDNumber = qrZoomedInView.findViewById<TextView>(R.id.qrZoomedInIDNumber)
-            qrZoomedInIDNumber.text = UID
-
             val qrZoomedInUsername = qrZoomedInView.findViewById<TextView>(R.id.qrZoomedInUsername)
-            qrZoomedInUsername.text = NAME
-
             val qrZoomedInRole = qrZoomedInView.findViewById<TextView>(R.id.qrZoomedInRole)
-            qrZoomedInRole.text = ROLE
+
+            qrZoomedInIDNumber.text = UID
+            qrZoomedInUsername.text = NAME ?: "No Name"
+            qrZoomedInRole.text = ROLE ?: "Unknown"
+
+            val qrGenerator = QRCodeGeneratorClass()
+            qrGenerator.generateQRCodeToImageView(qrCodeIV, UID)
 
             val goBackBTN = qrZoomedInView.findViewById<Button>(R.id.qrZoomedInGoBackBTN)
             goBackBTN.setOnClickListener {
-                rootView.removeView(qrZoomedInView)  // Remove the overlay when clicking "Go Back"
+                rootView.removeView(qrZoomedInView)
             }
 
-            // Set layout params to ensure it covers the full screen
-            val params = LinearLayout.LayoutParams(
+            // Set layout params
+            qrZoomedInView.layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT
             )
-            qrZoomedInView.layoutParams = params
+            qrZoomedInView.elevation = 1000f
 
-            // Set the elevation (z-index) to ensure it's on top of other views
-            qrZoomedInView.elevation = 1000f  // You can adjust this value for desired stacking order
-
-            // Add the zoomed-in view on top of the dashboard
+            // Add overlay
             rootView.addView(qrZoomedInView)
         }
     }
+
 
     private fun patientInformation(ROLE: String, PID: String) {
         val editPatientBtn = findViewById<ImageView>(R.id.editPatientBtn)
@@ -135,20 +158,20 @@ class Dashboard : AppCompatActivity() {
 
             // Role-based listeners
             when (ROLE) {
-                "patient" -> PatientButtons(view, UID, ROLE)
-                "doctor" -> DoctorButtons(view, UID, ROLE)
+                "patient" -> patientButtons(view, UID, ROLE)
+                "doctor" -> doctorButtons(view, UID, ROLE)
                 "nurse"  -> NurseButtons(view, UID, ROLE)
             }
         }
     }
 
     // Button Listeners
-    private fun PatientButtons(view: View, UID: String, ROLE: String) {
-        val doctorBtn = view.findViewById<LinearLayout>(R.id.doctorBtn)
-        val scheduleBtn = view.findViewById<LinearLayout>(R.id.scheduleBtn)
+    private fun patientButtons(view: View, UID: String, ROLE: String) {
+        val doctorsBtn = view.findViewById<LinearLayout>(R.id.doctorBtn)
+        val scheduleBtn = view.findViewById<LinearLayout>(R.id.scheduleBtn) // Appointment button.
         val prescriptionBtn = view.findViewById<LinearLayout>(R.id.prescriptionBtn)
 
-        doctorBtn.setOnClickListener {
+        doctorsBtn.setOnClickListener {
             val intent = Intent(this, DoctorSchedule::class.java)
             intent.putExtra("ROLE", ROLE)
             intent.putExtra("UID", UID)
@@ -166,7 +189,7 @@ class Dashboard : AppCompatActivity() {
         }
     }
 
-    private fun DoctorButtons(view: View, UID: String, ROLE: String) {
+    private fun doctorButtons(view: View, UID: String, ROLE: String) {
         val qrBtn = view.findViewById<LinearLayout>(R.id.patientQRBtn)
         val scheduleBtn = view.findViewById<LinearLayout>(R.id.doctorAccessSchedule)
 

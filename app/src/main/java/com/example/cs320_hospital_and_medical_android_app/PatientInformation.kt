@@ -5,6 +5,7 @@ import android.content.Intent
 import android.health.connect.datatypes.units.Length
 import android.icu.util.Calendar
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
@@ -40,6 +41,7 @@ class PatientInformation : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d("DEBUG", "You are now in edit patient view")
 
         //Firebase Initialization
         db = FirebaseFirestore.getInstance()
@@ -67,8 +69,7 @@ class PatientInformation : AppCompatActivity() {
 
         //Fetching role
         val ROLE = intent.getStringExtra("ROLE") ?: "patient"
-
-        val userId = intent.getStringExtra("uid") ?: "Unknown"
+        val userId = intent.getStringExtra("uid") ?: null
 
         initializeFucntionalities()
 
