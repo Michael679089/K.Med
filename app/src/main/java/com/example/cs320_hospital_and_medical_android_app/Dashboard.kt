@@ -74,7 +74,6 @@ class Dashboard : AppCompatActivity() {
             val rootView = findViewById<ConstraintLayout>(R.id.main)
             val inflater = LayoutInflater.from(this)
             val qrZoomedInView = inflater.inflate(R.layout.qr_zoomed_in, rootView, false)
-            Log.d("DEBUG", "reached here")
 
             // Populate data in the zoomed-in layout
             val qrCodeIV = qrZoomedInView.findViewById<ImageView>(R.id.qrCodeIV)
