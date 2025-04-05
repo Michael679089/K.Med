@@ -130,6 +130,7 @@ class QRReader : AppCompatActivity() {
         btnSubmit.setOnClickListener {
             val editTextPIDValue = editTextPid.text.toString().trim()
             if (editTextPIDValue.isNotEmpty()) {
+                Toast.makeText(this, editTextPid.text.toString(), Toast.LENGTH_SHORT).show()
                 openQRReaderDisplayPatientInfoActivity(editTextPIDValue)
             }
             else {
@@ -143,7 +144,6 @@ class QRReader : AppCompatActivity() {
         setContentView(R.layout.qr_reader_view)
 
         userROLE = intent.getStringExtra("ROLE").toString()
-        userUID = intent.getStringExtra("UID").toString()
 
         // Get the latest Appointment (⏰ asynchronous function)
         val dbHandler = DBHandlerClass()
@@ -177,26 +177,25 @@ class QRReader : AppCompatActivity() {
 
                 if (userROLE == "nurse") {
                     Log.d("DEBUG", "you are nurse")
-                    val nurseSubmitBTN : Button = findViewById(R.id.btnQueueDoctor)
+                    Toast.makeText(this, "Input the patient's Blood Pressure and Weight", Toast.LENGTH_LONG).show()
+                    val nurseSubmitBTN : Button = findViewById(R.id.btnNurseSubmit)
                     nurseSubmitBTN.setOnClickListener {
                         val bloodPressureETVal = bloodPressureET.text.toString().toDoubleOrNull()
                         val weightInPoundsETVal = weightInPoundsET.text.toString().toDoubleOrNull()
 
-                        if (bloodPressureETVal != null && weightInPoundsETVal != null) {
-                            dbHandler.updateNurseTask(userUID, patientIDVal.toString(), bloodPressureETVal, weightInPoundsETVal)
-                            Toast.makeText(this, "Patient is in Queue", Toast.LENGTH_LONG).show()
-                            val intent = Intent(this, Dashboard::class.java)
-                            intent.putExtra("ROLE", userROLE)
-                            intent.putExtra("UID", userUID)
-                            startActivity(intent)
-
+                        // check if they are numbers.
+                        if (bloodPressureETVal == null || weightInPoundsETVal == null) {
+                            Toast.makeText(this, "ERROR: Blood and Weight have empty values. Input the values.", Toast.LENGTH_LONG).show()
                         } else {
-                            Toast.makeText(this, "Input all fields", Toast.LENGTH_LONG).show()
+                            Toast.makeText(this, "Patient's Blood Pressure: $bloodPressureETVal | Weight: $weightInPoundsETVal", Toast.LENGTH_LONG).show()
+                            // set readyToCall to True. 🚩
+                            dbHandler.setReadyToCall(true, editTextPIDValue)
                         }
                     }
                 }
                 else if (userROLE == "doctor") {
                     Log.d("DEBUG", "you are doctor")
+                    Toast.makeText(this, "Give patient prescription or ", Toast.LENGTH_LONG).show()
                     // android:visibility == gone for: Blood Pressure and Weight Edit Text (Disable Nurse-specific UI elements):
                     val bloodPressureWeightInstructionTextView : TextView = findViewById(R.id.textView4)
                     bloodPressureWeightInstructionTextView.visibility = View.GONE
@@ -204,7 +203,7 @@ class QRReader : AppCompatActivity() {
                     weightInPoundsET.visibility = View.GONE
 
                     // android:visibility == gone for: Remove Queue to Doctor Button from Context
-                    val nurseSubmitBTN : Button = findViewById(R.id.btnQueueDoctor)
+                    val nurseSubmitBTN : Button = findViewById(R.id.btnNurseSubmit)
                     nurseSubmitBTN.visibility = View.GONE
 
                     // switch android:visibility to the following (Doctor-specific UI elements):
@@ -230,13 +229,9 @@ class QRReader : AppCompatActivity() {
                     val forExitBTN : Button = findViewById(R.id.btnDoctorAction)
                     forExitBTN.setOnClickListener {
                         Log.d("DEBUG", "Clicked For Exit")
-                        dbHandler.updateAppointment(userUID, patientIDVal.toString())
-                        Toast.makeText(this, "Patient is for exit", Toast.LENGTH_LONG).show()
-                        val intent = Intent(this, Dashboard::class.java)
-                        intent.putExtra("ROLE", userROLE)
-                        intent.putExtra("UID", userUID)
-                        startActivity(intent)
+                        Toast.makeText(this, "For Exit", Toast.LENGTH_SHORT).show()
                     }
+
                 }
             }
             else { // if no appointments found, return user to dashboard.

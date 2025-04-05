@@ -321,16 +321,6 @@ class Dashboard : AppCompatActivity() {
                                     )
                                 }
 
-                                status == "called_by_doctor" && date == today -> {
-                                    setScheduleLayout(
-                                        R.layout.dashboard_schedule_patient_queue,
-                                        mapOf(
-                                            R.id.textQueueLocation to doc.get("queueStation")?.toString(),
-                                            R.id.textQueueNumber to doc.get("queueNumber")?.toString()
-                                        )
-                                    )
-                                }
-
                                 else -> {
                                     setScheduleLayout(R.layout.dashboard_schedule_none, emptyMap())
                                 }
@@ -382,6 +372,10 @@ class Dashboard : AppCompatActivity() {
                                         )
                                         .addOnSuccessListener {
                                             Toast.makeText(this, "Patient called to nurse station.", Toast.LENGTH_SHORT).show()
+//                                            // Remove task from nurse SA QR
+//                                            db.collection("assignments").document(UID)
+//                                                .delete()
+//                                            loadScheduleCard("nurse", UID)
                                         }
                                         .addOnFailureListener {
                                             Toast.makeText(this, "Failed to call the patient.", Toast.LENGTH_SHORT).show()
@@ -451,12 +445,13 @@ class Dashboard : AppCompatActivity() {
                             callBtn.setOnClickListener {
                                 // Mark appointment done or handled
                                 db.collection("appointments").document(appointmentId)
-                                    .update(mapOf("status" to "called_by_doctor", "queueNumber" to "Please Enter"))
+                                    .update(mapOf("status" to "done"))
                                     .addOnSuccessListener {
-                                        Toast.makeText(this, "Patient is called.", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(this, "Appointment completed.", Toast.LENGTH_SHORT).show()
+                                        loadScheduleCard("doctor", UID)
                                     }
                                     .addOnFailureListener {
-                                        Toast.makeText(this, "Failed to call the patient.", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(this, "Failed to complete appointment.", Toast.LENGTH_SHORT).show()
                                     }
                             }
 
