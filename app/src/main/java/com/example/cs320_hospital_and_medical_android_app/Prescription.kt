@@ -75,6 +75,8 @@ class Prescription : AppCompatActivity() {
                 if (error != null) {
                     createToast("Failed to load prescriptions: ${error.message}")
                     return@addSnapshotListener
+
+                    Log.e("LOLPOP", "${error.message}")
                 }
 
                 if (snapshot != null) {

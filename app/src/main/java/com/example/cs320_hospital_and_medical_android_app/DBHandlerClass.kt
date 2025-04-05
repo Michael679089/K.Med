@@ -12,7 +12,75 @@ class DBHandlerClass() {
     private var db = FirebaseFirestore.getInstance()
     private var auth = FirebaseAuth.getInstance()
 
+    fun updateAppointment(DID: String, PID: String){
+        getAppointmentsByPatientID(PID) { _, documentIds ->
+            if (documentIds.isNotEmpty()) {
+                for (docId in documentIds) {
+                    db.collection("appointments")
+                        .document(docId)
+                        .addSnapshotListener { doc, exception ->
+                            if (doc != null && doc.exists()) {
+                                db.collection("appointments")
+                                    .document(doc.id)
+                                    .update(
+                                        mapOf(
+                                            "status" to "done",
+                                            "queueNumber" to 0,
+                                            "queueStation" to "For Exit",
+                                        )
+                                    )
+                            }
+                        }
+                }
+            }
+        }
+    }
 
+    fun updateNurseTask(NID: String, PID: String, BP_VAL: Double, WEIGHT: Double) {
+        getAppointmentsByPatientID(PID) { _, documentIds ->
+            if (documentIds.isNotEmpty()) {
+                for (docId in documentIds) {
+                    db.collection("appointments")
+                        .document(docId)
+                        .addSnapshotListener { doc, exception ->
+                            if (doc != null && doc.exists()) {
+                                db.collection("assignments")
+                                    .whereEqualTo("nurseId", NID)
+                                    .whereEqualTo("appointmentId", doc.id)
+                                    .get()
+                                    .addOnSuccessListener { snapshot ->
+                                        if (!snapshot.isEmpty) {
+                                            for (document in snapshot) {
+                                                document.reference.delete()
+                                            }
+                                        }
+                                    }
+
+                                val DID = doc.getString("doctorID").toString()
+
+                                db.collection("Doctors")
+                                    .document(DID)
+                                    .get()
+                                    .addOnSuccessListener { snapshot ->
+                                        val DOCTOR_ROOM = snapshot.getString("room").toString()
+                                        db.collection("appointments")
+                                            .document(doc.id)
+                                            .update(
+                                                mapOf(
+                                                    "status" to "queue_doctor",
+                                                    "queueNumber" to 1,
+                                                    "queueStation" to "ROOM $DOCTOR_ROOM",
+                                                    "bloodPressure" to BP_VAL,
+                                                    "weight" to WEIGHT,
+                                                )
+                                            )
+                                    }
+                            }
+                        }
+                }
+            }
+        }
+    }
 
     // # FUNCTIONS
 
