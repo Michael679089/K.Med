@@ -28,6 +28,7 @@ class DBHandlerClass() {
                 val appointments = mutableListOf<Map<String, Any>>()
                 val documentIds = mutableListOf<String>()
 
+
                 if (!documents.isEmpty) {
                     for (document in documents) {
                         appointments.add(document.data)
