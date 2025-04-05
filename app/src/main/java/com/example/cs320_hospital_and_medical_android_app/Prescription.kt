@@ -154,20 +154,27 @@ class Prescription : AppCompatActivity() {
                 id = existing?.id ?: db.collection("prescriptions").document().id,
                 doctorId = uid,
                 doctorName = doctorName.text.toString(),
-                patientId = existing?.patientId ?: selectedPatientId.orEmpty(), // ✅ FIXED: Uses passed patientId
+                patientId = existing?.patientId ?: selectedPatientId.orEmpty(),
                 date = dateText.text.toString(),
                 details = reasonInput.text.toString(),
                 createdAt = Timestamp.now()
             )
 
             Log.d("DEBUG", "Saving prescription: $newPrescription")
+            Log.d("DEBUG", "Saving prescription with values:")
+            Log.d("DEBUG", "Doctor ID: $uid")
+            Log.d("DEBUG", "Doctor Name: ${doctorName.text}")
+            Log.d("DEBUG", "Patient ID: $selectedPatientId")
+            Log.d("DEBUG", "Details: ${reasonInput.text}")
+
 
             db.collection("prescriptions").document(newPrescription.id).set(newPrescription)
                 .addOnSuccessListener {
                     createToast("Prescription saved")
                     listPrescription()
                 }
-                .addOnFailureListener {
+                .addOnFailureListener { e ->
+                    Log.e("DEBUG", "Failed to save prescription", e)
                     createToast("Failed to save prescription")
                 }
         }
