@@ -2,6 +2,7 @@ package com.example.cs320_hospital_and_medical_android_app
 
 import android.content.Context
 import android.widget.EditText
+import android.util.Log
 import android.widget.Toast
 import com.journeyapps.barcodescanner.BarcodeView
 
@@ -15,12 +16,14 @@ class QRCodeScannerClass(private val context: Context, private val scanner: Barc
         scanner.decodeContinuous { result ->
             if (result != null && isScanning) {
                 Toast.makeText(context, "Scanned: ${result.text}", Toast.LENGTH_SHORT).show()
+                Log.d("DEBUG",  "Scanned: ${result.text}")
                 editTextPID.setText(result.text) // Set scanned text to EditText
                 stopScanner()
             }
         }
     }
 
+    // # FUNCTIONS + getters and setters
 
     fun getIsScanning() : Boolean {
         return isScanning

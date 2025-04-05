@@ -6,7 +6,7 @@ import com.google.zxing.BarcodeFormat
 import com.google.zxing.WriterException
 import com.journeyapps.barcodescanner.BarcodeEncoder
 
-class QRCodeGeneratorClass public constructor() {
+class QRCodeGeneratorClass {
     private val qrSize = 300
 
      fun generateQRCodeToImageView(imageView: ImageView, textValue : String) {

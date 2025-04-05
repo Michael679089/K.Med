@@ -10,7 +10,9 @@
         android:layout_height="match_parent">
 
         <include layout="@layout/prescription_list" />
+
         <include layout="@layout/prescription_view" />
+
         <include layout="@layout/prescription_doctor" />
 
     </ViewFlipper>

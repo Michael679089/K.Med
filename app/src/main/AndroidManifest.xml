@@ -31,7 +31,8 @@
             android:exported="false" />
         <activity
             android:name=".PatientAppointment"
-            android:exported="false" />
+            android:exported="false"
+            />
         <activity
             android:name=".AccountRegistration"
             android:exported="false" />
@@ -41,6 +42,7 @@
         <activity
             android:name=".Prescription"
             android:exported="false" />
+        <activity android:name=".QRReaderDisplayPatientInfoActivity" />
         <activity
             android:name=".MainActivity"
             android:exported="true">

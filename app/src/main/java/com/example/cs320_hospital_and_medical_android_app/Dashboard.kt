@@ -26,6 +26,7 @@ class Dashboard : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) { // MAIN FUNCTION
         Log.d("DEBUG", "You are now in Dashboard Page")
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.dashboard)
 
@@ -110,7 +111,8 @@ class Dashboard : AppCompatActivity() {
             editPatientBtn.visibility = View.VISIBLE
             editPatientBtn.setOnClickListener() {
                 val intent = Intent(this, PatientInformation::class.java)
-                intent.putExtra("uid", PID)
+                intent.putExtra("UID", PID)
+                intent.putExtra("ROLE", ROLE)
                 startActivity(intent)
             }
         }
@@ -263,8 +265,7 @@ class Dashboard : AppCompatActivity() {
                                                 mapOf(
                                                     "status" to "queue_onboarding",
                                                     "queueNumber" to 1,
-                                                    "queueType" to "onboarding",
-                                                    "readyToCall" to false
+                                                    "queueStation" to "Onboarding Desk",
                                                 )
                                             )
                                             .addOnSuccessListener {
@@ -294,7 +295,17 @@ class Dashboard : AppCompatActivity() {
                                     setScheduleLayout(
                                         R.layout.dashboard_schedule_patient_queue,
                                         mapOf(
-                                            R.id.textQueueLocation to "Nurse Station",
+                                            R.id.textQueueLocation to doc.get("queueStation")?.toString(),
+                                            R.id.textQueueNumber to doc.get("queueNumber")?.toString()
+                                        )
+                                    )
+                                }
+
+                                status == "queue_nurse" && date == today -> {
+                                    setScheduleLayout(
+                                        R.layout.dashboard_schedule_patient_queue,
+                                        mapOf(
+                                            R.id.textQueueLocation to doc.get("queueStation")?.toString(),
                                             R.id.textQueueNumber to doc.get("queueNumber")?.toString()
                                         )
                                     )
@@ -304,7 +315,7 @@ class Dashboard : AppCompatActivity() {
                                     setScheduleLayout(
                                         R.layout.dashboard_schedule_patient_queue,
                                         mapOf(
-                                            R.id.textQueueLocation to "ROOM 504",
+                                            R.id.textQueueLocation to doc.get("queueStation")?.toString(),
                                             R.id.textQueueNumber to doc.get("queueNumber")?.toString()
                                         )
                                     )
@@ -331,24 +342,66 @@ class Dashboard : AppCompatActivity() {
                             return@addSnapshotListener
                         }
 
-                        if (documents != null && !documents.isEmpty()) {
-                            Log.d("FIRESTORE", "Fetched nurse assignment successfully")
+                        if (documents != null && !documents.isEmpty) {
 
                             val doc = documents.first()
-                            val patientName = doc.getString("patientName") // Get the patient name
-                            if (!patientName.isNullOrBlank()) {
-                                if (doc.getBoolean("hasTask") == true) {
-                                    val layoutRes = R.layout.dashboard_schedule_nurse
-                                    val textMap = mapOf(
-                                        R.id.textQueueLabel to "Next Patient:",
-                                        R.id.patientName to patientName // Ensure this field exists in the layout
-                                    )
-                                    setScheduleLayout(layoutRes, textMap)
-                                } else {
-                                    setScheduleLayout(R.layout.dashboard_schedule_none, emptyMap())
+
+                            if (doc.getBoolean("hasTask") == true) {
+                                val inflater = LayoutInflater.from(this)
+                                val view = inflater.inflate(R.layout.dashboard_schedule_nurse, null)
+
+                                val patientName = doc.getString("patientName") ?: "Unknown"
+                                val appointmentId = doc.getString("appointmentId") ?: ""
+
+                                view.findViewById<TextView>(R.id.patientName)?.text = patientName
+
+                                val callBtn = view.findViewById<Button>(R.id.callPatient)
+                                val exitBtn = view.findViewById<Button>(R.id.exitPatient)
+
+                                // Call Button
+                                callBtn.setOnClickListener {
+                                    Log.d("CALL_PATIENT", "Calling patient with appointmentId: $appointmentId")
+
+                                    db.collection("appointments").document(appointmentId)
+                                        .update(
+                                            mapOf(
+                                                "status" to "queue_nurse",
+                                                "queueNumber" to 1,
+                                                "queueStation" to "Nurse Station",
+                                            )
+                                        )
+                                        .addOnSuccessListener {
+                                            Toast.makeText(this, "Patient called to nurse station.", Toast.LENGTH_SHORT).show()
+//                                            // Remove task from nurse SA QR
+//                                            db.collection("assignments").document(UID)
+//                                                .delete()
+//                                            loadScheduleCard("nurse", UID)
+                                        }
+                                        .addOnFailureListener {
+                                            Toast.makeText(this, "Failed to call the patient.", Toast.LENGTH_SHORT).show()
+                                        }
                                 }
-                            } else {
-                                Log.e("FIRESTORE", "Patient name is null or blank")
+
+                                // Exit Button
+                                exitBtn.setOnClickListener {
+                                    db.collection("appointments").document(appointmentId)
+                                        .update(mapOf("status" to "done"))
+                                        .addOnSuccessListener {
+                                            Toast.makeText(this, "Patient marked as exited.", Toast.LENGTH_SHORT).show()
+                                            db.collection("assignments").document(UID)
+                                                .delete()
+                                            loadScheduleCard("nurse", UID)
+                                        }
+                                        .addOnFailureListener {
+                                            Toast.makeText(this, "Failed to complete exit.", Toast.LENGTH_SHORT).show()
+                                        }
+                                }
+
+                                val scheduleContainer = findViewById<LinearLayout>(R.id.scheduleCardContent)
+                                scheduleContainer.removeAllViews()
+                                scheduleContainer.addView(view)
+                            }else {
+                                Log.e("FIRESTORE", "No documents found for this nurseId")
                                 setScheduleLayout(R.layout.dashboard_schedule_none, emptyMap())
                             }
                         } else {
@@ -362,8 +415,7 @@ class Dashboard : AppCompatActivity() {
 
             // Doctor Schedule Card
             "doctor" -> {
-                val today = java.text.SimpleDateFormat("MMMM d, yyyy", java.util.Locale.ENGLISH)
-                    .format(java.util.Date())
+                val today = SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).format(Date())
 
                 db.collection("appointments")
                     .whereEqualTo("doctorID", UID)
@@ -372,20 +424,40 @@ class Dashboard : AppCompatActivity() {
                     .whereEqualTo("date", today)
                     .limit(1)
                     .addSnapshotListener { documents, exception ->
-
                         if (exception != null) {
                             Log.e("FIRESTORE", "Failed to fetch doctor queue", exception)
                             setScheduleLayout(R.layout.dashboard_schedule_none, emptyMap())
+                            return@addSnapshotListener
                         }
 
                         if (documents != null && !documents.isEmpty) {
                             val doc = documents.first()
-                            val layoutRes = R.layout.dashboard_schedule_doctor
-                            val textMap = mapOf(
-                                R.id.textQueueLabel to "Next Patient:",
-                                R.id.patientName to doc.getString("patientName")
-                            )
-                            setScheduleLayout(layoutRes, textMap)
+
+                            val appointmentId = doc.id
+                            val patientName = doc.getString("patientName") ?: "Unknown"
+
+                            val inflater = LayoutInflater.from(this)
+                            val view = inflater.inflate(R.layout.dashboard_schedule_doctor, null)
+
+                            view.findViewById<TextView>(R.id.patientName)?.text = patientName
+
+                            val callBtn = view.findViewById<Button>(R.id.callPatient_doctor)
+                            callBtn.setOnClickListener {
+                                // Mark appointment done or handled
+                                db.collection("appointments").document(appointmentId)
+                                    .update(mapOf("status" to "done"))
+                                    .addOnSuccessListener {
+                                        Toast.makeText(this, "Appointment completed.", Toast.LENGTH_SHORT).show()
+                                        loadScheduleCard("doctor", UID)
+                                    }
+                                    .addOnFailureListener {
+                                        Toast.makeText(this, "Failed to complete appointment.", Toast.LENGTH_SHORT).show()
+                                    }
+                            }
+
+                            val scheduleContainer = findViewById<LinearLayout>(R.id.scheduleCardContent)
+                            scheduleContainer.removeAllViews()
+                            scheduleContainer.addView(view)
                         } else {
                             setScheduleLayout(R.layout.dashboard_schedule_none, emptyMap())
                         }

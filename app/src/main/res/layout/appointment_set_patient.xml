@@ -17,11 +17,13 @@
 
     <!-- Watermark Logo -->
     <include
-        layout="@layout/logo_watermark"
         android:id="@+id/includeWatermark"
+        layout="@layout/logo_watermark"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginEnd="-80dp"
+        android:layout_marginBottom="-120dp"
+        app:layout_constraintBottom_toBottomOf="@+id/cancelBtn"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
