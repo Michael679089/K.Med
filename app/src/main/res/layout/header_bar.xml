@@ -25,8 +25,8 @@
     <!-- Settings icon -->
     <ImageView
         android:id="@+id/settings"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
         android:layout_gravity="end|top"
         android:clickable="true"
         android:contentDescription="Settings"

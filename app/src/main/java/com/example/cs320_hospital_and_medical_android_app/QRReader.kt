@@ -221,7 +221,8 @@ class QRReader : AppCompatActivity() {
                     val prescriptionBTN : Button = findViewById(R.id.btnSubmitDoctor)
                     prescriptionBTN.setOnClickListener {
                         val intent = Intent(this, Prescription::class.java)
-                        intent.putExtra("role", userROLE) //
+                        intent.putExtra("ROLE", userROLE) //
+                        intent.putExtra("UID", userUID) //
                         intent.putExtra("patientId", patientIDVal)
                         intent.putExtra("patientName", patientNameVal)
                         startActivity(intent)

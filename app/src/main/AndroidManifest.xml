@@ -42,7 +42,9 @@
         <activity
             android:name=".Prescription"
             android:exported="false" />
-        <activity android:name=".QRReaderDisplayPatientInfoActivity" />
+        <activity
+            android:name=".Settings"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true">

@@ -38,6 +38,7 @@ class Dashboard : AppCompatActivity() {
         val nameView = findViewById<TextView>(R.id.accountName)
         val idView = findViewById<TextView>(R.id.accountID)
         val qrCode = findViewById<ImageView>(R.id.qrCode)
+        val settings = findViewById<ImageView>(R.id.settings)
 
         Log.d("DEBUG", ROLE)
 
@@ -50,6 +51,11 @@ class Dashboard : AppCompatActivity() {
         patientInformation(ROLE, UID)
         loadRoleButtons(ROLE, UID)
         loadScheduleCard(ROLE, UID)
+
+        settings.setOnClickListener() {
+            val intent = Intent(this, Settings::class.java)
+            startActivity(intent)
+        }
 
         val buttonSectionContainer = findViewById<FrameLayout>(R.id.buttonSectionContainer)
         val maxHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics).toInt()

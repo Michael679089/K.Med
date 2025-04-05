@@ -62,13 +62,7 @@ class MainActivity : AppCompatActivity() {
                     val firebaseUid = auth.currentUser?.uid!!
 
                     db.collection("users").document(firebaseUid)
-                        .addSnapshotListener { userDoc, error ->
-                            if (error != null) {
-                                signInBtn.isEnabled = true
-                                Toast.makeText(this, "Error fetching user data: ${error.message}", Toast.LENGTH_LONG).show()
-                                return@addSnapshotListener
-                            }
-
+                        .addSnapshotListener { userDoc, _ ->
                             if (userDoc != null && userDoc.exists()) {
                                 val ROLE = userDoc.getString("role")
                                 val UID = userDoc.getString("accountId")
