@@ -63,7 +63,7 @@
 
     </LinearLayout>
 
-    <!-- Delete Icon -->
+    <!-- View Icon -->
     <ImageView
         android:id="@+id/viewPrescriptionBtn"
         android:layout_width="50dp"

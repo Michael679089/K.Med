@@ -2,6 +2,7 @@ package com.example.cs320_hospital_and_medical_android_app
 
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -38,7 +39,7 @@ class Prescription : AppCompatActivity() {
         db = FirebaseFirestore.getInstance()
 
         // Extract role & patient info from Intent
-        userRole = intent.getStringExtra("ROLE") ?: "patient"
+        userRole = intent.getStringExtra("role") ?: "patient"
         selectedPatientId = intent.getStringExtra("patientId")
         selectedPatientName = intent.getStringExtra("patientName")
 
@@ -217,7 +218,7 @@ class Prescription : AppCompatActivity() {
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PrescriptionViewHolder {
-            val view = layoutInflater.inflate(R.layout.prescription_card, parent, false)
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.prescription_card, parent, false)
             return PrescriptionViewHolder(view)
         }
 
