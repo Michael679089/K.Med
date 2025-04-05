@@ -21,8 +21,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var db: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val testAcc = "james.billate@ciit.edu.ph" // "nurse1@kmed.com"
-        val testAccPass = "123456789" // "12345678"
 
         //Firebase Initialization
         db = FirebaseFirestore.getInstance()
@@ -40,9 +38,6 @@ class MainActivity : AppCompatActivity() {
 
         val emailInput: EditText = findViewById(R.id.emailInput)
         val passwordInput: EditText = findViewById(R.id.passwordInput)
-        emailInput.setText(testAcc)
-        passwordInput.setText(testAccPass)
-
 
         val signInBtn: Button = findViewById(R.id.signinBtn)
 
@@ -103,7 +98,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         initializeOtherAccess()
-//        autoLogin()
+        autoLogin()
     }
 
     private fun patientRegistration(ROLE: String) {
@@ -156,7 +151,8 @@ class MainActivity : AppCompatActivity() {
             db.collection("users").document(firebaseUid).get()
                 .addOnSuccessListener { userDoc ->
                     if (userDoc.exists()) {
-                        val role = userDoc.getString("role")
+                        val ROLE = userDoc.getString("role").toString()
+                        val role = userDoc.getString("role")?.replaceFirstChar { it.uppercaseChar() }
                         val accountId = userDoc.getString("accountId")
 
                         if (role != null && accountId != null) {
@@ -166,12 +162,9 @@ class MainActivity : AppCompatActivity() {
                                     val lastName = profileDoc.getString("lastName") ?: ""
                                     val name = "$firstName $lastName".trim()
 
-                                    val intent = Intent(this, Dashboard::class.java)
-                                    intent.putExtra("role", role)
-                                    intent.putExtra("uid", accountId)
-                                    intent.putExtra("name", name)
-                                    startActivity(intent)
-                                    finish()
+                                    Log.e("NAME", "$firebaseUid")
+
+                                    directToDashboard(ROLE, accountId, name)
                                 }
                         }
                     }

@@ -58,7 +58,7 @@ class Dashboard : AppCompatActivity() {
             startActivity(intent)
         }
 
-        val buttonSectionContainer = findViewById<ScrollView>(R.id.buttonSectionContainer)
+        val buttonSectionContainer = findViewById<FrameLayout>(R.id.buttonSectionContainer)
         val maxHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics).toInt()
         buttonSectionContainer.post {
             if (buttonSectionContainer.height > maxHeight) { // Hardcoded max height in pixels
@@ -126,7 +126,7 @@ class Dashboard : AppCompatActivity() {
 
     // Load RBA Buttons
     private fun loadRoleButtons(ROLE: String, UID: String) {
-        val container = findViewById<ScrollView>(R.id.buttonSectionContainer)
+        val container = findViewById<FrameLayout>(R.id.buttonSectionContainer)
         val inflater = LayoutInflater.from(this)
 
         val layoutRes = when (ROLE) {
