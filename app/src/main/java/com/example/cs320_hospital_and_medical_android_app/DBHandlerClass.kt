@@ -222,37 +222,65 @@ class DBHandlerClass() {
                     var processedCount = 0
 
                     for (userDocument in usersSnapshot.documents) {
-                        var infoEntry = mutableListOf<String>()
+                        val infoEntry = mutableListOf<String>()
 
-                        if (userDocument["accountId"].toString().isNotEmpty()) {
-                            infoEntry.add(userDocument["accountId"].toString())
-                            infoEntry.add(userDocument["role"].toString())
+                        val userID = userDocument.id
+                        val accountId = userDocument["accountId"].toString()
+                        val role = userDocument["role"].toString()
 
-                            var fullName = ""
+                        infoEntry.add(userID)
+                        infoEntry.add(accountId)
+                        infoEntry.add(role)
 
-                            val collectionName = when (infoEntry[1]) {
-                                "patient" -> "Patients"
-                                "nurse" -> "Nurses"
-                                "doctor" -> "Doctors"
-                                "admin" -> "Admins"
-                                "patient-notreg" -> null
-                                else -> {
-                                    null
+                        val collectionName = when (role) {
+                            "patient" -> "Patients"
+                            "nurse" -> "Nurses"
+                            "doctor" -> "Doctors"
+                            "admin" -> "Admins"
+                            "patient-notreg" -> null
+                            else -> null
+                        }
+
+                        if (collectionName != null) {
+                            db.collection(collectionName).document(accountId).get()
+                                .addOnSuccessListener { profileDoc ->
+                                    val firstName = profileDoc.getString("firstName") ?: ""
+                                    val lastName = profileDoc.getString("lastName") ?: ""
+                                    val fullName = "$firstName $lastName".trim()
+
+                                    infoEntry.add(if (fullName.isNotEmpty()) fullName else "No profile linked")
+                                    userList.add(infoEntry.toTypedArray())
+                                    processedCount++
+
+                                    if (processedCount == usersSnapshot.documents.size) {
+                                        callback(userList.toTypedArray())
+                                    }
                                 }
-                            }
+                                .addOnFailureListener {
+                                    infoEntry.add("No profile linked")
+                                    userList.add(infoEntry.toTypedArray())
+                                    processedCount++
 
-                            if (collectionName != "patient-notreg") {
-                            }
-                            else {
+                                    if (processedCount == usersSnapshot.documents.size) {
+                                        callback(userList.toTypedArray())
+                                    }
+                                }
+                        } else {
+                            // For 'patient-notreg'
+                            infoEntry.add("No profile linked")
+                            userList.add(infoEntry.toTypedArray())
+                            processedCount++
 
+                            if (processedCount == usersSnapshot.documents.size) {
+                                callback(userList.toTypedArray())
                             }
                         }
                     }
-                }
-                else if (usersSnapshot.documents.isEmpty()) {  // Handle the case where there are no users in the "users" collection
+                } else {
                     Log.d("DEBUG", "❗ No users found in the 'users' collection.")
                     callback(emptyArray())
                 }
+
             }
             .addOnFailureListener { e ->
                 Log.d("DEBUG", "❌ Error fetching users: ${e.message}")

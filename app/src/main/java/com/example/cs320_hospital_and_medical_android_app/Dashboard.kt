@@ -319,7 +319,7 @@ class Dashboard : AppCompatActivity() {
             // declare variable to use for fetchUserList
             dbHandler.fetchUserList { userList ->
                 // After data is fetched, log it
-                Log.d("DEBUG", "Fetched User List: ${userList.joinToString()}")
+                Log.d("DEBUG", "Fetched User List: ${userList.contentDeepToString()}")
 
                 // Optionally, you can update the UI with the fetched data here, e.g., populate a RecyclerView or ListView.
             }
