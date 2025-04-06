@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import android.content.Intent
 import android.util.Log
@@ -14,12 +13,14 @@ import android.widget.Button
 import android.widget.Toast
 import android.widget.ImageView
 import android.view.View
+import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.firestore.Query
+import androidx.constraintlayout.widget.ConstraintSet
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -58,9 +59,70 @@ class Dashboard : AppCompatActivity() {
         nameView.text = NAME
         idView.text = UID
 
-        patientInformation(ROLE, UID)
         loadRoleButtons(ROLE, UID)
-        loadScheduleCard(ROLE, UID)
+        if (ROLE == "admin") { // For Admin Dashboard
+            Log.d("DEBUG", "Admin Role found")
+
+            // Remove the scheduleCardContainer
+            val scheduleCardContainer: androidx.cardview.widget.CardView = findViewById(R.id.scheduleCard)
+            val main: ConstraintLayout = findViewById(R.id.main)
+            main.removeView(scheduleCardContainer)
+
+            // Continue with rest of your logic
+            loadRoleButtons(ROLE, UID)
+
+        }
+        else { // For Anyone else Dashboard
+            // add the scheduleCardContainer
+            val scheduleCardContainer : androidx.cardview.widget.CardView = findViewById(R.id.scheduleCard)
+            val main : ConstraintLayout = findViewById(R.id.main)
+            main.addView(scheduleCardContainer)
+
+            patientInformation(ROLE, UID)
+            loadScheduleCard(ROLE, UID)
+
+
+            // QR Code - Zoomed In - Overlay
+            qrCode.setOnClickListener {
+                Log.d("DEBUG", "Going to qr zoomed in")
+
+                // Ensure the root layout is a FrameLayout (we want to stack views)
+                val rootView = findViewById<ConstraintLayout>(R.id.main)
+                val inflater = LayoutInflater.from(this)
+                val qrZoomedInView = inflater.inflate(R.layout.qr_zoomed_in, rootView, false)
+
+                // Populate data in the zoomed-in layout
+                val qrCodeIV = qrZoomedInView.findViewById<ImageView>(R.id.qrCodeIV)
+                qrGenerator.generateQRCodeToImageView(qrCodeIV, UID)
+
+                val qrZoomedInIDNumber = qrZoomedInView.findViewById<TextView>(R.id.qrZoomedInIDNumber)
+                qrZoomedInIDNumber.text = UID
+
+                val qrZoomedInUsername = qrZoomedInView.findViewById<TextView>(R.id.qrZoomedInUsername)
+                qrZoomedInUsername.text = NAME
+
+                val qrZoomedInRole = qrZoomedInView.findViewById<TextView>(R.id.qrZoomedInRole)
+                qrZoomedInRole.text = ROLE
+
+                val goBackBTN = qrZoomedInView.findViewById<Button>(R.id.qrZoomedInGoBackBTN)
+                goBackBTN.setOnClickListener {
+                    rootView.removeView(qrZoomedInView)  // Remove the overlay when clicking "Go Back"
+                }
+
+                // Set layout params to ensure it covers the full screen
+                val params = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT
+                )
+                qrZoomedInView.layoutParams = params
+
+                // Set the elevation (z-index) to ensure it's on top of other views
+                qrZoomedInView.elevation = 1000f  // You can adjust this value for desired stacking order
+
+                // Add the zoomed-in view on top of the dashboard
+                rootView.addView(qrZoomedInView)
+            }
+        }
 
         settings.setOnClickListener() {
             val intent = Intent(this, Settings::class.java)
@@ -76,46 +138,6 @@ class Dashboard : AppCompatActivity() {
             }
         }
 
-        // QR Code - Zoomed In - Overlay
-        qrCode.setOnClickListener {
-            Log.d("DEBUG", "Going to qr zoomed in")
-
-            // Ensure the root layout is a FrameLayout (we want to stack views)
-            val rootView = findViewById<ConstraintLayout>(R.id.main)
-            val inflater = LayoutInflater.from(this)
-            val qrZoomedInView = inflater.inflate(R.layout.qr_zoomed_in, rootView, false)
-
-            // Populate data in the zoomed-in layout
-            val qrCodeIV = qrZoomedInView.findViewById<ImageView>(R.id.qrCodeIV)
-            qrGenerator.generateQRCodeToImageView(qrCodeIV, UID)
-
-            val qrZoomedInIDNumber = qrZoomedInView.findViewById<TextView>(R.id.qrZoomedInIDNumber)
-            qrZoomedInIDNumber.text = UID
-
-            val qrZoomedInUsername = qrZoomedInView.findViewById<TextView>(R.id.qrZoomedInUsername)
-            qrZoomedInUsername.text = NAME
-
-            val qrZoomedInRole = qrZoomedInView.findViewById<TextView>(R.id.qrZoomedInRole)
-            qrZoomedInRole.text = ROLE
-
-            val goBackBTN = qrZoomedInView.findViewById<Button>(R.id.qrZoomedInGoBackBTN)
-            goBackBTN.setOnClickListener {
-                rootView.removeView(qrZoomedInView)  // Remove the overlay when clicking "Go Back"
-            }
-
-            // Set layout params to ensure it covers the full screen
-            val params = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT
-            )
-            qrZoomedInView.layoutParams = params
-
-            // Set the elevation (z-index) to ensure it's on top of other views
-            qrZoomedInView.elevation = 1000f  // You can adjust this value for desired stacking order
-
-            // Add the zoomed-in view on top of the dashboard
-            rootView.addView(qrZoomedInView)
-        }
     }
 
     private fun patientInformation(ROLE: String, PID: String) {
@@ -142,6 +164,7 @@ class Dashboard : AppCompatActivity() {
             "patient" -> R.layout.dashboard_buttons_patient
             "doctor" -> R.layout.dashboard_buttons_doctor
             "nurse" -> R.layout.dashboard_buttons_nurse
+            "admin" -> R.layout.dashboard_buttons_admin
             else -> null
         }
 
@@ -155,11 +178,182 @@ class Dashboard : AppCompatActivity() {
                 "patient" -> PatientButtons(view, UID, ROLE)
                 "doctor" -> DoctorButtons(view, UID, ROLE)
                 "nurse"  -> NurseButtons(view, UID, ROLE)
+                "admin" -> AdminButtons(view, UID, ROLE)
             }
         }
     }
 
     // Button Listeners
+    private fun AdminButtons(view: View, UID: String, ROLE: String) { // Admin 🚩
+        val addNurseBTN: LinearLayout = view.findViewById(R.id.adminAddNurseBTN)
+        val addDoctorBTN: LinearLayout = view.findViewById(R.id.adminAddDoctorBTN)
+        val deleteViewUserBTN : LinearLayout = view.findViewById(R.id.deleteUserBTN)
+        val dbHandler = DBHandlerClass()
+
+        addDoctorBTN.setOnClickListener {
+            // add the doctor overlay
+            Log.d("DEBUG", "Add Doctor BTN clicked")
+
+            // Setting up overlay + Ensure the root layout is a FrameLayout (we want to stack views)
+            val rootView: ConstraintLayout = findViewById(R.id.main)
+            val inflater = LayoutInflater.from(this)
+            val doctorLayout =
+                inflater.inflate(R.layout.dashboard_add_doctor_overlay, rootView, false)
+            val params =
+                LinearLayout.LayoutParams( // Set layout params to ensure it covers the full screen
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT
+                )
+            doctorLayout.layoutParams = params
+            doctorLayout.elevation =
+                1000f  // Set the elevation (z-index) to ensure it's on top of other views // You can adjust this value for desired stacking order
+            rootView.addView(doctorLayout)
+
+            val goBackBTN: Button = doctorLayout.findViewById(R.id.adminCancelDoctorBTN)
+            goBackBTN.setOnClickListener {
+                rootView.removeView(doctorLayout)  // Remove the overlay when clicking "Go Back"
+            }
+
+            // Form Features
+            val adminDoctorEmailET : EditText = findViewById(R.id.adminDoctorEmailET)
+            val adminDoctorPassword : EditText = findViewById(R.id.adminDoctorPasswordET)
+            val adminDoctorFNameET: EditText = findViewById(R.id.adminDoctorFName)
+            val adminDoctorLNameET: EditText = findViewById(R.id.adminDoctorLName)
+            val adminDoctorRoomNumET: EditText = findViewById(R.id.adminDoctorRoomNum) // check if it's number else prevent click listener from proceeding
+            val adminDoctorSpecET: EditText = findViewById(R.id.adminDoctorSpecialization)
+
+
+            val adminSubmitDoctorBTN: Button = findViewById(R.id.adminSubmitDoctorBTN)
+            adminSubmitDoctorBTN.setOnClickListener { // Add Doctor Button
+                val doctorEmail = adminDoctorEmailET.text.toString().trim()
+                val doctorPassword = adminDoctorPassword.text.toString().trim()
+                val doctorFirstName = adminDoctorFNameET.text.toString().trim()
+                val doctorLastName = adminDoctorLNameET.text.toString().trim()
+                val doctorRoomNum = adminDoctorRoomNumET.text.toString().trim()
+                val doctorSpecialization = adminDoctorSpecET.text.toString()
+
+                if (doctorFirstName.isNotEmpty() && doctorLastName.isNotEmpty() && doctorRoomNum.isNotEmpty() && doctorSpecialization.isNotEmpty()) {
+                    // Call addDoctor function
+                    dbHandler.addDoctor(
+                        doctorEmail,
+                        doctorPassword,
+                        doctorFirstName,
+                        doctorLastName,
+                        doctorRoomNum,
+                        doctorSpecialization
+                    ) { success ->
+                        if (success) {
+                            Log.d("DEBUG", "Doctor added successfully")
+                            // Optionally show a success message
+                            Toast.makeText(this, "Doctor added successfully!", Toast.LENGTH_SHORT)
+                                .show()
+                        } else {
+                            Log.e("DEBUG", "Failed to add doctor")
+                            // Optionally show an error message
+                            Toast.makeText(
+                                this,
+                                "Failed to add doctor. Try again.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+
+                        // Close the overlay
+                        rootView.removeView(doctorLayout)
+                    }
+                } else {
+                    Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+        addNurseBTN.setOnClickListener {
+            // add the nurse overlay
+            Log.d("DEBUG", "Add Nurse BTN clicked")
+
+            // Setting up overlay + Ensure the root layout is a FrameLayout (we want to stack views)
+            val rootView: ConstraintLayout = findViewById(R.id.main)
+            val inflater = LayoutInflater.from(this)
+            val nurseLayout =
+                inflater.inflate(R.layout.dashboard_add_nurse_overlay, rootView, false)
+            val params =
+                LinearLayout.LayoutParams( // Set layout params to ensure it covers the full screen
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT
+                )
+            nurseLayout.layoutParams = params
+            nurseLayout.elevation =
+                1000f  // Set the elevation (z-index) to ensure it's on top of other views // You can adjust this value for desired stacking order
+            rootView.addView(nurseLayout)
+
+            val goBackBTN: Button = nurseLayout.findViewById(R.id.adminCancelNurseBTN)
+            goBackBTN.setOnClickListener {
+                rootView.removeView(nurseLayout)  // Remove the overlay when clicking "Go Back"
+            }
+
+            // Form Features
+            val adminNurseEmailET : EditText = findViewById(R.id.adminNurseEmailET)
+            val adminNursePasswordET : EditText = findViewById(R.id.adminNursePasswordET)
+            val adminNurseFNameET: EditText = findViewById(R.id.adminNurseFirstNameET)
+            val adminNurseLNameET: EditText = findViewById(R.id.adminNurseLastNameET)
+
+            val adminSubmitNurseBTN: Button = findViewById(R.id.adminSubmitNurseBTN)
+            adminSubmitNurseBTN.setOnClickListener {
+                val adminNurseFirstName = adminNurseFNameET.text.toString().trim()
+                val adminNurseLastName = adminNurseLNameET.text.toString().trim()
+                val adminNurseEmailET = adminNurseEmailET.text.toString().trim()
+                val adminNursePasswordET = adminNursePasswordET.text.toString()
+
+                if (adminNurseFirstName.isNotEmpty() && adminNurseLastName.isNotEmpty()) {
+                    // Call addNurse function
+                    dbHandler.addNurse(adminNurseEmailET, adminNursePasswordET, adminNurseFirstName, adminNurseLastName) { success ->
+                        if (success) {
+                            Log.d("DEBUG", "Nurse added successfully")
+                            // Optionally show a success message
+                            Toast.makeText(this, "Nurse added successfully!", Toast.LENGTH_SHORT)
+                                .show()
+                        } else {
+                            Log.e("DEBUG", "Failed to add nurse")
+                            // Optionally show an error message
+                            Toast.makeText(
+                                this,
+                                "Failed to add nurse. Try again.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+
+                        // Close the overlay
+                        rootView.removeView(nurseLayout)
+                    }
+                } else {
+                    Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+        deleteViewUserBTN.setOnClickListener {
+            Log.d("DEBUG", "Delete User BTN clicked")
+
+            // Setting up overlay + Ensure the root layout is a FrameLayout (we want to stack views)
+            val rootView: ConstraintLayout = findViewById(R.id.main)
+            val inflater = LayoutInflater.from(this)
+            val deleteUserLayout = inflater.inflate(R.layout.dashboard_admin_delete_user_layout, rootView, false)
+            val params = LinearLayout.LayoutParams( // Set layout params to ensure it covers the full screen
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+            )
+            deleteUserLayout.layoutParams = params
+            deleteUserLayout.elevation = 1000f  // Set the elevation (z-index) to ensure it's on top of other views // You can adjust this value for desired stacking order
+            rootView.addView(deleteUserLayout)
+
+            val goBackBTN: Button = deleteUserLayout.findViewById(R.id.deleteUserBackBTN)
+            goBackBTN.setOnClickListener {
+                rootView.removeView(deleteUserLayout)  // Remove the overlay when clicking "Go Back"
+            }
+
+
+        }
+
+    }
+
+
     private fun PatientButtons(view: View, UID: String, ROLE: String) {
         val doctorBtn = view.findViewById<LinearLayout>(R.id.doctorBtn)
         val scheduleBtn = view.findViewById<LinearLayout>(R.id.scheduleBtn)

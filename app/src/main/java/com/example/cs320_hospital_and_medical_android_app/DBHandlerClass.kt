@@ -1,16 +1,214 @@
 package com.example.cs320_hospital_and_medical_android_app
 
+import android.content.Context
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.UUID
 
 class DBHandlerClass() {
     // Firebase Initialization
     private var db = FirebaseFirestore.getInstance()
     private var auth = FirebaseAuth.getInstance()
+
+
+    fun addDoctor(
+        email: String,
+        password: String,
+        firstName: String,
+        lastName: String,
+        roomNum: String,
+        specialization: String,
+        onComplete: (Boolean) -> Unit
+    ) {
+        auth.createUserWithEmailAndPassword(email, password)
+            .addOnSuccessListener { authResult ->
+                val userID = authResult.user?.uid ?: return@addOnSuccessListener
+
+                val userMap = hashMapOf(
+                    "accountId" to "",
+                    "role" to "doctor"
+                )
+
+                db.collection("users").document(userID).set(userMap)
+                    .addOnSuccessListener {
+                        // Generate unique doctor ID
+                        val doctorId = "DID${UUID.randomUUID()}"
+                        val doctorMap = hashMapOf(
+                            "firebaseUid" to userID,
+                            "firstName" to firstName,
+                            "lastName" to lastName,
+                            "profilePicture" to "",
+                            "room" to roomNum,
+                            "specialization" to specialization
+                        )
+
+                        db.collection("Doctors").document(doctorId).set(doctorMap)
+                            .addOnSuccessListener {
+                                db.collection("users").document(userID)
+                                    .update("accountId", doctorId)
+                                    .addOnSuccessListener {
+                                        onComplete(true)
+                                    }
+                                    .addOnFailureListener {
+                                        Log.e("DEBUG", "Failed to update user with DoctorID")
+                                        onComplete(false)
+                                    }
+                            }
+                            .addOnFailureListener {
+                                Log.e("DEBUG", "Failed to create doctor row")
+                                onComplete(false)
+                            }
+                    }
+                    .addOnFailureListener {
+                        Log.e("DEBUG", "Failed to create user row")
+                        onComplete(false)
+                    }
+            }
+            .addOnFailureListener { e ->
+                if (e is FirebaseAuthUserCollisionException) {
+                    Log.e("DEBUG", "Email already in use")
+                } else {
+                    Log.e("DEBUG", "Failed to create auth user: ${e.message}")
+                }
+                onComplete(false)
+            }
+    }
+
+    fun addNurse(
+        email: String,
+        password: String,
+        firstName: String,
+        lastName: String,
+        onComplete: (Boolean) -> Unit
+    ) {
+        auth.createUserWithEmailAndPassword(email, password)
+            .addOnSuccessListener { authResult ->
+                val userID = authResult.user?.uid ?: return@addOnSuccessListener
+
+                val userMap = hashMapOf(
+                    "accountId" to "",
+                    "role" to "nurse"
+                )
+
+                db.collection("users").document(userID).set(userMap)
+                    .addOnSuccessListener {
+                        val nurseId = "NID${UUID.randomUUID()}"
+                        val nurseMap = hashMapOf(
+                            "firebaseUid" to userID,
+                            "firstName" to firstName,
+                            "lastName" to lastName,
+                            "profilePicture" to ""
+                        )
+
+                        db.collection("Nurses").document(nurseId).set(nurseMap)
+                            .addOnSuccessListener {
+                                db.collection("users").document(userID)
+                                    .update("accountId", nurseId)
+                                    .addOnSuccessListener {
+                                        onComplete(true)
+                                    }
+                                    .addOnFailureListener {
+                                        Log.e("DEBUG", "Failed to update user with NurseID")
+                                        onComplete(false)
+                                    }
+                            }
+                            .addOnFailureListener {
+                                Log.e("DEBUG", "Failed to create nurse row")
+                                onComplete(false)
+                            }
+                    }
+                    .addOnFailureListener {
+                        Log.e("DEBUG", "Failed to create user row")
+                        onComplete(false)
+                    }
+            }
+            .addOnFailureListener { e ->
+                if (e is FirebaseAuthUserCollisionException) {
+                    Log.e("DEBUG", "Email already in use")
+                } else {
+                    Log.e("DEBUG", "Failed to create auth user: ${e.message}")
+                }
+                onComplete(false)
+            }
+    }
+
+    fun deleteAccountById(accountId: String, role: String, callback: (Boolean) -> Unit) {
+        // Check which collection to delete from based on role
+        val collectionName = when (role) {
+            "doctor" -> "Doctors"
+            "nurse" -> "Nurses"
+            "patient" -> "Patients"
+            else -> {
+                callback(false)
+                return
+            }
+        }
+
+        // Step 1: Get the Firebase UID from the role collection (Doctors, Nurses, Patients)
+        val accountDocRef = db.collection(collectionName).document(accountId)
+        accountDocRef.get().addOnSuccessListener { document ->
+            if (document.exists()) {
+                val firebaseUid = document.getString("firebaseUid")
+
+                if (firebaseUid == null) {
+                    Log.e("DEBUG", "Firebase UID not found for account.")
+                    callback(false)
+                    return@addOnSuccessListener
+                }
+
+                // Step 2: Delete the account from Firebase Auth using Firebase Admin SDK
+                // Note: You need to use Firebase Admin SDK to delete users by UID.
+                // This example assumes you are using Firebase Admin SDK in a server environment.
+                // For client-side deletion, you would need to handle it differently.
+                val firebaseAuth = FirebaseAuth.getInstance()
+                firebaseAuth.currentUser?.delete()?.addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Log.d("DEBUG", "User deleted from Firebase Authentication.")
+                    } else {
+                        Log.e("DEBUG", "Failed to delete user from Firebase Authentication.", task.exception)
+                        callback(false)
+                        return@addOnCompleteListener
+                    }
+
+                    // Step 3: Now delete from "users" collection
+                    val userDocRef = db.collection("users").document(firebaseUid)
+                    userDocRef.delete().addOnCompleteListener { userDeletionTask ->
+                        if (userDeletionTask.isSuccessful) {
+                            // Step 4: Now delete from the appropriate role collection (Doctors, Nurses, Patients)
+                            accountDocRef.delete().addOnCompleteListener { roleDeletionTask ->
+                                if (roleDeletionTask.isSuccessful) {
+                                    // Success: account and related rows deleted
+                                    callback(true)
+                                } else {
+                                    // Failed to delete from role collection
+                                    Log.e("DEBUG", "Failed to delete from role collection")
+                                    callback(false)
+                                }
+                            }
+                        } else {
+                            // Failed to delete from users collection
+                            Log.e("DEBUG", "Failed to delete from users collection")
+                            callback(false)
+                        }
+                    }
+                }
+            } else {
+                // If the document doesn't exist, the accountId is invalid
+                Log.e("DEBUG", "Account ID not found.")
+                callback(false)
+            }
+        }.addOnFailureListener {
+            // Failure in getting the document
+            Log.e("DEBUG", "Failed to retrieve account data.", it)
+            callback(false)
+        }
+    }
+
 
     fun updateAppointment(DID: String, PID: String){
         getAppointmentsByPatientID(PID) { _, documentIds ->
@@ -111,6 +309,71 @@ class DBHandlerClass() {
                 callback(emptyList(), emptyList())
             }
     }
+
+    // authentication of patient users
+    fun authenticateUser(
+        email: String,
+        password: String,
+        callback: (Map<String, String>?) -> Unit
+    )
+    {
+        val auth = FirebaseAuth.getInstance()
+        val db = FirebaseFirestore.getInstance()
+
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnSuccessListener {
+                val firebaseUid = auth.currentUser?.uid
+
+                if (firebaseUid != null) {
+                    db.collection("users").document(firebaseUid)
+                        .get()
+                        .addOnSuccessListener { userDoc ->
+                            if (userDoc != null && userDoc.exists()) {
+                                val role = userDoc.getString("role")
+                                val uid = userDoc.getString("accountId")
+
+                                if (role != null && uid != null) {
+                                    if (role == "patient-notreg") {
+                                        callback(mapOf("status" to "patient-notreg", "role" to role))
+                                    } else {
+                                        val collectionName = role.replaceFirstChar { it.uppercase() } + "s"
+                                        db.collection(collectionName).document(uid)
+                                            .get()
+                                            .addOnSuccessListener { profileDoc ->
+                                                val firstName = profileDoc.getString("firstName") ?: ""
+                                                val lastName = profileDoc.getString("lastName") ?: ""
+                                                val name = "$firstName $lastName".trim()
+
+                                                callback(
+                                                    mapOf(
+                                                        "status" to "success",
+                                                        "role" to role,
+                                                        "uid" to uid,
+                                                        "name" to name
+                                                    )
+                                                )
+                                            }
+                                    }
+                                } else {
+                                    Log.e("DEBUG", "ERROR: HANDLER -> Invalid user profile data")
+                                    callback(null)
+                                }
+                            } else {
+                                Log.e("DEBUG", "ERROR: DBHANDLER -> User profile not found")
+                                callback(null)
+                            }
+                        }
+                } else {
+                    Log.e("DEBUG", "ERROR: DBHANDLER -> Authentication Failed")
+                    callback(null)
+                }
+            }
+            .addOnFailureListener {
+                Log.e("DEBUG", "ERROR: DBHANDLER -> Authentication Failed")
+                callback(null)
+            }
+    }
+
 
     // ## Get the latest appointment based on date
     fun getLatestAppointment(editTextPIDValue: String, callback: (Map<String, Any>?) -> Unit) {
