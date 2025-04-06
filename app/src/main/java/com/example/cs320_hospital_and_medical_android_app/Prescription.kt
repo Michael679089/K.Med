@@ -162,13 +162,13 @@ class Prescription : AppCompatActivity() {
             db.collection("Doctors").document(UID)
                 .get()
                 .addOnSuccessListener { document ->
-                    val firstName = document.getString("doctorName") ?: "Unknown"
+                    val firstName = document.getString("firstName") ?: "Unknown"
                     val lastName = document.getString("lastName") ?: "Unknown"
                     doctorName.text = "$firstName $lastName"
                 }
 
             // Set today's date
-            val formatter = SimpleDateFormat("MMMM d, yyyy", Locale.getDefault())
+            val formatter = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault())
             val today = formatter.format(Date())
             dateText.text = today
         }
