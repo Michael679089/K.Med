@@ -15,6 +15,8 @@ import android.view.View
 import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -316,13 +318,23 @@ class Dashboard : AppCompatActivity() {
                 rootView.removeView(deleteUserLayout)  // Remove the overlay when clicking "Go Back"
             }
 
-            // declare variable to use for fetchUserList
+            data class User(
+                val userID: String,
+                val accountId: String?,
+                val role: String,
+                val fullName: String
+            )
+
+
             dbHandler.fetchUserList { userList ->
-                // After data is fetched, log it
+                // Log the fetched user list
                 Log.d("DEBUG", "Fetched User List: ${userList.contentDeepToString()}")
 
-                // Optionally, you can update the UI with the fetched data here, e.g., populate a RecyclerView or ListView.
+
             }
+
+
+
         }
 
 

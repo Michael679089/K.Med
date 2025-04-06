@@ -219,56 +219,58 @@ class DBHandlerClass() {
                 if (usersSnapshot.documents.isNotEmpty()) {
                     val userList = mutableListOf<Array<String>>()
                     var processedCount = 0
-                    val totalCount = usersSnapshot.documents.size
 
                     for (userDocument in usersSnapshot.documents) {
-                        val accountId = userDocument.getString("accountId") ?: ""
-                        val role = userDocument.getString("role") ?: ""
+                        val infoEntry = mutableListOf<String>()
 
-                        if (accountId.isNotEmpty()) {
-                            val collectionName = when (role.lowercase()) {
-                                "doctor" -> "Doctors"
-                                "nurse" -> "Nurses"
-                                "patient" -> "Patients"
-                                else -> null
-                            }
+                        val userID = userDocument.id
+                        val accountId = userDocument["accountId"].toString()
+                        val role = userDocument["role"].toString()
 
-                            if (collectionName != null) {
-                                db.collection(collectionName).document(accountId).get()
-                                    .addOnSuccessListener { profileDoc ->
-                                        val firstName = profileDoc.getString("firstName") ?: ""
-                                        val lastName = profileDoc.getString("lastName") ?: ""
-                                        val fullName = "$firstName $lastName".trim()
+                        infoEntry.add(userID)
+                        infoEntry.add(accountId)
+                        infoEntry.add(role)
 
-                                        userList.add(arrayOf(accountId, role, fullName))
-                                        processedCount++
+                        val collectionName = when (role) {
+                            "patient" -> "Patients"
+                            "nurse" -> "Nurses"
+                            "doctor" -> "Doctors"
+                            "admin" -> "Admins"
+                            "patient-notreg" -> null
+                            else -> null
+                        }
 
-                                        if (processedCount == totalCount) {
-                                            Log.d("DEBUG", "✅ Finished processing all users.")
-                                            callback(userList.toTypedArray())
-                                        }
+                        if (collectionName != null) {
+                            db.collection(collectionName).document(accountId).get()
+                                .addOnSuccessListener { profileDoc ->
+                                    val firstName = profileDoc.getString("firstName") ?: ""
+                                    val lastName = profileDoc.getString("lastName") ?: ""
+                                    val fullName = "$firstName $lastName".trim()
+
+                                    infoEntry.add(if (fullName.isNotEmpty()) fullName else "No profile linked")
+                                    userList.add(infoEntry.toTypedArray())
+                                    processedCount++
+
+                                    if (processedCount == usersSnapshot.documents.size) {
+                                        callback(userList.toTypedArray())
                                     }
-                                    .addOnFailureListener {
-                                        Log.e("DEBUG", "❌ Failed to fetch profile for $accountId")
-                                        processedCount++
-
-                                        if (processedCount == totalCount) {
-                                            callback(userList.toTypedArray())
-                                        }
-                                    }
-                            } else {
-                                Log.e("DEBUG", "❌ Unknown role for user: $role")
-                                processedCount++
-
-                                if (processedCount == totalCount) {
-                                    callback(userList.toTypedArray())
                                 }
-                            }
+                                .addOnFailureListener {
+                                    infoEntry.add("No profile linked")
+                                    userList.add(infoEntry.toTypedArray())
+                                    processedCount++
+
+                                    if (processedCount == usersSnapshot.documents.size) {
+                                        callback(userList.toTypedArray())
+                                    }
+                                }
                         } else {
-                            Log.w("DEBUG", "⚠️ Skipping user with missing accountId.")
+                            // For 'patient-notreg'
+                            infoEntry.add("No profile linked")
+                            userList.add(infoEntry.toTypedArray())
                             processedCount++
 
-                            if (processedCount == totalCount) {
+                            if (processedCount == usersSnapshot.documents.size) {
                                 callback(userList.toTypedArray())
                             }
                         }
@@ -277,6 +279,7 @@ class DBHandlerClass() {
                     Log.d("DEBUG", "❗ No users found in the 'users' collection.")
                     callback(emptyArray())
                 }
+
             }
             .addOnFailureListener { e ->
                 Log.d("DEBUG", "❌ Error fetching users: ${e.message}")
