@@ -31,12 +31,12 @@ class DBHandlerClass() {
 
                 val userMap = hashMapOf(
                     "accountId" to "",
-                    "role" to "doctor"
+                    "role" to "doctor",
+                    "firebaseUid" to userID  // ✅ Added this
                 )
 
                 db.collection("users").document(userID).set(userMap)
                     .addOnSuccessListener {
-                        // Generate unique doctor ID
                         val doctorId = "DID${UUID.randomUUID()}"
                         val doctorMap = hashMapOf(
                             "firebaseUid" to userID,
@@ -78,6 +78,7 @@ class DBHandlerClass() {
                 onComplete(false)
             }
     }
+
 
     fun addNurse(
         email: String,
@@ -229,11 +230,21 @@ class DBHandlerClass() {
 
                             var fullName = ""
 
-                            if (infoEntry[1].toString() == "patient") {
-                                Log.d("DEBUG", "Yeah this is a patient")
+                            val collectionName = when (infoEntry[1]) {
+                                "patient" -> "Patients"
+                                "nurse" -> "Nurses"
+                                "doctor" -> "Doctors"
+                                "admin" -> "Admins"
+                                "patient-notreg" -> null
+                                else -> {
+                                    null
+                                }
+                            }
+
+                            if (collectionName != "patient-notreg") {
                             }
                             else {
-                                Log.d("DEBUG", infoEntry[1].toString())
+
                             }
                         }
                     }

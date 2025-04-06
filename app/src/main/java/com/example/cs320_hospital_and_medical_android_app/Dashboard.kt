@@ -207,16 +207,9 @@ class Dashboard : AppCompatActivity() {
                 val doctorRoomNum = adminDoctorRoomNumET.text.toString().trim()
                 val doctorSpecialization = adminDoctorSpecET.text.toString()
 
-                if (doctorFirstName.isNotEmpty() && doctorLastName.isNotEmpty() && doctorRoomNum.isNotEmpty() && doctorSpecialization.isNotEmpty()) {
+                if (doctorEmail.isNotEmpty() && doctorPassword.isNotEmpty() && doctorFirstName.isNotEmpty() && doctorLastName.isNotEmpty() && doctorRoomNum.isNotEmpty() && doctorSpecialization.isNotEmpty()) {
                     // Call addDoctor function
-                    dbHandler.addDoctor(
-                        doctorEmail,
-                        doctorPassword,
-                        doctorFirstName,
-                        doctorLastName,
-                        doctorRoomNum,
-                        doctorSpecialization
-                    ) { success ->
+                    dbHandler.addDoctor(doctorEmail, doctorPassword, doctorFirstName, doctorLastName, doctorRoomNum, doctorSpecialization) { success ->
                         if (success) {
                             Log.d("DEBUG", "Doctor added successfully")
                             // Optionally show a success message
