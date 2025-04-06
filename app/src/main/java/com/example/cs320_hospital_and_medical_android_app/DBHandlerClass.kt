@@ -142,11 +142,25 @@ class DBHandlerClass() {
         if (role == "patient") {
             db.collection("Patients").document(accountId).get()
                 .addOnSuccessListener { document ->
-                    // example firebaseUid "libia2lrwWcubnSx0Ic3fulR8da2"
-                    val firebaseUid = document["firebaseUid"]
+                    if (document.exists()) {
+                        // save documentID
+                        val patientID = document.id
+                        
+                        db.collection("Users").get()
+                            .addOnSuccessListener { documentList ->
 
-                    // lets go to auth
-                    // delete an account in authentication with the column the same as firebaseUid
+                            }
+
+                        
+
+                        // example firebaseUid "libia2lrwWcubnSx0Ic3fulR8da2"
+
+
+                        // lets go to auth
+
+                        // delete an account in authentication with the column the same as firebaseUid
+
+                    }
 
                 }
                 .addOnFailureListener {
