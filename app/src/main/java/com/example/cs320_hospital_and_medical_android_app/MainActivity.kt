@@ -16,6 +16,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity : AppCompatActivity() {
 
+
     //Firebase Initialization
     private val dbHandler = DBHandlerClass()
     private lateinit var auth: FirebaseAuth
@@ -102,14 +103,14 @@ class MainActivity : AppCompatActivity() {
     private fun initializeOtherAccess() {
         val forgotPW: TextView = findViewById(R.id.forgotPassword)
 
-        forgotPW.setOnClickListener(){
+        forgotPW.setOnClickListener() {
             val intent = Intent(this, ForgotPassword::class.java)
             startActivity(intent)
         }
 
         val registerBtn: TextView = findViewById(R.id.registerBtn)
 
-        registerBtn.setOnClickListener(){
+        registerBtn.setOnClickListener() {
             val intent = Intent(this, AccountRegistration::class.java)
             startActivity(intent)
         }
