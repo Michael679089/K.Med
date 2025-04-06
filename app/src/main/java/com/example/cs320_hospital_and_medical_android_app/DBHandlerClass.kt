@@ -209,6 +209,47 @@ class DBHandlerClass() {
         }
     }
 
+    fun fetchUserList(callback: (Array<Array<String>>) -> Unit) {
+        Log.d("DEBUG", "🟦 Starting to fetch user list...")
+
+        db.collection("users").get()
+            .addOnSuccessListener { usersSnapshot ->
+                Log.d("DEBUG", "🟩 Users fetched successfully. Number of users: ${usersSnapshot.documents.size}")
+
+                if (usersSnapshot.documents.isNotEmpty()) {
+                    val userList = mutableListOf<Array<String>>()
+                    var processedCount = 0
+
+                    for (userDocument in usersSnapshot.documents) {
+                        var infoEntry = mutableListOf<String>()
+
+                        if (userDocument["accountId"].toString().isNotEmpty()) {
+                            infoEntry.add(userDocument["accountId"].toString())
+                            infoEntry.add(userDocument["role"].toString())
+
+                            var fullName = ""
+
+                            if (infoEntry[1].toString() == "patient") {
+                                Log.d("DEBUG", "Yeah this is a patient")
+                            }
+                            else {
+                                Log.d("DEBUG", infoEntry[1].toString())
+                            }
+                        }
+                    }
+                }
+                else if (usersSnapshot.documents.isEmpty()) {  // Handle the case where there are no users in the "users" collection
+                    Log.d("DEBUG", "❗ No users found in the 'users' collection.")
+                    callback(emptyArray())
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.d("DEBUG", "❌ Error fetching users: ${e.message}")
+                callback(emptyArray())
+            }
+    }
+
+
 
     fun updateAppointment(DID: String, PID: String){
         getAppointmentsByPatientID(PID) { _, documentIds ->

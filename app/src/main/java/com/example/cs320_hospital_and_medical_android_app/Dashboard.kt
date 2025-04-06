@@ -47,69 +47,64 @@ class Dashboard : AppCompatActivity() {
         nameView.text = NAME
         idView.text = UID
 
-        loadRoleButtons(ROLE, UID)
-        if (ROLE == "admin") { // For Admin Dashboard
+        // Reappear schedule card for Everyone
+        val scheduleCardContainer: androidx.cardview.widget.CardView = findViewById(R.id.scheduleCard)
+        scheduleCardContainer.visibility = View.VISIBLE
+
+        if (ROLE == "admin") { // For "Admin" Dashboard
             Log.d("DEBUG", "Admin Role found")
 
-            // Remove the scheduleCardContainer
-            val scheduleCardContainer: androidx.cardview.widget.CardView = findViewById(R.id.scheduleCard)
-            val main: ConstraintLayout = findViewById(R.id.main)
-            main.removeView(scheduleCardContainer)
+             val scheduleCardContainer: androidx.cardview.widget.CardView = findViewById(R.id.scheduleCard) // hide schedule card for Admin
+             scheduleCardContainer.visibility = View.GONE
 
             // Continue with rest of your logic
             loadRoleButtons(ROLE, UID)
-
         }
-        else { // For Anyone else Dashboard
-            // add the scheduleCardContainer
-            val scheduleCardContainer : androidx.cardview.widget.CardView = findViewById(R.id.scheduleCard)
-            val main : ConstraintLayout = findViewById(R.id.main)
-            main.addView(scheduleCardContainer)
-
+        else { // For "Anyone else" Dashboard
             patientInformation(ROLE, UID)
             loadScheduleCard(ROLE, UID)
+            loadRoleButtons(ROLE, UID)
+        }
 
+        // QR Code - Zoomed In - Overlay
+        qrCode.setOnClickListener {
+            Log.d("DEBUG", "Going to qr zoomed in")
 
-            // QR Code - Zoomed In - Overlay
-            qrCode.setOnClickListener {
-                Log.d("DEBUG", "Going to qr zoomed in")
+            // Ensure the root layout is a FrameLayout (we want to stack views)
+            val rootView = findViewById<ConstraintLayout>(R.id.main)
+            val inflater = LayoutInflater.from(this)
+            val qrZoomedInView = inflater.inflate(R.layout.qr_zoomed_in, rootView, false)
 
-                // Ensure the root layout is a FrameLayout (we want to stack views)
-                val rootView = findViewById<ConstraintLayout>(R.id.main)
-                val inflater = LayoutInflater.from(this)
-                val qrZoomedInView = inflater.inflate(R.layout.qr_zoomed_in, rootView, false)
+            // Populate data in the zoomed-in layout
+            val qrCodeIV = qrZoomedInView.findViewById<ImageView>(R.id.qrCodeIV)
+            qrGenerator.generateQRCodeToImageView(qrCodeIV, UID)
 
-                // Populate data in the zoomed-in layout
-                val qrCodeIV = qrZoomedInView.findViewById<ImageView>(R.id.qrCodeIV)
-                qrGenerator.generateQRCodeToImageView(qrCodeIV, UID)
+            val qrZoomedInIDNumber = qrZoomedInView.findViewById<TextView>(R.id.qrZoomedInIDNumber)
+            qrZoomedInIDNumber.text = UID
 
-                val qrZoomedInIDNumber = qrZoomedInView.findViewById<TextView>(R.id.qrZoomedInIDNumber)
-                qrZoomedInIDNumber.text = UID
+            val qrZoomedInUsername = qrZoomedInView.findViewById<TextView>(R.id.qrZoomedInUsername)
+            qrZoomedInUsername.text = NAME
 
-                val qrZoomedInUsername = qrZoomedInView.findViewById<TextView>(R.id.qrZoomedInUsername)
-                qrZoomedInUsername.text = NAME
+            val qrZoomedInRole = qrZoomedInView.findViewById<TextView>(R.id.qrZoomedInRole)
+            qrZoomedInRole.text = ROLE
 
-                val qrZoomedInRole = qrZoomedInView.findViewById<TextView>(R.id.qrZoomedInRole)
-                qrZoomedInRole.text = ROLE
-
-                val goBackBTN = qrZoomedInView.findViewById<Button>(R.id.qrZoomedInGoBackBTN)
-                goBackBTN.setOnClickListener {
-                    rootView.removeView(qrZoomedInView)  // Remove the overlay when clicking "Go Back"
-                }
-
-                // Set layout params to ensure it covers the full screen
-                val params = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.MATCH_PARENT
-                )
-                qrZoomedInView.layoutParams = params
-
-                // Set the elevation (z-index) to ensure it's on top of other views
-                qrZoomedInView.elevation = 1000f  // You can adjust this value for desired stacking order
-
-                // Add the zoomed-in view on top of the dashboard
-                rootView.addView(qrZoomedInView)
+            val goBackBTN = qrZoomedInView.findViewById<Button>(R.id.qrZoomedInGoBackBTN)
+            goBackBTN.setOnClickListener {
+                rootView.removeView(qrZoomedInView)  // Remove the overlay when clicking "Go Back"
             }
+
+            // Set layout params to ensure it covers the full screen
+            val params = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+            )
+            qrZoomedInView.layoutParams = params
+
+            // Set the elevation (z-index) to ensure it's on top of other views
+            qrZoomedInView.elevation = 1000f  // You can adjust this value for desired stacking order
+
+            // Add the zoomed-in view on top of the dashboard
+            rootView.addView(qrZoomedInView)
         }
 
         settings.setOnClickListener() {
@@ -328,8 +323,15 @@ class Dashboard : AppCompatActivity() {
                 rootView.removeView(deleteUserLayout)  // Remove the overlay when clicking "Go Back"
             }
 
+            // declare variable to use for fetchUserList
+            dbHandler.fetchUserList { userList ->
+                // After data is fetched, log it
+                Log.d("DEBUG", "Fetched User List: ${userList.joinToString()}")
 
+                // Optionally, you can update the UI with the fetched data here, e.g., populate a RecyclerView or ListView.
+            }
         }
+
 
     }
 
