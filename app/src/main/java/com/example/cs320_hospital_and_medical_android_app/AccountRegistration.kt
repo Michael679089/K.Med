@@ -42,8 +42,10 @@ class AccountRegistration : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
 
         loginBtn.setOnClickListener {
-            startActivity(Intent(this, MainActivity::class.java))
-        }
+            val intent = Intent(this, MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()        }
 
         signUpBtn.setOnClickListener {
             registerUser()
@@ -77,7 +79,9 @@ class AccountRegistration : AppCompatActivity() {
                 }
 
                 Toast.makeText(this, "Registration successful!", Toast.LENGTH_SHORT).show()
-                startActivity(Intent(this, MainActivity::class.java))
+                val intent = Intent(this, MainActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
                 finish()
             } else {
                 handleRegistrationError(task.exception)
@@ -91,25 +95,50 @@ class AccountRegistration : AppCompatActivity() {
         return when {
 
             email.isEmpty() || password.isEmpty() -> {
-                Toast.makeText(this, "Please enter both email and password", Toast.LENGTH_SHORT)
-                    .show()
-                false
+                showToast("Please enter both email and password.")
+                return false
             }
 
             !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
-                Toast.makeText(this, "Please enter a valid email address", Toast.LENGTH_SHORT)
-                    .show()
-                false
+                showToast("Please enter a valid email address.")
+                return false
             }
 
             password.length < 6 -> {
-                Toast.makeText(this, "Password must be at least 6 characters", Toast.LENGTH_SHORT)
-                    .show()
-                false
+                showToast("Password must be at least 6 characters long.")
+                return false
+            }
+
+                // Check for at least one lowercase letter
+            !password.any { it.isLowerCase() } -> {
+                showToast("Password must contain at least one lowercase letter.")
+                return false
+            }
+
+            // Check for at least one uppercase letter
+            !password.any { it.isUpperCase() } -> {
+                showToast("Password must contain at least one uppercase letter.")
+                return false
+            }
+
+            // Check for at least one digit
+            !password.any { it.isDigit() } -> {
+                showToast("Password must contain at least one number.")
+                return false
+            }
+
+            // Check for at least one special character
+            !password.any { it in "!@#$%^&*()_+[]{}|;:,.<>?/" } -> {
+                showToast("Password must contain at least one special character.")
+                return false
             }
 
             else -> true
         }
+    }
+
+    fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
     private fun handleRegistrationError(exception: Exception?) {

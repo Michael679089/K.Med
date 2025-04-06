@@ -98,24 +98,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         initializeOtherAccess()
-        autoLogin()
+//        autoLogin()
     }
 
     private fun patientRegistration(ROLE: String) {
-        db.collection("Patients")
-            .document()
-            .addSnapshotListener { document, patientError ->
-                if (patientError != null) {
-                    return@addSnapshotListener
-                }
-
-                if (document != null && !document.exists()) {
-                    val intent = Intent(this, PatientInformation::class.java)
-                    intent.putExtra("ROLE", ROLE)
-                    startActivity(intent)
-                    finish()
-                }
-            }
+        val intent = Intent(this, PatientInformation::class.java)
+        intent.putExtra("ROLE", ROLE)
+        startActivity(intent)
+        finish()
     }
 
     private fun directToDashboard(ROLE: String, UID: String, NAME: String) {

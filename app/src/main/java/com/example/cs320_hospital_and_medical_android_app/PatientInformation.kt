@@ -72,6 +72,17 @@ class PatientInformation : AppCompatActivity() {
 
         initializeFucntionalities()
 
+        if (ROLE == "patient-notreg"){
+
+            submitBtn.visibility = View.VISIBLE
+            cancelBtn.visibility = View.GONE
+            updateBtn.visibility = View.GONE
+
+            submitBtn.setOnClickListener {
+                addPatient("", "added", ROLE)
+            }
+        }
+
         if (UID != null) {
             db.collection("Patients")
                 .document(UID)
@@ -81,7 +92,7 @@ class PatientInformation : AppCompatActivity() {
                         getPatient(UID)
                     }else {
                         submitBtn.setOnClickListener(){
-                            addPatient(UID, "added", ROLE)
+                            addPatient(UID, "updated", ROLE)
                         }
                     }
                 }
@@ -194,7 +205,7 @@ class PatientInformation : AppCompatActivity() {
                             .document(ASSIGN_UID)
                             .set(patient)
                             .addOnSuccessListener {
-                                directToDashboard(status, "patient", UID, "${firstName} ${lastName}")
+                                directToDashboard(status, "patient", ASSIGN_UID, "${firstName} ${lastName}")
                             }
                             .addOnFailureListener { e ->
                                 Toast.makeText(this, "Error: $e", Toast.LENGTH_SHORT).show()
@@ -221,6 +232,7 @@ class PatientInformation : AppCompatActivity() {
         intent.putExtra("ROLE", "patient")
         intent.putExtra("UID", UID)
         intent.putExtra("NAME", NAME)
+        finish()
 
         startActivity(intent)
     }
