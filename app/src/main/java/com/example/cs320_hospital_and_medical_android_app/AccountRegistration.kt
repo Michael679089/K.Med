@@ -42,6 +42,7 @@ class AccountRegistration : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
 
         loginBtn.setOnClickListener {
+            auth.signOut()
             val intent = Intent(this, MainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
@@ -79,6 +80,7 @@ class AccountRegistration : AppCompatActivity() {
                 }
 
                 Toast.makeText(this, "Registration successful!", Toast.LENGTH_SHORT).show()
+                auth.signOut()
                 val intent = Intent(this, MainActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)

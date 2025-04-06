@@ -16,13 +16,12 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity : AppCompatActivity() {
 
-    //Firebase Initialization
+    // Firebase Initialization
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
-        //Firebase Initialization
+        // Firebase Initialization
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
 
@@ -120,14 +119,14 @@ class MainActivity : AppCompatActivity() {
     private fun initializeOtherAccess() {
         val forgotPW: TextView = findViewById(R.id.forgotPassword)
 
-        forgotPW.setOnClickListener(){
+        forgotPW.setOnClickListener() {
             val intent = Intent(this, ForgotPassword::class.java)
             startActivity(intent)
         }
 
         val registerBtn: TextView = findViewById(R.id.registerBtn)
 
-        registerBtn.setOnClickListener(){
+        registerBtn.setOnClickListener() {
             val intent = Intent(this, AccountRegistration::class.java)
             startActivity(intent)
         }
@@ -162,5 +161,3 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
-
-
