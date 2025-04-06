@@ -18,6 +18,8 @@ import android.widget.ViewFlipper
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.core.snap
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.example.cs320_hospital_and_medical_android_app.DoctorSchedule.Schedule
 import com.google.firebase.firestore.FirebaseFirestore
 import java.time.format.DateTimeFormatter
@@ -41,6 +43,12 @@ class PatientAppointment : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.appointments)
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
 
         //Initialize firebase
         db = FirebaseFirestore.getInstance()

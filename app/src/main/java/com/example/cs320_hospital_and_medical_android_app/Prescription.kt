@@ -8,6 +8,8 @@ import android.widget.ViewFlipper
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cs320_hospital_and_medical_android_app.models.PrescriptionModel
@@ -36,6 +38,12 @@ class Prescription : AppCompatActivity() {
         Log.d("DEBUG", "You are in Prescription Activity View")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.prescription)
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
 
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()

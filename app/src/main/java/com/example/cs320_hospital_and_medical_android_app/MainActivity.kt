@@ -98,7 +98,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         initializeOtherAccess()
-//        autoLogin()
+        autoLogin()
     }
 
     private fun patientRegistration(ROLE: String) {
