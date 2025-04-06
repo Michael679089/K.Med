@@ -271,7 +271,7 @@ class DoctorSchedule : AppCompatActivity() {
         findViewById<Button>(R.id.setBtn).setOnClickListener {
             if (dateInput.text.isNotEmpty() && timeInput.text.isNotEmpty()){
                 //Get the day
-                val inputFormat = SimpleDateFormat("MMMM d, yyyy", Locale.getDefault()) // Matches "March 5, 2025"
+                val inputFormat = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault()) // Matches "March 5, 2025"
                 val date = inputFormat.parse(dateInput.text.toString().trim())
                 val dayFormat = SimpleDateFormat("EEEE", Locale.getDefault())
 
