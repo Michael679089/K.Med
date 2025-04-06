@@ -503,6 +503,7 @@ class Dashboard : AppCompatActivity() {
                                     setScheduleLayout(
                                         R.layout.dashboard_schedule_patient_queue,
                                         mapOf(
+                                            R.id.textQueueLocation to doc.get("queueStation")?.toString(),
                                             R.id.textQueueNumber to doc.get("queueNumber")?.toString()
                                         )
                                     )
