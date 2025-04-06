@@ -14,9 +14,7 @@ import android.widget.ImageView
 import android.view.View
 import android.widget.EditText
 import android.widget.LinearLayout
-import android.widget.ScrollView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintSet
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -316,7 +314,7 @@ class Dashboard : AppCompatActivity() {
             // Setting up overlay + Ensure the root layout is a FrameLayout (we want to stack views)
             val rootView: ConstraintLayout = findViewById(R.id.main)
             val inflater = LayoutInflater.from(this)
-            val deleteUserLayout = inflater.inflate(R.layout.dashboard_admin_delete_user_layout, rootView, false)
+            val deleteUserLayout = inflater.inflate(R.layout.dashboard_admin_delete_user_overlay, rootView, false)
             val params = LinearLayout.LayoutParams( // Set layout params to ensure it covers the full screen
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT
