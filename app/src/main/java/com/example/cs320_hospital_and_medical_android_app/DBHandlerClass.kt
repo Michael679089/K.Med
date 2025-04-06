@@ -1,6 +1,5 @@
 package com.example.cs320_hospital_and_medical_android_app
 
-import android.content.Context
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
@@ -9,6 +8,8 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.UUID
+// admin imports
+
 
 class DBHandlerClass() {
     // Firebase Initialization
@@ -31,12 +32,12 @@ class DBHandlerClass() {
 
                 val userMap = hashMapOf(
                     "accountId" to "",
-                    "role" to "doctor",
-                    "firebaseUid" to userID  // ✅ Added this
+                    "role" to "doctor"
                 )
 
                 db.collection("users").document(userID).set(userMap)
                     .addOnSuccessListener {
+                        // Generate unique doctor ID
                         val doctorId = "DID${UUID.randomUUID()}"
                         val doctorMap = hashMapOf(
                             "firebaseUid" to userID,
@@ -78,7 +79,6 @@ class DBHandlerClass() {
                 onComplete(false)
             }
     }
-
 
     fun addNurse(
         email: String,
@@ -138,77 +138,73 @@ class DBHandlerClass() {
             }
     }
 
-    fun deleteAccountById(accountId: String, role: String, callback: (Boolean) -> Unit) {
-        // Check which collection to delete from based on role
-        val collectionName = when (role) {
+    fun deleteAccountByUserId(firebaseUid: String, role: String, callback: (Boolean) -> Unit) {
+        val roleCollection = when (role) {
+            "patient" -> "Patients"
             "doctor" -> "Doctors"
             "nurse" -> "Nurses"
-            "patient" -> "Patients"
+            "patient-notreg" -> {
+                db.collection("users").document(firebaseUid).delete()
+                    .addOnSuccessListener {
+                        Log.d("DEBUG", "Successfully deleted a patient-notreg account")
+                        callback(true)
+                    }
+                    .addOnFailureListener {
+                        Log.e("DEBUG", "ERROR: can't delete '$firebaseUid' patient-notreg account")
+                        callback(false)
+                    }
+                return
+            }
+            "admin" -> {
+                Log.e("DEBUG", "ERROR: Admin Account Deletion is not allowed here. Do it in Firebase Console.")
+                callback(false)
+                return
+            }
             else -> {
+                Log.e("DEBUG", "ERROR: Unknown role '$role'")
                 callback(false)
                 return
             }
         }
 
-        // Step 1: Get the Firebase UID from the role collection (Doctors, Nurses, Patients)
-        val accountDocRef = db.collection(collectionName).document(accountId)
-        accountDocRef.get().addOnSuccessListener { document ->
-            if (document.exists()) {
-                val firebaseUid = document.getString("firebaseUid")
-
-                if (firebaseUid == null) {
-                    Log.e("DEBUG", "Firebase UID not found for account.")
+        // Fetch user document
+        db.collection("users").document(firebaseUid).get()
+            .addOnSuccessListener { userRow ->
+                if (!userRow.exists()) {
+                    Log.e("DEBUG", "ERROR: Can't find $firebaseUid user row")
                     callback(false)
                     return@addOnSuccessListener
                 }
 
-                // Step 2: Delete the account from Firebase Auth using Firebase Admin SDK
-                // Note: You need to use Firebase Admin SDK to delete users by UID.
-                // This example assumes you are using Firebase Admin SDK in a server environment.
-                // For client-side deletion, you would need to handle it differently.
-                val firebaseAuth = FirebaseAuth.getInstance()
-                firebaseAuth.currentUser?.delete()?.addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        Log.d("DEBUG", "User deleted from Firebase Authentication.")
-                    } else {
-                        Log.e("DEBUG", "Failed to delete user from Firebase Authentication.", task.exception)
-                        callback(false)
-                        return@addOnCompleteListener
+                val accountId = userRow["accountId"].toString()
+
+                // Delete role-specific document
+                db.collection(roleCollection).document(accountId).delete()
+                    .addOnSuccessListener {
+                        Log.d("DEBUG", "Successfully deleted $role document: $accountId")
+                    }
+                    .addOnFailureListener {
+                        Log.e("DEBUG", "ERROR: Can't delete $role document: $accountId")
                     }
 
-                    // Step 3: Now delete from "users" collection
-                    val userDocRef = db.collection("users").document(firebaseUid)
-                    userDocRef.delete().addOnCompleteListener { userDeletionTask ->
-                        if (userDeletionTask.isSuccessful) {
-                            // Step 4: Now delete from the appropriate role collection (Doctors, Nurses, Patients)
-                            accountDocRef.delete().addOnCompleteListener { roleDeletionTask ->
-                                if (roleDeletionTask.isSuccessful) {
-                                    // Success: account and related rows deleted
-                                    callback(true)
-                                } else {
-                                    // Failed to delete from role collection
-                                    Log.e("DEBUG", "Failed to delete from role collection")
-                                    callback(false)
-                                }
-                            }
-                        } else {
-                            // Failed to delete from users collection
-                            Log.e("DEBUG", "Failed to delete from users collection")
-                            callback(false)
-                        }
+                // Then delete user document
+                db.collection("users").document(firebaseUid).delete()
+                    .addOnSuccessListener {
+                        Log.d("DEBUG", "Successfully deleted user document: $firebaseUid")
+                        Log.d("DEBUG", "Note: To delete the Firebase Auth account, you need to do it via the Firebase Console or backend")
+                        callback(true)
                     }
-                }
-            } else {
-                // If the document doesn't exist, the accountId is invalid
-                Log.e("DEBUG", "Account ID not found.")
+                    .addOnFailureListener {
+                        Log.e("DEBUG", "ERROR: Can't delete user document: $firebaseUid")
+                        callback(false)
+                    }
+            }
+            .addOnFailureListener {
+                Log.e("DEBUG", "ERROR: Failed to fetch user document: $firebaseUid")
                 callback(false)
             }
-        }.addOnFailureListener {
-            // Failure in getting the document
-            Log.e("DEBUG", "Failed to retrieve account data.", it)
-            callback(false)
-        }
     }
+
 
     fun fetchUserList(callback: (Array<Array<String>>) -> Unit) {
         Log.d("DEBUG", "🟦 Starting to fetch user list...")
@@ -222,46 +218,72 @@ class DBHandlerClass() {
                     var processedCount = 0
 
                     for (userDocument in usersSnapshot.documents) {
-                        var infoEntry = mutableListOf<String>()
+                        val infoEntry = mutableListOf<String>()
 
-                        if (userDocument["accountId"].toString().isNotEmpty()) {
-                            infoEntry.add(userDocument["accountId"].toString())
-                            infoEntry.add(userDocument["role"].toString())
+                        val userID = userDocument.id
+                        val accountId = userDocument["accountId"].toString()
+                        val role = userDocument["role"].toString()
 
-                            var fullName = ""
+                        infoEntry.add(userID)
+                        infoEntry.add(accountId)
+                        infoEntry.add(role)
 
-                            val collectionName = when (infoEntry[1]) {
-                                "patient" -> "Patients"
-                                "nurse" -> "Nurses"
-                                "doctor" -> "Doctors"
-                                "admin" -> "Admins"
-                                "patient-notreg" -> null
-                                else -> {
-                                    null
+                        val collectionName = when (role) {
+                            "patient" -> "Patients"
+                            "nurse" -> "Nurses"
+                            "doctor" -> "Doctors"
+                            "admin" -> "Admins"
+                            "patient-notreg" -> null
+                            else -> null
+                        }
+
+                        if (collectionName != null) {
+                            db.collection(collectionName).document(accountId).get()
+                                .addOnSuccessListener { profileDoc ->
+                                    val firstName = profileDoc.getString("firstName") ?: ""
+                                    val lastName = profileDoc.getString("lastName") ?: ""
+                                    val fullName = "$firstName $lastName".trim()
+
+                                    infoEntry.add(if (fullName.isNotEmpty()) fullName else "No profile linked")
+                                    userList.add(infoEntry.toTypedArray())
+                                    processedCount++
+
+                                    if (processedCount == usersSnapshot.documents.size) {
+                                        callback(userList.toTypedArray())
+                                    }
                                 }
-                            }
+                                .addOnFailureListener {
+                                    infoEntry.add("No profile linked")
+                                    userList.add(infoEntry.toTypedArray())
+                                    processedCount++
 
-                            if (collectionName != "patient-notreg") {
-                            }
-                            else {
+                                    if (processedCount == usersSnapshot.documents.size) {
+                                        callback(userList.toTypedArray())
+                                    }
+                                }
+                        } else {
+                            // For 'patient-notreg'
+                            infoEntry.add("No profile linked")
+                            userList.add(infoEntry.toTypedArray())
+                            processedCount++
 
+                            if (processedCount == usersSnapshot.documents.size) {
+                                callback(userList.toTypedArray())
                             }
                         }
                     }
-                }
-                else if (usersSnapshot.documents.isEmpty()) {  // Handle the case where there are no users in the "users" collection
+                } else {
                     Log.d("DEBUG", "❗ No users found in the 'users' collection.")
                     callback(emptyArray())
                 }
+
             }
             .addOnFailureListener { e ->
                 Log.d("DEBUG", "❌ Error fetching users: ${e.message}")
                 callback(emptyArray())
             }
     }
-
-
-
+    
     fun updateAppointment(DID: String, PID: String){
         getAppointmentsByPatientID(PID) { _, documentIds ->
             if (documentIds.isNotEmpty()) {
@@ -320,7 +342,6 @@ class DBHandlerClass() {
                                                     "status" to "queue_doctor",
                                                     "queueStation" to "ROOM $DOCTOR_ROOM",
                                                     "bloodPressure" to BP_VAL,
-                                                    "toCall" to true,
                                                     "weight" to WEIGHT,
                                                 )
                                             )
