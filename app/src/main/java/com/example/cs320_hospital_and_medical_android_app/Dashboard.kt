@@ -48,22 +48,14 @@ class Dashboard : AppCompatActivity() {
         idView.text = UID
 
         loadRoleButtons(ROLE, UID)
-        if (ROLE == "admin") { // For Admin Dashboard
+        if (ROLE == "admin") { // For "Admin" Dashboard
             Log.d("DEBUG", "Admin Role found")
-
-            // Hide the scheduleCardContainer
-            val scheduleCardContainer: androidx.cardview.widget.CardView = findViewById(R.id.scheduleCard)
-            scheduleCardContainer.visibility = View.GONE
 
             // Continue with rest of your logic
             loadRoleButtons(ROLE, UID)
 
         }
-        else { // For Anyone else Dashboard
-            // Reappear the scheduleCardContainer
-            val scheduleCardContainer: androidx.cardview.widget.CardView = findViewById(R.id.scheduleCard)
-            scheduleCardContainer.visibility = View.VISIBLE
-
+        else { // For "Anyone else" Dashboard
             patientInformation(ROLE, UID)
             loadScheduleCard(ROLE, UID)
             loadRoleButtons(ROLE, UID)
