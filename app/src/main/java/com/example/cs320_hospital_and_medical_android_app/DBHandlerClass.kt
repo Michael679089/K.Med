@@ -219,26 +219,61 @@ class DBHandlerClass() {
                 if (usersSnapshot.documents.isNotEmpty()) {
                     val userList = mutableListOf<Array<String>>()
                     var processedCount = 0
+                    val totalCount = usersSnapshot.documents.size
 
                     for (userDocument in usersSnapshot.documents) {
-                        var infoEntry = mutableListOf<String>()
+                        val accountId = userDocument.getString("accountId") ?: ""
+                        val role = userDocument.getString("role") ?: ""
 
-                        if (userDocument["accountId"].toString().isNotEmpty()) {
-                            infoEntry.add(userDocument["accountId"].toString())
-                            infoEntry.add(userDocument["role"].toString())
-
-                            var fullName = ""
-
-                            if (infoEntry[1].toString() == "patient") {
-                                Log.d("DEBUG", "Yeah this is a patient")
+                        if (accountId.isNotEmpty()) {
+                            val collectionName = when (role.lowercase()) {
+                                "doctor" -> "Doctors"
+                                "nurse" -> "Nurses"
+                                "patient" -> "Patients"
+                                else -> null
                             }
-                            else {
-                                Log.d("DEBUG", infoEntry[1].toString())
+
+                            if (collectionName != null) {
+                                db.collection(collectionName).document(accountId).get()
+                                    .addOnSuccessListener { profileDoc ->
+                                        val firstName = profileDoc.getString("firstName") ?: ""
+                                        val lastName = profileDoc.getString("lastName") ?: ""
+                                        val fullName = "$firstName $lastName".trim()
+
+                                        userList.add(arrayOf(accountId, role, fullName))
+                                        processedCount++
+
+                                        if (processedCount == totalCount) {
+                                            Log.d("DEBUG", "✅ Finished processing all users.")
+                                            callback(userList.toTypedArray())
+                                        }
+                                    }
+                                    .addOnFailureListener {
+                                        Log.e("DEBUG", "❌ Failed to fetch profile for $accountId")
+                                        processedCount++
+
+                                        if (processedCount == totalCount) {
+                                            callback(userList.toTypedArray())
+                                        }
+                                    }
+                            } else {
+                                Log.e("DEBUG", "❌ Unknown role for user: $role")
+                                processedCount++
+
+                                if (processedCount == totalCount) {
+                                    callback(userList.toTypedArray())
+                                }
+                            }
+                        } else {
+                            Log.w("DEBUG", "⚠️ Skipping user with missing accountId.")
+                            processedCount++
+
+                            if (processedCount == totalCount) {
+                                callback(userList.toTypedArray())
                             }
                         }
                     }
-                }
-                else if (usersSnapshot.documents.isEmpty()) {  // Handle the case where there are no users in the "users" collection
+                } else {
                     Log.d("DEBUG", "❗ No users found in the 'users' collection.")
                     callback(emptyArray())
                 }
@@ -248,9 +283,7 @@ class DBHandlerClass() {
                 callback(emptyArray())
             }
     }
-
-
-
+    
     fun updateAppointment(DID: String, PID: String){
         getAppointmentsByPatientID(PID) { _, documentIds ->
             if (documentIds.isNotEmpty()) {
