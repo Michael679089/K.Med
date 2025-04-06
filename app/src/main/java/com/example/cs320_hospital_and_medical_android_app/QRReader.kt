@@ -282,7 +282,7 @@ class QRReader : AppCompatActivity() {
         startActivity(intent)
     }
 
-    // Override onResume to check permission after the user returns from settings
+    // ## Override onResume to check permission after the user returns from settings
     override fun onResume() {
         super.onResume()
 

@@ -1,5 +1,6 @@
 package com.example.cs320_hospital_and_medical_android_app
 
+import android.content.Context
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -110,6 +111,71 @@ class DBHandlerClass() {
                 callback(emptyList(), emptyList())
             }
     }
+
+    // authentication of patient users
+    fun authenticateUser(
+        email: String,
+        password: String,
+        callback: (Map<String, String>?) -> Unit
+    )
+    {
+        val auth = FirebaseAuth.getInstance()
+        val db = FirebaseFirestore.getInstance()
+
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnSuccessListener {
+                val firebaseUid = auth.currentUser?.uid
+
+                if (firebaseUid != null) {
+                    db.collection("users").document(firebaseUid)
+                        .get()
+                        .addOnSuccessListener { userDoc ->
+                            if (userDoc != null && userDoc.exists()) {
+                                val role = userDoc.getString("role")
+                                val uid = userDoc.getString("accountId")
+
+                                if (role != null && uid != null) {
+                                    if (role == "patient-notreg") {
+                                        callback(mapOf("status" to "patient-notreg", "role" to role))
+                                    } else {
+                                        val collectionName = role.replaceFirstChar { it.uppercase() } + "s"
+                                        db.collection(collectionName).document(uid)
+                                            .get()
+                                            .addOnSuccessListener { profileDoc ->
+                                                val firstName = profileDoc.getString("firstName") ?: ""
+                                                val lastName = profileDoc.getString("lastName") ?: ""
+                                                val name = "$firstName $lastName".trim()
+
+                                                callback(
+                                                    mapOf(
+                                                        "status" to "success",
+                                                        "role" to role,
+                                                        "uid" to uid,
+                                                        "name" to name
+                                                    )
+                                                )
+                                            }
+                                    }
+                                } else {
+                                    Log.e("DEBUG", "ERROR: HANDLER -> Invalid user profile data")
+                                    callback(null)
+                                }
+                            } else {
+                                Log.e("DEBUG", "ERROR: DBHANDLER -> User profile not found")
+                                callback(null)
+                            }
+                        }
+                } else {
+                    Log.e("DEBUG", "ERROR: DBHANDLER -> Authentication Failed")
+                    callback(null)
+                }
+            }
+            .addOnFailureListener {
+                Log.e("DEBUG", "ERROR: DBHANDLER -> Authentication Failed")
+                callback(null)
+            }
+    }
+
 
     // ## Get the latest appointment based on date
     fun getLatestAppointment(editTextPIDValue: String, callback: (Map<String, Any>?) -> Unit) {
