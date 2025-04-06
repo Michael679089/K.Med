@@ -21,6 +21,9 @@
             android:name=".QRReader"
             android:exported="false" />
         <activity
+            android:name=".Admin"
+            />
+        <activity
             android:name=".Dashboard"
             android:exported="false" />
         <activity

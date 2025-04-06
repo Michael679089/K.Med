@@ -17,6 +17,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 class MainActivity : AppCompatActivity() {
 
     //Firebase Initialization
+    private val dbHandler = DBHandlerClass()
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
 
@@ -51,50 +52,31 @@ class MainActivity : AppCompatActivity() {
             }
 
             signInBtn.isEnabled = false
+            Log.d("DEBUG", "SignBTN enabled = false")
 
-            auth.signInWithEmailAndPassword(email, password)
-                .addOnSuccessListener {
-                    val firebaseUid = auth.currentUser?.uid!!
-
-                    db.collection("users").document(firebaseUid)
-                        .addSnapshotListener { userDoc, _ ->
-                            if (userDoc != null && userDoc.exists()) {
-                                val ROLE = userDoc.getString("role")
-                                val UID = userDoc.getString("accountId")
-
-                                if (ROLE != null && UID != null) {
-                                    if (ROLE == "patient-notreg") {
-                                        patientRegistration(ROLE)
-                                    } else {
-                                        val collectionName = ROLE.replaceFirstChar { it.uppercase() } + "s"
-                                        db.collection(collectionName).document(UID)
-                                            .addSnapshotListener { profileDoc, profileError ->
-                                                if (profileError != null) {
-                                                    return@addSnapshotListener
-                                                }
-
-                                                if (profileDoc != null) {
-                                                    val firstName = profileDoc.getString("firstName") ?: ""
-                                                    val lastName = profileDoc.getString("lastName") ?: ""
-                                                    val NAME = "$firstName $lastName".trim()
-
-                                                    directToDashboard(ROLE, UID, NAME)
-                                                }
-                                            }
-                                    }
-                                } else {
-                                    Toast.makeText(this, "Invalid user profile data.", Toast.LENGTH_LONG).show()
-                                }
-                            } else {
-                                Toast.makeText(this, "User profile not found.", Toast.LENGTH_LONG).show()
-                            }
-                        }
-                }
-                .addOnFailureListener {
+            dbHandler.authenticateUser(email, password) { mapInfo ->
+                runOnUiThread {
                     signInBtn.isEnabled = true
-                    Toast.makeText(this, "Authentication failed", Toast.LENGTH_LONG).show()
+                    Log.d("DEBUG", "SignBTN enabled = true")
                 }
 
+                if (mapInfo == null) {
+                    Toast.makeText(this, "Authentication failed", Toast.LENGTH_LONG).show()
+                    return@authenticateUser
+                }
+
+                val role = mapInfo["role"] ?: return@authenticateUser
+                val uid = mapInfo["uid"]
+                val name = mapInfo["name"]
+
+                if (mapInfo["status"] == "patient-notreg") {
+                    patientRegistration(role)
+                } else if (uid != null && name != null) {
+                    directToDashboard(role, uid, name)
+                } else {
+                    Toast.makeText(this, "Invalid user profile data.", Toast.LENGTH_LONG).show()
+                }
+            }
         }
 
         initializeOtherAccess()
@@ -136,6 +118,7 @@ class MainActivity : AppCompatActivity() {
     private fun autoLogin() {
         val user = auth.currentUser
         if (user != null) {
+            Log.d("DEBUG", "Found previous login data")
             val firebaseUid = user.uid
 
             db.collection("users").document(firebaseUid).get()
@@ -162,5 +145,4 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
-
 

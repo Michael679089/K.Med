@@ -276,4 +276,3 @@ class PatientInformation : AppCompatActivity() {
         }
     }
 }
-
