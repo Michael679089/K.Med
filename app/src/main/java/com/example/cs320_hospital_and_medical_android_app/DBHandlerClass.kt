@@ -232,6 +232,7 @@ class DBHandlerClass() {
                         "patient" -> "Patients"
                         "nurse" -> "Nurses"
                         "doctor" -> "Doctors"
+                        "admin" -> "Admins"
                         else -> {
                             Log.d("DEBUG", "❗ Unknown role: $role for user: $accountId")
                             continue

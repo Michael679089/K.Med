@@ -51,24 +51,22 @@ class Dashboard : AppCompatActivity() {
         if (ROLE == "admin") { // For Admin Dashboard
             Log.d("DEBUG", "Admin Role found")
 
-            // Remove the scheduleCardContainer
+            // Hide the scheduleCardContainer
             val scheduleCardContainer: androidx.cardview.widget.CardView = findViewById(R.id.scheduleCard)
-            val main: ConstraintLayout = findViewById(R.id.main)
-            main.removeView(scheduleCardContainer)
+            scheduleCardContainer.visibility = View.GONE
 
             // Continue with rest of your logic
             loadRoleButtons(ROLE, UID)
 
         }
         else { // For Anyone else Dashboard
-            // add the scheduleCardContainer
-            val scheduleCardContainer : androidx.cardview.widget.CardView = findViewById(R.id.scheduleCard)
-            val main : ConstraintLayout = findViewById(R.id.main)
-            main.addView(scheduleCardContainer)
+            // Reappear the scheduleCardContainer
+            val scheduleCardContainer: androidx.cardview.widget.CardView = findViewById(R.id.scheduleCard)
+            scheduleCardContainer.visibility = View.VISIBLE
 
             patientInformation(ROLE, UID)
             loadScheduleCard(ROLE, UID)
-
+            loadRoleButtons(ROLE, UID)
 
             // QR Code - Zoomed In - Overlay
             qrCode.setOnClickListener {
