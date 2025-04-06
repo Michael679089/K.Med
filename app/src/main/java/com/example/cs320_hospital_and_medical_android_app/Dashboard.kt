@@ -503,6 +503,15 @@ class Dashboard : AppCompatActivity() {
                                     setScheduleLayout(
                                         R.layout.dashboard_schedule_patient_queue,
                                         mapOf(
+                                            R.id.textQueueNumber to doc.get("queueNumber")?.toString()
+                                        )
+                                    )
+                                }
+
+                                status == "in_room" && date == today -> {
+                                    setScheduleLayout(
+                                        R.layout.dashboard_schedule_patient_queue,
+                                        mapOf(
                                             R.id.textQueueLocation to doc.get("queueStation")?.toString(),
                                             R.id.textQueueNumber to doc.get("queueNumber")?.toString()
                                         )
@@ -602,7 +611,7 @@ class Dashboard : AppCompatActivity() {
                 db.collection("appointments")
                     .whereEqualTo("doctorID", UID)
                     .whereEqualTo("status", "queue_doctor")
-                    .whereEqualTo("readyToCall", true)
+                    .whereEqualTo("toCall", true)
                     .whereEqualTo("date", today)
                     .limit(1)
                     .addSnapshotListener { documents, exception ->
@@ -627,7 +636,8 @@ class Dashboard : AppCompatActivity() {
                             callBtn.setOnClickListener {
                                 // Mark appointment done or handled
                                 db.collection("appointments").document(appointmentId)
-                                    .update(mapOf("status" to "done"))
+                                    .update(mapOf("status" to "in_room",
+                                        "queueNumber" to "Enter the Room"))
                                     .addOnSuccessListener {
                                         Toast.makeText(this, "Appointment completed.", Toast.LENGTH_SHORT).show()
                                         loadScheduleCard("doctor", UID)
