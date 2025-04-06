@@ -32,7 +32,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_marginEnd="12dp"
-                android:src="@drawable/icon_qr_placeholder"
+                android:src="@drawable/icon_person"
                 app:tint="@android:color/white" />
 
             <TextView
@@ -68,13 +68,49 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_marginEnd="12dp"
-                android:src="@drawable/icon_calendar"
+                android:src="@drawable/icon_person"
                 app:tint="@android:color/white" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Add Doctor"
+                android:textColor="@android:color/white"
+                android:textSize="25sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:backgroundTint="@color/red"
+        app:cardCornerRadius="100dp"
+        app:cardElevation="6dp">
+
+        <LinearLayout
+            android:id="@+id/deleteUserBTN"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingTop="25dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="25dp">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="12dp"
+                android:src="@drawable/icon_trash"
+                app:tint="@android:color/white" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Delete a user"
                 android:textColor="@android:color/white"
                 android:textSize="25sp"
                 android:textStyle="bold" />

@@ -3,10 +3,12 @@ package com.example.cs320_hospital_and_medical_android_app
 import android.content.Context
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.UUID
 
 class DBHandlerClass() {
     // Firebase Initialization
@@ -14,168 +16,198 @@ class DBHandlerClass() {
     private var auth = FirebaseAuth.getInstance()
 
 
-    fun getDB(): FirebaseFirestore {
-        return db
-    }
-
-    fun getAuth() : FirebaseAuth {
-        return auth
-    }
-
     fun addDoctor(
-        email: String, // Email input for doctor
-        password: String, // Password input for doctor
+        email: String,
+        password: String,
         firstName: String,
         lastName: String,
         roomNum: String,
         specialization: String,
-        callback: (Boolean) -> Unit
+        onComplete: (Boolean) -> Unit
     ) {
-        // Step 1: Create the Firebase Authentication user (Doctor)
-        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
+        auth.createUserWithEmailAndPassword(email, password)
             .addOnSuccessListener { authResult ->
-                val userId = authResult.user?.uid
+                val userID = authResult.user?.uid ?: return@addOnSuccessListener
 
-                if (userId != null) {
-                    // Step 2: Add user to the Firestore "users" collection
-                    val userMap = hashMapOf(
-                        "role" to "doctor",  // Role is doctor
-                        "firstName" to firstName,
-                        "lastName" to lastName,
-                        "roomNum" to roomNum,
-                        "specialization" to specialization,
-                        "accountId" to ""  // Initially set accountId as blank
-                    )
+                val userMap = hashMapOf(
+                    "accountId" to "",
+                    "role" to "doctor"
+                )
 
-                    // Store user details in Firestore
-                    FirebaseFirestore.getInstance().collection("users").document(userId)
-                        .set(userMap)
-                        .addOnSuccessListener {
-                            // Step 3: Add doctor profile to "Doctors" collection
-                            val doctorMap = hashMapOf(
-                                "firebaseUid" to userId,
-                                "firstName" to firstName,
-                                "lastName" to lastName,
-                                "roomNum" to roomNum,
-                                "specialization" to specialization,
-                                "profilePicture" to ""  // Blank profile picture initially
-                            )
+                db.collection("users").document(userID).set(userMap)
+                    .addOnSuccessListener {
+                        // Generate unique doctor ID
+                        val doctorId = "DID${UUID.randomUUID()}"
+                        val doctorMap = hashMapOf(
+                            "firebaseUid" to userID,
+                            "firstName" to firstName,
+                            "lastName" to lastName,
+                            "profilePicture" to "",
+                            "room" to roomNum,
+                            "specialization" to specialization
+                        )
 
-                            val doctorId = "DID" + System.currentTimeMillis() // Generate a unique doctor ID
-
-                            FirebaseFirestore.getInstance().collection("Doctors").document(doctorId)
-                                .set(doctorMap)
-                                .addOnSuccessListener {
-                                    // Step 4: Update the user's accountId in the "users" collection
-                                    FirebaseFirestore.getInstance().collection("users").document(userId)
-                                        .update("accountId", doctorId)
-                                        .addOnSuccessListener {
-                                            Log.d("DEBUG", "User accountId updated with DoctorID")
-
-                                            // Step 5: Return success via callback
-                                            callback(true)  // Return success
-                                        }
-                                        .addOnFailureListener { e ->
-                                            Log.e("DEBUG", "Error updating accountId: ", e)
-                                            callback(false)  // Return failure
-                                        }
-                                }
-                                .addOnFailureListener { e ->
-                                    Log.e("DEBUG", "Error adding doctor to Doctors collection: ", e)
-                                    callback(false)  // Return failure
-                                }
-                        }
-                        .addOnFailureListener { e ->
-                            Log.e("DEBUG", "Error adding doctor to Users collection: ", e)
-                            callback(false)  // Return failure
-                        }
-                } else {
-                    Log.e("DEBUG", "Error: User creation failed")
-                    callback(false)  // Return failure if the user creation failed
-                }
+                        db.collection("Doctors").document(doctorId).set(doctorMap)
+                            .addOnSuccessListener {
+                                db.collection("users").document(userID)
+                                    .update("accountId", doctorId)
+                                    .addOnSuccessListener {
+                                        onComplete(true)
+                                    }
+                                    .addOnFailureListener {
+                                        Log.e("DEBUG", "Failed to update user with DoctorID")
+                                        onComplete(false)
+                                    }
+                            }
+                            .addOnFailureListener {
+                                Log.e("DEBUG", "Failed to create doctor row")
+                                onComplete(false)
+                            }
+                    }
+                    .addOnFailureListener {
+                        Log.e("DEBUG", "Failed to create user row")
+                        onComplete(false)
+                    }
             }
             .addOnFailureListener { e ->
-                Log.e("DEBUG", "Error creating user with email and password: ", e)
-                callback(false)  // Return failure if the user creation failed
+                if (e is FirebaseAuthUserCollisionException) {
+                    Log.e("DEBUG", "Email already in use")
+                } else {
+                    Log.e("DEBUG", "Failed to create auth user: ${e.message}")
+                }
+                onComplete(false)
             }
     }
-
 
     fun addNurse(
-        email: String, // Email input for nurse
-        password: String, // Password input for nurse
+        email: String,
+        password: String,
         firstName: String,
         lastName: String,
-        callback: (Boolean) -> Unit
+        onComplete: (Boolean) -> Unit
     ) {
-        // Step 1: Create the Firebase Authentication user
-        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
+        auth.createUserWithEmailAndPassword(email, password)
             .addOnSuccessListener { authResult ->
-                val userId = authResult.user?.uid
+                val userID = authResult.user?.uid ?: return@addOnSuccessListener
 
-                if (userId != null) {
-                    // Step 2: Add user to the Firestore "users" collection
-                    val userMap = hashMapOf(
-                        "role" to "nurse",  // Role is nurse
-                        "firstName" to firstName,
-                        "lastName" to lastName,
-                        "accountId" to ""  // Initially set accountId as blank
-                    )
+                val userMap = hashMapOf(
+                    "accountId" to "",
+                    "role" to "nurse"
+                )
 
-                    // Store user details in Firestore
-                    FirebaseFirestore.getInstance().collection("users").document(userId)
-                        .set(userMap)
-                        .addOnSuccessListener {
-                            // Step 3: Add nurse profile to "Nurses" collection
-                            val nurseMap = hashMapOf(
-                                "firebaseUid" to userId,
-                                "firstName" to firstName,
-                                "lastName" to lastName,
-                                "profilePicture" to ""  // Blank profile picture initially
-                            )
+                db.collection("users").document(userID).set(userMap)
+                    .addOnSuccessListener {
+                        val nurseId = "NID${UUID.randomUUID()}"
+                        val nurseMap = hashMapOf(
+                            "firebaseUid" to userID,
+                            "firstName" to firstName,
+                            "lastName" to lastName,
+                            "profilePicture" to ""
+                        )
 
-                            val nurseId = "NID" + System.currentTimeMillis() // Generate a unique nurse ID
-
-                            FirebaseFirestore.getInstance().collection("Nurses").document(nurseId)
-                                .set(nurseMap)
-                                .addOnSuccessListener {
-                                    // Step 4: Update the user's accountId in the "users" collection
-                                    FirebaseFirestore.getInstance().collection("users").document(userId)
-                                        .update("accountId", nurseId)
-                                        .addOnSuccessListener {
-                                            Log.d("DEBUG", "User accountId updated with NurseID")
-
-                                            // Step 5: Return success via callback
-                                            callback(true)  // Return success
-                                        }
-                                        .addOnFailureListener { e ->
-                                            Log.e("DEBUG", "Error updating accountId: ", e)
-                                            callback(false)  // Return failure
-                                        }
-                                }
-                                .addOnFailureListener { e ->
-                                    Log.e("DEBUG", "Error adding nurse to Nurses collection: ", e)
-                                    callback(false)  // Return failure
-                                }
-                        }
-                        .addOnFailureListener { e ->
-                            Log.e("DEBUG", "Error adding nurse to Users collection: ", e)
-                            callback(false)  // Return failure
-                        }
-                } else {
-                    Log.e("DEBUG", "Error: User creation failed")
-                    callback(false)  // Return failure if the user creation failed
-                }
+                        db.collection("Nurses").document(nurseId).set(nurseMap)
+                            .addOnSuccessListener {
+                                db.collection("users").document(userID)
+                                    .update("accountId", nurseId)
+                                    .addOnSuccessListener {
+                                        onComplete(true)
+                                    }
+                                    .addOnFailureListener {
+                                        Log.e("DEBUG", "Failed to update user with NurseID")
+                                        onComplete(false)
+                                    }
+                            }
+                            .addOnFailureListener {
+                                Log.e("DEBUG", "Failed to create nurse row")
+                                onComplete(false)
+                            }
+                    }
+                    .addOnFailureListener {
+                        Log.e("DEBUG", "Failed to create user row")
+                        onComplete(false)
+                    }
             }
             .addOnFailureListener { e ->
-                Log.e("DEBUG", "Error creating user with email and password: ", e)
-                callback(false)  // Return failure if the user creation failed
+                if (e is FirebaseAuthUserCollisionException) {
+                    Log.e("DEBUG", "Email already in use")
+                } else {
+                    Log.e("DEBUG", "Failed to create auth user: ${e.message}")
+                }
+                onComplete(false)
             }
     }
 
+    fun deleteAccountById(accountId: String, role: String, callback: (Boolean) -> Unit) {
+        // Check which collection to delete from based on role
+        val collectionName = when (role) {
+            "doctor" -> "Doctors"
+            "nurse" -> "Nurses"
+            "patient" -> "Patients"
+            else -> {
+                callback(false)
+                return
+            }
+        }
 
+        // Step 1: Get the Firebase UID from the role collection (Doctors, Nurses, Patients)
+        val accountDocRef = db.collection(collectionName).document(accountId)
+        accountDocRef.get().addOnSuccessListener { document ->
+            if (document.exists()) {
+                val firebaseUid = document.getString("firebaseUid")
 
+                if (firebaseUid == null) {
+                    Log.e("DEBUG", "Firebase UID not found for account.")
+                    callback(false)
+                    return@addOnSuccessListener
+                }
 
+                // Step 2: Delete the account from Firebase Auth using Firebase Admin SDK
+                // Note: You need to use Firebase Admin SDK to delete users by UID.
+                // This example assumes you are using Firebase Admin SDK in a server environment.
+                // For client-side deletion, you would need to handle it differently.
+                val firebaseAuth = FirebaseAuth.getInstance()
+                firebaseAuth.currentUser?.delete()?.addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Log.d("DEBUG", "User deleted from Firebase Authentication.")
+                    } else {
+                        Log.e("DEBUG", "Failed to delete user from Firebase Authentication.", task.exception)
+                        callback(false)
+                        return@addOnCompleteListener
+                    }
+
+                    // Step 3: Now delete from "users" collection
+                    val userDocRef = db.collection("users").document(firebaseUid)
+                    userDocRef.delete().addOnCompleteListener { userDeletionTask ->
+                        if (userDeletionTask.isSuccessful) {
+                            // Step 4: Now delete from the appropriate role collection (Doctors, Nurses, Patients)
+                            accountDocRef.delete().addOnCompleteListener { roleDeletionTask ->
+                                if (roleDeletionTask.isSuccessful) {
+                                    // Success: account and related rows deleted
+                                    callback(true)
+                                } else {
+                                    // Failed to delete from role collection
+                                    Log.e("DEBUG", "Failed to delete from role collection")
+                                    callback(false)
+                                }
+                            }
+                        } else {
+                            // Failed to delete from users collection
+                            Log.e("DEBUG", "Failed to delete from users collection")
+                            callback(false)
+                        }
+                    }
+                }
+            } else {
+                // If the document doesn't exist, the accountId is invalid
+                Log.e("DEBUG", "Account ID not found.")
+                callback(false)
+            }
+        }.addOnFailureListener {
+            // Failure in getting the document
+            Log.e("DEBUG", "Failed to retrieve account data.", it)
+            callback(false)
+        }
+    }
 
 
     fun updateAppointment(DID: String, PID: String){

@@ -24,8 +24,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         //Firebase Initialization
-        db = dbHandler.getDB()
-        auth = dbHandler.getAuth()
+        db = FirebaseFirestore.getInstance()
+        auth = FirebaseAuth.getInstance()
 
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

@@ -14,7 +14,9 @@ import android.widget.ImageView
 import android.view.View
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -48,13 +50,27 @@ class Dashboard : AppCompatActivity() {
         idView.text = UID
 
         loadRoleButtons(ROLE, UID)
-        if (ROLE != "admin") { // For Admin Dashboard
+        if (ROLE == "admin") { // For Admin Dashboard
             Log.d("DEBUG", "Admin Role found")
+
+            // Remove the scheduleCardContainer
+            val scheduleCardContainer: androidx.cardview.widget.CardView = findViewById(R.id.scheduleCard)
+            val main: ConstraintLayout = findViewById(R.id.main)
+            main.removeView(scheduleCardContainer)
+
+            // Continue with rest of your logic
             loadRoleButtons(ROLE, UID)
+
         }
         else { // For Anyone else Dashboard
+            // add the scheduleCardContainer
+            val scheduleCardContainer : androidx.cardview.widget.CardView = findViewById(R.id.scheduleCard)
+            val main : ConstraintLayout = findViewById(R.id.main)
+            main.addView(scheduleCardContainer)
+
             patientInformation(ROLE, UID)
             loadScheduleCard(ROLE, UID)
+
 
             // QR Code - Zoomed In - Overlay
             qrCode.setOnClickListener {
@@ -153,6 +169,7 @@ class Dashboard : AppCompatActivity() {
     private fun AdminButtons(view: View, UID: String, ROLE: String) { // Admin 🚩
         val addNurseBTN: LinearLayout = view.findViewById(R.id.adminAddNurseBTN)
         val addDoctorBTN: LinearLayout = view.findViewById(R.id.adminAddDoctorBTN)
+        val deleteViewUserBTN : LinearLayout = view.findViewById(R.id.deleteUserBTN)
         val dbHandler = DBHandlerClass()
 
         addDoctorBTN.setOnClickListener {
@@ -293,6 +310,29 @@ class Dashboard : AppCompatActivity() {
                 }
             }
         }
+        deleteViewUserBTN.setOnClickListener {
+            Log.d("DEBUG", "Delete User BTN clicked")
+
+            // Setting up overlay + Ensure the root layout is a FrameLayout (we want to stack views)
+            val rootView: ConstraintLayout = findViewById(R.id.main)
+            val inflater = LayoutInflater.from(this)
+            val deleteUserLayout = inflater.inflate(R.layout.dashboard_admin_delete_user_layout, rootView, false)
+            val params = LinearLayout.LayoutParams( // Set layout params to ensure it covers the full screen
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+            )
+            deleteUserLayout.layoutParams = params
+            deleteUserLayout.elevation = 1000f  // Set the elevation (z-index) to ensure it's on top of other views // You can adjust this value for desired stacking order
+            rootView.addView(deleteUserLayout)
+
+            val goBackBTN: Button = deleteUserLayout.findViewById(R.id.deleteUserBackBTN)
+            goBackBTN.setOnClickListener {
+                rootView.removeView(deleteUserLayout)  // Remove the overlay when clicking "Go Back"
+            }
+
+
+        }
+
     }
 
 
