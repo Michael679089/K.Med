@@ -139,19 +139,20 @@ class DBHandlerClass() {
 
     fun deleteAccountById(accountId: String, role: String, callback: (Boolean) -> Unit) {
         // Check which collection to delete from based on role
-        val collectionName = when (role) {
-            "doctor" -> "Doctors"
-            "nurse" -> "Nurses"
-            "patient" -> "Patients"
-            else -> {
-                callback(false)
-                return
-            }
+        if (role == "patient") {
+            db.collection("Patients").document(accountId).get()
+                .addOnSuccessListener { document ->
+                    // example firebaseUid "libia2lrwWcubnSx0Ic3fulR8da2"
+                    val firebaseUid = document["firebaseUid"]
+
+                    // lets go to auth
+                    // delete an account in authentication with the column the same as firebaseUid
+
+                }
+                .addOnFailureListener {
+                    Log.e("DEBUG", "ERROR: No account found")
+                }
         }
-
-
-
-
     }
 
     fun fetchUserList(callback: (Array<Array<String>>) -> Unit) {
