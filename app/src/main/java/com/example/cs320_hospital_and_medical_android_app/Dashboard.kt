@@ -427,7 +427,7 @@ class Dashboard : AppCompatActivity() {
                             val doc = documents.first()
                             val status = doc.getString("status") ?: "none"
                             val date = doc.getString("date")
-                            val today = SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).format(Date())
+                            val today = SimpleDateFormat("MMMM dd, yyyy", Locale.ENGLISH).format(Date())
 
                             Log.d("LOAD_CARD_DEBUG", "Loading appointment for UID: $UID")
                             Log.d("DATE_DEBUG", "today = $today, appointment date = $date")
@@ -597,7 +597,7 @@ class Dashboard : AppCompatActivity() {
 
             // Doctor Schedule Card
             "doctor" -> {
-                val today = SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).format(Date())
+                val today = SimpleDateFormat("MMMM dd, yyyy", Locale.ENGLISH).format(Date())
 
                 db.collection("appointments")
                     .whereEqualTo("doctorID", UID)

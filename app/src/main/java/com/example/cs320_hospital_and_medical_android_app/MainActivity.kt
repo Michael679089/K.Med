@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
         //Firebase Initialization
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
-
+        
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
