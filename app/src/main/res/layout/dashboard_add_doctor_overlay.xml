@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="#FFFFFF"
+    tools:ignore="HardcodedText" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp"
+
+        />
+
+        <!-- Email and Password -->
+        <TextView
+            android:id="@+id/adminDoctorEmailTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="firstName"
+            />
+
+        <EditText
+            android:id="@+id/adminDoctorEmailET"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Doctor's Email Address"
+            android:inputType="textEmailAddress"
+            />
+
+        <TextView
+            android:id="@+id/adminDoctorPasswordTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="firstName" />
+
+        <EditText
+            android:id="@+id/adminDoctorPasswordET"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Doctor's Password"
+            android:inputType="textPassword" />
+
+        <TextView
+            android:id="@+id/adminFirstNameTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="firstName" />
+
+        <EditText
+            android:id="@+id/adminDoctorFName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Doctor's firstname"
+            android:inputType="text" />
+
+        <TextView
+            android:id="@+id/adminLNameTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="lastName" />
+
+        <EditText
+            android:id="@+id/adminDoctorLName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Doctor's lastName"
+            android:inputType="text" />
+
+        <TextView
+            android:id="@+id/adminRNumTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="room number" />
+
+        <EditText
+            android:id="@+id/adminDoctorRoomNum"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Doctor's assigned Number"
+            android:inputType="text" />
+
+        <TextView
+            android:id="@+id/adminDoctorSpecTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Doctor Specialization" />
+
+        <EditText
+            android:id="@+id/adminDoctorSpecialization"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Doctor's Assigned Specialization"
+            android:inputType="text" />
+
+        <Button
+            android:id="@+id/adminSubmitDoctorBTN"
+            style="@style/GreenButton"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginTop="36dp"
+            android:text="Submit Doctor"
+            android:backgroundTint="@null"
+            />
+
+        <Button
+            android:id="@+id/adminCancelDoctorBTN"
+            style="@style/RedButton"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginTop="36dp"
+            android:text="Go Back"
+            android:backgroundTint="@null"
+            />
+
+</ScrollView>

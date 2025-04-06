@@ -13,6 +13,171 @@ class DBHandlerClass() {
     private var db = FirebaseFirestore.getInstance()
     private var auth = FirebaseAuth.getInstance()
 
+
+    fun getDB(): FirebaseFirestore {
+        return db
+    }
+
+    fun getAuth() : FirebaseAuth {
+        return auth
+    }
+
+    fun addDoctor(
+        email: String, // Email input for doctor
+        password: String, // Password input for doctor
+        firstName: String,
+        lastName: String,
+        roomNum: String,
+        specialization: String,
+        callback: (Boolean) -> Unit
+    ) {
+        // Step 1: Create the Firebase Authentication user (Doctor)
+        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
+            .addOnSuccessListener { authResult ->
+                val userId = authResult.user?.uid
+
+                if (userId != null) {
+                    // Step 2: Add user to the Firestore "users" collection
+                    val userMap = hashMapOf(
+                        "role" to "doctor",  // Role is doctor
+                        "firstName" to firstName,
+                        "lastName" to lastName,
+                        "roomNum" to roomNum,
+                        "specialization" to specialization,
+                        "accountId" to ""  // Initially set accountId as blank
+                    )
+
+                    // Store user details in Firestore
+                    FirebaseFirestore.getInstance().collection("users").document(userId)
+                        .set(userMap)
+                        .addOnSuccessListener {
+                            // Step 3: Add doctor profile to "Doctors" collection
+                            val doctorMap = hashMapOf(
+                                "firebaseUid" to userId,
+                                "firstName" to firstName,
+                                "lastName" to lastName,
+                                "roomNum" to roomNum,
+                                "specialization" to specialization,
+                                "profilePicture" to ""  // Blank profile picture initially
+                            )
+
+                            val doctorId = "DID" + System.currentTimeMillis() // Generate a unique doctor ID
+
+                            FirebaseFirestore.getInstance().collection("Doctors").document(doctorId)
+                                .set(doctorMap)
+                                .addOnSuccessListener {
+                                    // Step 4: Update the user's accountId in the "users" collection
+                                    FirebaseFirestore.getInstance().collection("users").document(userId)
+                                        .update("accountId", doctorId)
+                                        .addOnSuccessListener {
+                                            Log.d("DEBUG", "User accountId updated with DoctorID")
+
+                                            // Step 5: Return success via callback
+                                            callback(true)  // Return success
+                                        }
+                                        .addOnFailureListener { e ->
+                                            Log.e("DEBUG", "Error updating accountId: ", e)
+                                            callback(false)  // Return failure
+                                        }
+                                }
+                                .addOnFailureListener { e ->
+                                    Log.e("DEBUG", "Error adding doctor to Doctors collection: ", e)
+                                    callback(false)  // Return failure
+                                }
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("DEBUG", "Error adding doctor to Users collection: ", e)
+                            callback(false)  // Return failure
+                        }
+                } else {
+                    Log.e("DEBUG", "Error: User creation failed")
+                    callback(false)  // Return failure if the user creation failed
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("DEBUG", "Error creating user with email and password: ", e)
+                callback(false)  // Return failure if the user creation failed
+            }
+    }
+
+
+    fun addNurse(
+        email: String, // Email input for nurse
+        password: String, // Password input for nurse
+        firstName: String,
+        lastName: String,
+        callback: (Boolean) -> Unit
+    ) {
+        // Step 1: Create the Firebase Authentication user
+        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
+            .addOnSuccessListener { authResult ->
+                val userId = authResult.user?.uid
+
+                if (userId != null) {
+                    // Step 2: Add user to the Firestore "users" collection
+                    val userMap = hashMapOf(
+                        "role" to "nurse",  // Role is nurse
+                        "firstName" to firstName,
+                        "lastName" to lastName,
+                        "accountId" to ""  // Initially set accountId as blank
+                    )
+
+                    // Store user details in Firestore
+                    FirebaseFirestore.getInstance().collection("users").document(userId)
+                        .set(userMap)
+                        .addOnSuccessListener {
+                            // Step 3: Add nurse profile to "Nurses" collection
+                            val nurseMap = hashMapOf(
+                                "firebaseUid" to userId,
+                                "firstName" to firstName,
+                                "lastName" to lastName,
+                                "profilePicture" to ""  // Blank profile picture initially
+                            )
+
+                            val nurseId = "NID" + System.currentTimeMillis() // Generate a unique nurse ID
+
+                            FirebaseFirestore.getInstance().collection("Nurses").document(nurseId)
+                                .set(nurseMap)
+                                .addOnSuccessListener {
+                                    // Step 4: Update the user's accountId in the "users" collection
+                                    FirebaseFirestore.getInstance().collection("users").document(userId)
+                                        .update("accountId", nurseId)
+                                        .addOnSuccessListener {
+                                            Log.d("DEBUG", "User accountId updated with NurseID")
+
+                                            // Step 5: Return success via callback
+                                            callback(true)  // Return success
+                                        }
+                                        .addOnFailureListener { e ->
+                                            Log.e("DEBUG", "Error updating accountId: ", e)
+                                            callback(false)  // Return failure
+                                        }
+                                }
+                                .addOnFailureListener { e ->
+                                    Log.e("DEBUG", "Error adding nurse to Nurses collection: ", e)
+                                    callback(false)  // Return failure
+                                }
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("DEBUG", "Error adding nurse to Users collection: ", e)
+                            callback(false)  // Return failure
+                        }
+                } else {
+                    Log.e("DEBUG", "Error: User creation failed")
+                    callback(false)  // Return failure if the user creation failed
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("DEBUG", "Error creating user with email and password: ", e)
+                callback(false)  // Return failure if the user creation failed
+            }
+    }
+
+
+
+
+
+
     fun updateAppointment(DID: String, PID: String){
         getAppointmentsByPatientID(PID) { _, documentIds ->
             if (documentIds.isNotEmpty()) {
