@@ -71,6 +71,7 @@ class DBHandlerClass() {
                                                     "queueNumber" to 1,
                                                     "queueStation" to "ROOM $DOCTOR_ROOM",
                                                     "bloodPressure" to BP_VAL,
+                                                    "toCall" to true,
                                                     "weight" to WEIGHT,
                                                 )
                                             )

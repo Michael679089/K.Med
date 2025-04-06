@@ -425,7 +425,7 @@ class Dashboard : AppCompatActivity() {
                 db.collection("appointments")
                     .whereEqualTo("doctorID", UID)
                     .whereEqualTo("status", "queue_doctor")
-                    .whereEqualTo("readyToCall", true)
+                    .whereEqualTo("toCall", true)
                     .whereEqualTo("date", today)
                     .limit(1)
                     .addSnapshotListener { documents, exception ->
@@ -450,13 +450,13 @@ class Dashboard : AppCompatActivity() {
                             callBtn.setOnClickListener {
                                 // Mark appointment done or handled
                                 db.collection("appointments").document(appointmentId)
-                                    .update(mapOf("status" to "done"))
+                                    .update(mapOf("status" to "in_doctor_room"))
                                     .addOnSuccessListener {
-                                        Toast.makeText(this, "Appointment completed.", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(this, "Patient is called.", Toast.LENGTH_SHORT).show()
                                         loadScheduleCard("doctor", UID)
                                     }
                                     .addOnFailureListener {
-                                        Toast.makeText(this, "Failed to complete appointment.", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(this, "Failed to call patient.", Toast.LENGTH_SHORT).show()
                                     }
                             }
 

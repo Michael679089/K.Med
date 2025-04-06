@@ -45,7 +45,7 @@ class Prescription : AppCompatActivity() {
         selectedPatientId = intent.getStringExtra("patientId")
         selectedPatientName = intent.getStringExtra("patientName")
 
-        viewFlipper = findViewById(R.id.prescription_main)
+        viewFlipper = findViewById(R.id.viewFlipper)
         recyclerPrescription = findViewById(R.id.recyclerPrescription)
         recyclerPrescription.layoutManager = LinearLayoutManager(this)
         recyclerPrescription.adapter = PrescriptionAdapter(prescriptions) { selected ->
@@ -103,8 +103,9 @@ class Prescription : AppCompatActivity() {
 
         findViewById<TextView>(R.id.prescriptionDate).text = prescription.date
         findViewById<TextView>(R.id.prescriptionDetails).text = prescription.details
-        findViewById<TextView>(R.id.doctorName).text = prescription.doctorName
         findViewById<TextView>(R.id.doctorID).text = prescription.doctorId
+        findViewById<TextView>(R.id.doctorNameText).text = prescription.doctorName
+
 
         val btnEdit: ImageButton = findViewById(R.id.btnEditPrescription)
         val btnDelete: ImageButton = findViewById(R.id.btnDeletePrescription)
@@ -153,7 +154,7 @@ class Prescription : AppCompatActivity() {
             db.collection("Doctors").document(UID)
                 .get()
                 .addOnSuccessListener { document ->
-                    val firstName = document.getString("firstName") ?: "Unknown"
+                    val firstName = document.getString("doctorName") ?: "Unknown"
                     val lastName = document.getString("lastName") ?: "Unknown"
                     doctorName.text = "$firstName $lastName"
                 }
