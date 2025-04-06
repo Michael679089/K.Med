@@ -149,64 +149,9 @@ class DBHandlerClass() {
             }
         }
 
-        // Step 1: Get the Firebase UID from the role collection (Doctors, Nurses, Patients)
-        val accountDocRef = db.collection(collectionName).document(accountId)
-        accountDocRef.get().addOnSuccessListener { document ->
-            if (document.exists()) {
-                val firebaseUid = document.getString("firebaseUid")
 
-                if (firebaseUid == null) {
-                    Log.e("DEBUG", "Firebase UID not found for account.")
-                    callback(false)
-                    return@addOnSuccessListener
-                }
 
-                // Step 2: Delete the account from Firebase Auth using Firebase Admin SDK
-                // Note: You need to use Firebase Admin SDK to delete users by UID.
-                // This example assumes you are using Firebase Admin SDK in a server environment.
-                // For client-side deletion, you would need to handle it differently.
-                val firebaseAuth = FirebaseAuth.getInstance()
-                firebaseAuth.currentUser?.delete()?.addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        Log.d("DEBUG", "User deleted from Firebase Authentication.")
-                    } else {
-                        Log.e("DEBUG", "Failed to delete user from Firebase Authentication.", task.exception)
-                        callback(false)
-                        return@addOnCompleteListener
-                    }
 
-                    // Step 3: Now delete from "users" collection
-                    val userDocRef = db.collection("users").document(firebaseUid)
-                    userDocRef.delete().addOnCompleteListener { userDeletionTask ->
-                        if (userDeletionTask.isSuccessful) {
-                            // Step 4: Now delete from the appropriate role collection (Doctors, Nurses, Patients)
-                            accountDocRef.delete().addOnCompleteListener { roleDeletionTask ->
-                                if (roleDeletionTask.isSuccessful) {
-                                    // Success: account and related rows deleted
-                                    callback(true)
-                                } else {
-                                    // Failed to delete from role collection
-                                    Log.e("DEBUG", "Failed to delete from role collection")
-                                    callback(false)
-                                }
-                            }
-                        } else {
-                            // Failed to delete from users collection
-                            Log.e("DEBUG", "Failed to delete from users collection")
-                            callback(false)
-                        }
-                    }
-                }
-            } else {
-                // If the document doesn't exist, the accountId is invalid
-                Log.e("DEBUG", "Account ID not found.")
-                callback(false)
-            }
-        }.addOnFailureListener {
-            // Failure in getting the document
-            Log.e("DEBUG", "Failed to retrieve account data.", it)
-            callback(false)
-        }
     }
 
     fun fetchUserList(callback: (Array<Array<String>>) -> Unit) {

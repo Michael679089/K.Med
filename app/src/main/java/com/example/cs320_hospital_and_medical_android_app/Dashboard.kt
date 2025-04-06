@@ -318,26 +318,34 @@ class Dashboard : AppCompatActivity() {
                 rootView.removeView(deleteUserLayout)  // Remove the overlay when clicking "Go Back"
             }
 
-            data class User(
-                val userID: String,
-                val accountId: String?,
-                val role: String,
-                val fullName: String
-            )
-
+            var listOfUsers: ArrayList<UserModelData> = ArrayList()
 
             dbHandler.fetchUserList { userList ->
                 // Log the fetched user list
                 Log.d("DEBUG", "Fetched User List: ${userList.contentDeepToString()}")
 
+                val myDeleteUserRecyclerView: RecyclerView = findViewById(R.id.deleteRecyclerView)
 
+                // Iterating over the userList using Kotlin's for loop
+                for (i in 0 until userList.size) {
+                    // Assuming each user is a list of 4 elements: [userID, accountID, userRole, fullName]
+                    val myUserModelData = UserModelData(
+                        userList[i][0],  // userID
+                        userList[i][1],  // accountID
+                        userList[i][2],  // userRole
+                        userList[i][3]   // fullName
+                    )
+
+                    // Add the UserModelData object to the listOfUsers
+                    listOfUsers.add(myUserModelData)
+                }
+
+                // Now that listOfUsers is populated, you can proceed to set up the RecyclerView adapter
+                val adapter = RecyclerViewAdapter(listOfUsers)
+                myDeleteUserRecyclerView.layoutManager = LinearLayoutManager(this)
+                myDeleteUserRecyclerView.adapter = adapter
             }
-
-
-
         }
-
-
     }
 
 
