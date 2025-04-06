@@ -1,6 +1,5 @@
 package com.example.cs320_hospital_and_medical_android_app
 
-import android.content.Context
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
@@ -9,6 +8,8 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.UUID
+// admin imports
+
 
 class DBHandlerClass() {
     // Firebase Initialization
@@ -137,37 +138,73 @@ class DBHandlerClass() {
             }
     }
 
-    fun deleteAccountById(accountId: String, role: String, callback: (Boolean) -> Unit) {
-        // Check which collection to delete from based on role
-        if (role == "patient") {
-            db.collection("Patients").document(accountId).get()
-                .addOnSuccessListener { document ->
-                    if (document.exists()) {
-                        // save documentID
-                        val patientID = document.id
-                        
-                        db.collection("Users").get()
-                            .addOnSuccessListener { documentList ->
+    fun deleteAccountByUserId(firebaseUid: String, role: String, callback: (Boolean) -> Unit) {
+        val roleCollection = when (role) {
+            "patient" -> "Patients"
+            "doctor" -> "Doctors"
+            "nurse" -> "Nurses"
+            "patient-notreg" -> {
+                db.collection("users").document(firebaseUid).delete()
+                    .addOnSuccessListener {
+                        Log.d("DEBUG", "Successfully deleted a patient-notreg account")
+                        callback(true)
+                    }
+                    .addOnFailureListener {
+                        Log.e("DEBUG", "ERROR: can't delete '$firebaseUid' patient-notreg account")
+                        callback(false)
+                    }
+                return
+            }
+            "admin" -> {
+                Log.e("DEBUG", "ERROR: Admin Account Deletion is not allowed here. Do it in Firebase Console.")
+                callback(false)
+                return
+            }
+            else -> {
+                Log.e("DEBUG", "ERROR: Unknown role '$role'")
+                callback(false)
+                return
+            }
+        }
 
-                            }
+        // Fetch user document
+        db.collection("users").document(firebaseUid).get()
+            .addOnSuccessListener { userRow ->
+                if (!userRow.exists()) {
+                    Log.e("DEBUG", "ERROR: Can't find $firebaseUid user row")
+                    callback(false)
+                    return@addOnSuccessListener
+                }
 
-                        
+                val accountId = userRow["accountId"].toString()
 
-                        // example firebaseUid "libia2lrwWcubnSx0Ic3fulR8da2"
-
-
-                        // lets go to auth
-
-                        // delete an account in authentication with the column the same as firebaseUid
-
+                // Delete role-specific document
+                db.collection(roleCollection).document(accountId).delete()
+                    .addOnSuccessListener {
+                        Log.d("DEBUG", "Successfully deleted $role document: $accountId")
+                    }
+                    .addOnFailureListener {
+                        Log.e("DEBUG", "ERROR: Can't delete $role document: $accountId")
                     }
 
-                }
-                .addOnFailureListener {
-                    Log.e("DEBUG", "ERROR: No account found")
-                }
-        }
+                // Then delete user document
+                db.collection("users").document(firebaseUid).delete()
+                    .addOnSuccessListener {
+                        Log.d("DEBUG", "Successfully deleted user document: $firebaseUid")
+                        Log.d("DEBUG", "Note: To delete the Firebase Auth account, you need to do it via the Firebase Console or backend")
+                        callback(true)
+                    }
+                    .addOnFailureListener {
+                        Log.e("DEBUG", "ERROR: Can't delete user document: $firebaseUid")
+                        callback(false)
+                    }
+            }
+            .addOnFailureListener {
+                Log.e("DEBUG", "ERROR: Failed to fetch user document: $firebaseUid")
+                callback(false)
+            }
     }
+
 
     fun fetchUserList(callback: (Array<Array<String>>) -> Unit) {
         Log.d("DEBUG", "🟦 Starting to fetch user list...")

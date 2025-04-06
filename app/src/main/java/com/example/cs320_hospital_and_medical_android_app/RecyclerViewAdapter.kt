@@ -39,14 +39,14 @@ class RecyclerViewAdapter(private val userList: MutableList<UserModelData>) :
             val userRole = holder.binding.roleTextView.text.toString()
 
             val dbHandler = DBHandlerClass()
-            dbHandler.deleteAccountById(userID, userRole) { success ->
+            dbHandler.deleteAccountByUserId(userID, userRole) { success ->
                 if (success) {
                     val positionToRemove = holder.adapterPosition
                     if (positionToRemove != RecyclerView.NO_POSITION) {
                         removeItem(positionToRemove)
                     }
                 } else {
-                    Log.e("DEBUG", "Account deletion failed")
+                    Log.e("DEBUG", "ERROR: Account deletion failed")
                 }
             }
         }
