@@ -15,6 +15,7 @@ import android.view.View
 import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.google.firebase.firestore.Query
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -412,6 +413,37 @@ class Dashboard : AppCompatActivity() {
         when (ROLE) {
             // Patient Schedule Card
             "patient" -> {
+                //For Queueing
+                var queueNumber = 0
+                Log.e("QUEUE", "Current: $queueNumber")
+                val today = SimpleDateFormat("MMMM dd, yyyy", Locale.ENGLISH).format(Date())
+
+                db.collection("appointments")
+                    .whereEqualTo("status", "queue_onboarding")
+                    .orderBy("date", Query.Direction.DESCENDING)
+                    .orderBy("queueNumber", Query.Direction.DESCENDING)
+                    .limit(1)
+                    .get()
+                    .addOnSuccessListener { documents ->
+                        if (documents.isEmpty) {
+                            queueNumber = 1
+                        } else {
+                            val latestAppointment = documents.first()
+                            val date = latestAppointment.getString("date")
+
+                            if (date == today) {
+                                val latestQueueNumber = latestAppointment.getLong("queueNumber") ?: 0
+                                queueNumber = (latestQueueNumber + 1).toInt()
+
+                            } else {
+                                queueNumber = 1
+                            }
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("Firestore", "Error fetching latest queue number", e)
+                    }
+
                 db.collection("appointments")
                     .whereEqualTo("patientID", UID)
                     .orderBy("createdAt", com.google.firebase.firestore.Query.Direction.DESCENDING)
@@ -452,7 +484,7 @@ class Dashboard : AppCompatActivity() {
                                             .update(
                                                 mapOf(
                                                     "status" to "queue_onboarding",
-                                                    "queueNumber" to 1,
+                                                    "queueNumber" to queueNumber,
                                                     "queueStation" to "Onboarding Desk",
                                                 )
                                             )
@@ -562,7 +594,6 @@ class Dashboard : AppCompatActivity() {
                                         .update(
                                             mapOf(
                                                 "status" to "queue_nurse",
-                                                "queueNumber" to 1,
                                                 "queueStation" to "Nurse Station",
                                             )
                                         )

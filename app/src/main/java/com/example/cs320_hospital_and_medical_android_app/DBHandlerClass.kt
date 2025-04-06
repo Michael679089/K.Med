@@ -318,7 +318,6 @@ class DBHandlerClass() {
                                             .update(
                                                 mapOf(
                                                     "status" to "queue_doctor",
-                                                    "queueNumber" to 1,
                                                     "queueStation" to "ROOM $DOCTOR_ROOM",
                                                     "bloodPressure" to BP_VAL,
                                                     "toCall" to true,
