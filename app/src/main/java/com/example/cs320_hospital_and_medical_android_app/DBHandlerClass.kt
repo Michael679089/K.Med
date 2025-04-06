@@ -209,6 +209,85 @@ class DBHandlerClass() {
         }
     }
 
+    fun fetchUserList(callback: (Array<Array<String>>) -> Unit) {
+        Log.d("DEBUG", "🟦 Starting to fetch user list...")
+
+        db.collection("users").get()
+            .addOnSuccessListener { usersSnapshot ->
+                Log.d("DEBUG", "🟩 Users fetched successfully. Number of users: ${usersSnapshot.documents.size}")
+
+                val userList = mutableListOf<Array<String>>()
+                var processedCount = 0
+
+                for (userDocument in usersSnapshot.documents) {
+                    Log.d("DEBUG", "🟧 Processing user: ${userDocument.id}")
+
+                    val accountId = userDocument.id
+                    val role = userDocument.getString("role") ?: continue
+                    val firebaseUid = userDocument.getString("firebaseUid") ?: continue
+
+                    var fullName = ""
+
+                    val collectionName = when (role) {
+                        "patient" -> "Patients"
+                        "nurse" -> "Nurses"
+                        "doctor" -> "Doctors"
+                        else -> {
+                            Log.d("DEBUG", "❗ Unknown role: $role for user: $accountId")
+                            continue
+                        }
+                    }
+
+                    Log.d("DEBUG", "🟨 Fetching role document for role: $role")
+
+                    db.collection(collectionName).document(accountId).get()
+                        .addOnSuccessListener { roleDocumentSnapshot ->
+                            Log.d("DEBUG", "🟩 Role document found for user: $accountId")
+
+                            if (roleDocumentSnapshot.exists()) {
+                                val firstName = roleDocumentSnapshot.getString("firstName") ?: ""
+                                val lastName = roleDocumentSnapshot.getString("lastName") ?: ""
+                                fullName = "$firstName $lastName"
+
+                                val infoEntry = arrayOf(fullName, accountId, role, firebaseUid)
+                                userList.add(infoEntry)
+
+                                Log.d("DEBUG", "🟩 User added to list: $fullName ($accountId)")
+                            } else {
+                                Log.d("DEBUG", "❌ No role document found for accountId: $accountId")
+                            }
+
+                            processedCount++
+
+                            // Check if all documents have been processed
+                            if (processedCount == usersSnapshot.documents.size) {
+                                Log.d("DEBUG", "✅ All users processed. Returning data.")
+                                callback(userList.toTypedArray())
+                            }
+                        }
+                        .addOnFailureListener { e ->
+                            Log.d("DEBUG", "❌ Error fetching role document for $accountId: ${e.message}")
+                            processedCount++
+                            if (processedCount == usersSnapshot.documents.size) {
+                                Log.d("DEBUG", "✅ All users processed with errors. Returning data.")
+                                callback(userList.toTypedArray())
+                            }
+                        }
+                }
+
+                // Handle the case where there are no users in the "users" collection
+                if (usersSnapshot.documents.isEmpty()) {
+                    Log.d("DEBUG", "❗ No users found in the 'users' collection.")
+                    callback(emptyArray())
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.d("DEBUG", "❌ Error fetching users: ${e.message}")
+                callback(emptyArray())
+            }
+    }
+
+
 
     fun updateAppointment(DID: String, PID: String){
         getAppointmentsByPatientID(PID) { _, documentIds ->

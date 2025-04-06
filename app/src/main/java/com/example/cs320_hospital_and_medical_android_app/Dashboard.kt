@@ -328,8 +328,15 @@ class Dashboard : AppCompatActivity() {
                 rootView.removeView(deleteUserLayout)  // Remove the overlay when clicking "Go Back"
             }
 
+            // declare variable to use for fetchUserList
+            dbHandler.fetchUserList { userList ->
+                // After data is fetched, log it
+                Log.d("DEBUG", "Fetched User List: ${userList.joinToString()}")
 
+                // Optionally, you can update the UI with the fetched data here, e.g., populate a RecyclerView or ListView.
+            }
         }
+
 
     }
 
