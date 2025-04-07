@@ -96,45 +96,53 @@ class QRReader : AppCompatActivity() {
     private fun startQRScannerFunction() { // ## The Function after permission.
         Log.d("DEBUG", "Camera Permission finished, unpause everything.")
 
-        val qrCodeScanner: BarcodeView = findViewById(R.id.qrBarcodeScanner)
-        val editTextPid: EditText = findViewById(R.id.editTextPid)
+        val isInAppointment : Boolean = intent.getStringExtra("InAppointment").toBoolean()
 
-        qrScanner = QRCodeScannerClass(this, qrCodeScanner, editTextPid)
-        qrScanner.startScanner()
-        Log.d("DEBUG", "⌚ Scanner starts Scanning")
+        if (isInAppointment) {
+            val prevPatientID = intent.getStringExtra("patient_PID").toString()
+            openQRReaderDisplayPatientInfoActivity(prevPatientID)
+        }
+        else {
+            val qrCodeScanner: BarcodeView = findViewById(R.id.qrBarcodeScanner)
+            val editTextPid: EditText = findViewById(R.id.editTextPid)
 
-        val qrFrameContainer: FrameLayout = findViewById(R.id.qrFrameContainer)
-        qrFrameContainer.setOnClickListener {
-            Log.d("DEBUG", "QRFrameScanner clicked")
-            if (checkCameraPermission()) {
-                if (!qrScanner.getIsScanning()) {
-                    qrScanner.startScanner()
+            qrScanner = QRCodeScannerClass(this, qrCodeScanner, editTextPid)
+            qrScanner.startScanner()
+            Log.d("DEBUG", "⌚ Scanner starts Scanning")
+
+            val qrFrameContainer: FrameLayout = findViewById(R.id.qrFrameContainer)
+            qrFrameContainer.setOnClickListener {
+                Log.d("DEBUG", "QRFrameScanner clicked")
+                if (checkCameraPermission()) {
+                    if (!qrScanner.getIsScanning()) {
+                        qrScanner.startScanner()
+                    }
+                } else {
+                    openAppSettings()
+                    requestPermission()
                 }
-            } else {
-                openAppSettings()
-                requestPermission()
             }
-        }
 
-        val btnToggleFlash: ImageButton = findViewById(R.id.btnToggleFlash)
-        btnToggleFlash.setOnClickListener {
-            qrScanner.toggleFlash()
-        }
-        val btnToggleAutoFocus: ImageButton = findViewById(R.id.btnToggleAutoFocus)
-        btnToggleAutoFocus.setOnClickListener {
-            qrScanner.toggleAutoFocus()
-        }
-
-        val btnSubmit: Button = findViewById(R.id.btnSubmit)
-        btnSubmit.setOnClickListener {
-            val editTextPIDValue = editTextPid.text.toString().trim()
-            if (editTextPIDValue.isNotEmpty()) {
-                Toast.makeText(this, editTextPid.text.toString(), Toast.LENGTH_SHORT).show()
-                openQRReaderDisplayPatientInfoActivity(editTextPIDValue)
+            val btnToggleFlash: ImageButton = findViewById(R.id.btnToggleFlash)
+            btnToggleFlash.setOnClickListener {
+                qrScanner.toggleFlash()
             }
-            else {
-                Log.d("DEBUG", "ERROR: Input is empty or null")
-                Toast.makeText(this, "ERROR: Input is empty or null", Toast.LENGTH_SHORT).show()
+            val btnToggleAutoFocus: ImageButton = findViewById(R.id.btnToggleAutoFocus)
+            btnToggleAutoFocus.setOnClickListener {
+                qrScanner.toggleAutoFocus()
+            }
+
+            val btnSubmit: Button = findViewById(R.id.btnSubmit)
+            btnSubmit.setOnClickListener {
+                val editTextPIDValue = editTextPid.text.toString().trim()
+                if (editTextPIDValue.isNotEmpty()) {
+                    Toast.makeText(this, editTextPid.text.toString(), Toast.LENGTH_SHORT).show()
+                    openQRReaderDisplayPatientInfoActivity(editTextPIDValue)
+                }
+                else {
+                    Log.d("DEBUG", "ERROR: Input is empty or null")
+                    Toast.makeText(this, "ERROR: Input is empty or null", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
@@ -223,6 +231,7 @@ class QRReader : AppCompatActivity() {
                         intent.putExtra("UID", UID)
                         intent.putExtra("patientId", patientIDVal)
                         intent.putExtra("patientName", patientNameVal)
+                        intent.putExtra("InAppointment", true)
                         startActivity(intent)
                     }
 

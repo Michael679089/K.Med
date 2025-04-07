@@ -1,5 +1,7 @@
 package com.example.cs320_hospital_and_medical_android_app
 
+import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -209,7 +211,7 @@ class Prescription : AppCompatActivity() {
         if (viewFlipper.displayedChild > 0) {
             listPrescription()
         } else {
-            super.onBackPressed()
+            goToQRReader()
         }
     }
 
@@ -243,5 +245,17 @@ class Prescription : AppCompatActivity() {
         override fun onBindViewHolder(holder: PrescriptionViewHolder, position: Int) {
             holder.bind(items[position])
         }
+    }
+
+    private fun goToQRReader() {
+        val intent = Intent(this, QRReader::class.java)
+        val isInAppointment = intent.getStringExtra("InAppointment")
+
+        intent.putExtra("ROLE", ROLE)
+        intent.putExtra("UID", UID)
+        intent.putExtra("InAppointment", isInAppointment)
+        intent.putExtra("patient_PID", selectedPatientId)
+        startActivity(intent)
+        finish() // Optional: removes this activity from the back stack
     }
 }

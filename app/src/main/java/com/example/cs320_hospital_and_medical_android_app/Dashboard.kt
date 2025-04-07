@@ -23,98 +23,115 @@ import java.util.Locale
 
 class Dashboard : AppCompatActivity() {
 
-    override fun onCreate(savedInstanceState: Bundle?) { // MAIN FUNCTION
+    override fun onCreate(savedInstanceState: Bundle?) {
         Log.d("DEBUG", "You are now in Dashboard Page")
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.dashboard)
 
-        // Load User Info
-        val ROLE = intent.getStringExtra("ROLE") ?: return
-        val NAME = intent.getStringExtra("NAME") ?: "No Name"
-        val UID = intent.getStringExtra("UID") ?: "Unknown"
+        // Try to get extras from intent
+        val dbHandler = DBHandlerClass()
+        var UID = intent.getStringExtra("UID") ?: ""
+        var ROLE = intent.getStringExtra("ROLE") ?: ""
+        var NAME = intent.getStringExtra("NAME") ?: "No Name"
 
+        if (NAME == "No Name" || ROLE.isBlank() || UID.isBlank()) {
+            dbHandler.getRoleOfLoggedInUser { userRole ->
+                if (userRole.isNotBlank()) {
+                    ROLE = userRole
+                    Log.d("DEBUG", "Fetched Role: $ROLE")
+
+                    dbHandler.getNameOfLoggedInUser { fullName ->
+                        if (fullName.isNotBlank()) {
+                            NAME = fullName
+                            Log.d("DEBUG", "Fetched Name: $NAME")
+
+                            dbHandler.getAccountID { accountId ->
+                                if (accountId.isNotBlank()) {
+                                    UID = accountId
+                                    Log.d("DEBUG", "Fetched UID: $UID")
+                                    updateUI(UID, NAME, ROLE)
+                                } else {
+                                    Log.e("DEBUG", "Failed to get UID")
+                                }
+                            }
+                        } else {
+                            Log.e("DEBUG", "Failed to get Name")
+                        }
+                    }
+                } else {
+                    Log.e("DEBUG", "Failed to get Role")
+                }
+            }
+        } else {
+            updateUI(UID, NAME, ROLE)
+        }
+
+
+        // Settings Button - Open Settings Page
+        val settings = findViewById<ImageView>(R.id.settings)
+        settings.visibility = View.VISIBLE
+        settings.setOnClickListener {
+            val intent = Intent(this, Settings::class.java)
+            startActivity(intent)
+        }
+    }
+
+    private fun updateUI(UID: String, NAME: String, ROLE: String) { // Only updates if there are missing (UID, NAME, ROLE)
         val nameView = findViewById<TextView>(R.id.accountName)
         val idView = findViewById<TextView>(R.id.accountID)
         val qrCode = findViewById<ImageView>(R.id.qrCode)
-        val settings = findViewById<ImageView>(R.id.settings)
-        settings.visibility = View.VISIBLE
-
-        Log.d("DEBUG", ROLE)
-
-        val qrGenerator = QRCodeGeneratorClass()
-        qrGenerator.generateQRCodeToImageView(qrCode, UID)
 
         nameView.text = NAME
         idView.text = UID
 
-        // Reappear schedule card for Everyone
+        Log.d("DEBUG", "Updating UI with ROLE: $ROLE and NAME: $NAME")
+
+        val qrGenerator = QRCodeGeneratorClass()
+        qrGenerator.generateQRCodeToImageView(qrCode, UID)
+
+        // Show/hide schedule card
         val scheduleCardContainer: androidx.cardview.widget.CardView = findViewById(R.id.scheduleCard)
-        scheduleCardContainer.visibility = View.VISIBLE
-
-        if (ROLE == "admin") { // For "Admin" Dashboard
-            Log.d("DEBUG", "Admin Role found")
-
-             val scheduleCardContainer: androidx.cardview.widget.CardView = findViewById(R.id.scheduleCard) // hide schedule card for Admin
-             scheduleCardContainer.visibility = View.GONE
-
-            // Continue with rest of your logic
-            loadRoleButtons(ROLE, UID)
-        }
-        else { // For "Anyone else" Dashboard
+        if (ROLE == "admin") {
+            scheduleCardContainer.visibility = View.GONE
+        } else {
+            scheduleCardContainer.visibility = View.VISIBLE
             patientInformation(ROLE, UID)
             loadScheduleCard(ROLE, UID)
-            loadRoleButtons(ROLE, UID)
         }
 
-        // QR Code - Zoomed In - Overlay
+        loadRoleButtons(ROLE, UID)
+
+        // QR Code Zoom Overlay
         qrCode.setOnClickListener {
             Log.d("DEBUG", "Going to qr zoomed in")
 
-            // Ensure the root layout is a FrameLayout (we want to stack views)
             val rootView = findViewById<ConstraintLayout>(R.id.main)
             val inflater = LayoutInflater.from(this)
             val qrZoomedInView = inflater.inflate(R.layout.qr_zoomed_in, rootView, false)
 
-            // Populate data in the zoomed-in layout
             val qrCodeIV = qrZoomedInView.findViewById<ImageView>(R.id.qrCodeIV)
             qrGenerator.generateQRCodeToImageView(qrCodeIV, UID)
 
-            val qrZoomedInIDNumber = qrZoomedInView.findViewById<TextView>(R.id.qrZoomedInIDNumber)
-            qrZoomedInIDNumber.text = UID
+            qrZoomedInView.findViewById<TextView>(R.id.qrZoomedInIDNumber).text = UID
+            qrZoomedInView.findViewById<TextView>(R.id.qrZoomedInUsername).text = NAME
+            qrZoomedInView.findViewById<TextView>(R.id.qrZoomedInRole).text = ROLE
 
-            val qrZoomedInUsername = qrZoomedInView.findViewById<TextView>(R.id.qrZoomedInUsername)
-            qrZoomedInUsername.text = NAME
-
-            val qrZoomedInRole = qrZoomedInView.findViewById<TextView>(R.id.qrZoomedInRole)
-            qrZoomedInRole.text = ROLE
-
-            val goBackBTN = qrZoomedInView.findViewById<Button>(R.id.qrZoomedInGoBackBTN)
-            goBackBTN.setOnClickListener {
-                rootView.removeView(qrZoomedInView)  // Remove the overlay when clicking "Go Back"
+            qrZoomedInView.findViewById<Button>(R.id.qrZoomedInGoBackBTN).setOnClickListener {
+                rootView.removeView(qrZoomedInView)
             }
 
-            // Set layout params to ensure it covers the full screen
             val params = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT
             )
             qrZoomedInView.layoutParams = params
+            qrZoomedInView.elevation = 1000f
 
-            // Set the elevation (z-index) to ensure it's on top of other views
-            qrZoomedInView.elevation = 1000f  // You can adjust this value for desired stacking order
-
-            // Add the zoomed-in view on top of the dashboard
             rootView.addView(qrZoomedInView)
         }
-
-        settings.setOnClickListener() {
-            val intent = Intent(this, Settings::class.java)
-            startActivity(intent)
-        }
-
-
     }
+
 
     private fun patientInformation(ROLE: String, PID: String) {
         val editPatientBtn = findViewById<ImageView>(R.id.editPatientBtn)

@@ -491,56 +491,99 @@ class DBHandlerClass() {
         }
     }
 
-    fun getNameOfLoggedInUser(userID: String, userRole: String, callback: (String) -> Unit) {
-        val collectionName = when (userRole.lowercase()) {
-            "patient" -> "Patients"
-            "nurse" -> "Nurses"
-            "doctor" -> "Doctors"
-            else -> {
-                Log.e("DEBUG", "Invalid user role: $userRole")
-                callback("")
-                return
-            }
+    fun getNameOfLoggedInUser(callback: (String) -> Unit) {
+        val firebaseUid = auth.currentUser?.uid
+        if (firebaseUid == null) {
+            Log.e("DEBUG", "No logged-in user found")
+            callback("")
+            return
         }
 
-        val dbTable = db.collection(collectionName)
-        dbTable.document(userID).get() // Access the document with ID = userID
-            .addOnSuccessListener { document ->
-                if (document.exists()) {
-                    // Extract firstName and lastName from the document
-                    val firstName = document.getString("firstName") ?: ""
-                    val lastName = document.getString("lastName") ?: ""
-
-                    // Combine firstName and lastName to form the full name
-                    val fullName = "$firstName $lastName".trim()
-
-                    Log.d("DEBUG", "User Full Name: $fullName")
-                    callback(fullName) // Pass the full name to the callback
-                } else {
-                    Log.e("DEBUG", "No document found with ID: $userID")
-                    callback("") // No document found
+        db.collection("users").document(firebaseUid).get()
+            .addOnSuccessListener { userDoc ->
+                if (!userDoc.exists()) {
+                    Log.e("DEBUG", "User document not found")
+                    callback("")
+                    return@addOnSuccessListener
                 }
+
+                val accountId = userDoc.getString("accountId") ?: ""
+                val role = userDoc.getString("role")?.lowercase() ?: ""
+
+                val collectionName = when (role) {
+                    "patient" -> "Patients"
+                    "nurse" -> "Nurses"
+                    "doctor" -> "Doctors"
+                    else -> {
+                        Log.e("DEBUG", "Invalid role: $role")
+                        callback("")
+                        return@addOnSuccessListener
+                    }
+                }
+
+                db.collection(collectionName).document(accountId).get()
+                    .addOnSuccessListener { roleDoc ->
+                        if (roleDoc.exists()) {
+                            val fullName = "${roleDoc.getString("firstName") ?: ""} ${roleDoc.getString("lastName") ?: ""}".trim()
+                            Log.d("DEBUG", "User Full Name: $fullName")
+                            callback(fullName)
+                        } else {
+                            Log.e("DEBUG", "No $role document found with ID: $accountId")
+                            callback("")
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("DEBUG", "Error fetching $role document", e)
+                        callback("")
+                    }
+
             }
             .addOnFailureListener { e ->
-                Log.e("DEBUG", "Failed to fetch user data", e)
+                Log.e("DEBUG", "Error fetching user document", e)
                 callback("")
             }
     }
 
-    fun getRoleOfLoggedInUser(accountId: String, callback: (String) -> Unit) {
-        val dbTable = db.collection("users")
+    fun getAccountID(callback: (String) -> Unit) {
+        val firebaseUid = auth.currentUser?.uid
+        var accountId = ""
 
-        // Query directly by accountId instead of userID
-        dbTable.whereEqualTo("accountId", accountId).limit(1).get()
-            .addOnSuccessListener { documents ->
-                if (!documents.isEmpty) {
-                    val document = documents.documents.first()
+        if (firebaseUid == null) {
+            Log.e("DEBUG", "No logged-in user found")
+            callback("")
+            return
+        }
+
+        db.collection("users").document(firebaseUid).get()
+            .addOnSuccessListener { userRow ->
+                if (userRow.exists()) {
+                    accountId = userRow["accountId"].toString()
+                    callback(accountId)
+                }
+                callback("")
+            }
+            .addOnFailureListener {
+                Log.e("DEBUG", "ERROR: Can't find user.")
+                callback("")
+            }
+    }
+
+    fun getRoleOfLoggedInUser(callback: (String) -> Unit) {
+        val firebaseUid = auth.currentUser?.uid
+        if (firebaseUid == null) {
+            Log.e("DEBUG", "No logged-in user found")
+            callback("")
+            return
+        }
+
+        db.collection("users").document(firebaseUid).get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
                     val userRole = document.getString("role")?.lowercase() ?: ""
-
-                    Log.d("DEBUG", "Fetched user role: $userRole for accountId: $accountId")
+                    Log.d("DEBUG", "Fetched user role: $userRole")
                     callback(userRole)
                 } else {
-                    Log.e("DEBUG", "No user found with accountId: $accountId")
+                    Log.e("DEBUG", "No user document found for UID: $firebaseUid")
                     callback("")
                 }
             }
@@ -549,4 +592,5 @@ class DBHandlerClass() {
                 callback("")
             }
     }
+
 }
