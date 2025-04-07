@@ -93,7 +93,7 @@ class Prescription : AppCompatActivity() {
 
         query.addSnapshotListener { snapshot, error ->
             if (error != null) {
-                createToast("Failed to load prescriptions: ${error.message}")
+                createToast("Failed to load prescriptions")
                 return@addSnapshotListener
             }
 
@@ -208,10 +208,17 @@ class Prescription : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (viewFlipper.displayedChild > 0) {
+        if (viewFlipper.displayedChild == 1) {
+            viewFlipper.displayedChild = 0
+        }
+        else if (viewFlipper.displayedChild == 2) {
+            viewFlipper.displayedChild = 0
+        }
+        else if (viewFlipper.displayedChild > 0) {
             listPrescription()
-        } else {
-            goToQRReader()
+        }
+        else {
+            super.onBackPressed()
         }
     }
 

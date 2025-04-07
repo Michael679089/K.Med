@@ -36,6 +36,7 @@ class QRReader : AppCompatActivity() {
     private lateinit var UID : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         Log.d("DEBUG", "You are now in QR Reader View")
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -49,6 +50,18 @@ class QRReader : AppCompatActivity() {
         // Get the Intent Extra Information
         ROLE = intent.getStringExtra("ROLE").toString()
         UID = intent.getStringExtra("UID").toString()
+        val patientID = intent.getStringExtra("patient_PID") ?: null
+
+        if (patientID != null && patientID.isNotEmpty()) {
+            openQRReaderDisplayPatientInfoActivity(patientID)
+        }
+
+        if (ROLE == "patient") {
+            val intent = Intent(this, Dashboard::class.java)
+            intent.putExtra("ROLE", ROLE)
+            intent.putExtra("UID", UID)
+            startActivity(intent)
+        }
 
         // Initialize permission launcher
         initPermissionLauncher()
@@ -136,12 +149,11 @@ class QRReader : AppCompatActivity() {
             btnSubmit.setOnClickListener {
                 val editTextPIDValue = editTextPid.text.toString().trim()
                 if (editTextPIDValue.isNotEmpty()) {
-                    Toast.makeText(this, editTextPid.text.toString(), Toast.LENGTH_SHORT).show()
                     openQRReaderDisplayPatientInfoActivity(editTextPIDValue)
                 }
                 else {
                     Log.d("DEBUG", "ERROR: Input is empty or null")
-                    Toast.makeText(this, "ERROR: Input is empty or null", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Input is empty or null", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -249,7 +261,7 @@ class QRReader : AppCompatActivity() {
                 }
             }
             else { // if no appointments found, return user to dashboard.
-                Toast.makeText(this, "ERROR: No appointments found.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "No appointments found.", Toast.LENGTH_SHORT).show()
                 Log.d("DEBUG", "ERROR: No appointments found.")
 
                 val intent = Intent(this, Dashboard::class.java)
